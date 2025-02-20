@@ -2,6 +2,11 @@
 ```bash
 composer install
 ```
+### Tạo database
 ```bash
-composer install
+php artisan migrate
+```
+### Chạy dự án laravel
+```bash
+php artisan serve
 ```
