@@ -70,7 +70,7 @@
     margin-bottom: 5px;
 }
 
-.sidebar-item span {
+.sidebar-item a {
     display: block;
 }
 
@@ -79,11 +79,11 @@
     color: white;
 }
 
-.sidebar-item i, .sidebar-item span {
+.sidebar-item i, .sidebar-item a {
     transition: color 0.3s;
 }
 
-.sidebar-item.active i, .sidebar-item.active span {
+.sidebar-item.active i, .sidebar-item.active a {
     color: white;
 }
 
@@ -97,11 +97,11 @@ header {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-header .logo a {
+/* header .logo a {
     font-size: 24px;
     font-weight: bold;
     color: #333;
-}
+} */
 
 header .search input {
     width: 200px;
@@ -164,7 +164,7 @@ header .user-actions i:hover {
                 <button><i class="fa fa-search"></i></button>
             </div>
             <div class="user-actions">
-                <a href="#">Khóa học của tôi</a>
+                <a href="/login">Khóa học của tôi</a>
                 <i class="fa fa-bell"></i>
                 <i class="fa fa-user-circle"></i>
             </div>
@@ -173,19 +173,19 @@ header .user-actions i:hover {
         <div class="sidebar">
             <div class="sidebar-item active">
                 <i class="fas fa-home"></i>
-                <span>Trang chủ</span>
+                <a href="/" class="text-decoration-none">Trang Chủ</a>
             </div>
             <div class="sidebar-item">
                 <i class="fas fa-link"></i>
-                <span>Lộ trình</span>
+                <a href="#" class="text-decoration-none">Lộ Trình</a>
             </div>
             <div class="sidebar-item">
                 <i class="fas fa-file-alt"></i>
-                <span>Bài viết</span>
+                <a href="#" class="text-decoration-none">Bài Viết</a>
             </div>
             <div class="sidebar-item">
                 <i class="fas fa-volume-up"></i>
-                <span>Thông báo</span>
+                <a href="#" class="text-decoration-none">Thông Báo</a>
             </div>
         </div>
         

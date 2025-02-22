@@ -202,3 +202,109 @@
     border-radius: 10px;
     overflow: hidden;
 }
+
+/* Login */
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.social-btn {
+    width: 100%;
+    margin-top: 10px;
+}
+.social-btn a {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+}
+.google-btn {
+    background-color: #db4437;
+    color: white;
+}
+.google-btn:hover {
+    background-color: #c1351d;
+}
+.facebook-btn {
+    background-color: #3b5998;
+    color: white;
+}
+.facebook-btn:hover {
+    background-color: #2d4373;
+}
+.link-register {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+}
+
+.reviews {
+    margin-right: 10px; 
+}
+
+.link-register a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.link-register a:hover {
+    text-decoration: underline;
+}
+
+
+/* đăng kí */
+.register-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.register-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.social-btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.social-btn a {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.google-btn {
+    background-color: #db4437;
+    color: white;
+}
+
+.google-btn:hover {
+    background-color: #c1351d;
+}
+
+.facebook-btn {
+    background-color: #3b5998;
+    color: white;
+}
+
+.facebook-btn:hover {
+    background-color: #2d4373;
+}
