@@ -11,3 +11,6 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return view('auth/register');
 });
+Route::get('/line', function () {
+    return view('line/line');
+});

@@ -15,6 +15,7 @@
     </script>
     <!-- boostrap icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- font Saira Semi Condensed -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,122 +34,124 @@
 </head>
 <style>
     body {
-    margin: 0;
-    font-family: 'Quicksand', sans-serif;
-}
+        margin: 0;
+        font-family: 'Quicksand', sans-serif;
+    }
 
-.sidebar {
-    width: 80px;
-    height: 100vh;
-    background-color: #f8f9fa;
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 100px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
+    .sidebar {
+        width: 80px;
+        height: 100vh;
+        background-color: #f8f9fa;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 100px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
 
-.sidebar-item {
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-    font-size: 14px;
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+    .sidebar-item {
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
 
-.sidebar-item:hover {
-    background-color: #ddd;
-}
+    .sidebar-item:hover {
+        background-color: #ddd;
+    }
 
-.sidebar-item i {
-    font-size: 20px;
-    margin-bottom: 5px;
-}
+    .sidebar-item i {
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
 
-.sidebar-item a {
-    display: block;
-}
+    .sidebar-item a {
+        display: block;
+    }
 
-.sidebar-item.active {
-    background-color: #ff7f00;
-    color: white;
-}
+    .sidebar-item.active {
+        background-color: #ff7f00;
+        color: white;
+    }
 
-.sidebar-item i, .sidebar-item a {
-    transition: color 0.3s;
-}
+    .sidebar-item i,
+    .sidebar-item a {
+        transition: color 0.3s;
+    }
 
-.sidebar-item.active i, .sidebar-item.active a {
-    color: white;
-}
+    .sidebar-item.active i,
+    .sidebar-item.active a {
+        color: white;
+    }
 
-header {
-    padding: 20px;
-    background-color: #fff;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 100;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+    header {
+        padding: 20px;
+        background-color: #fff;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-/* header .logo a {
+    /* header .logo a {
     font-size: 24px;
     font-weight: bold;
     color: #333;
 } */
 
-header .search input {
-    width: 200px;
-    padding: 5px;
-}
+    header .search input {
+        width: 2000px;
+        padding: 5px;
+    }
 
-header .search button {
-    padding: 5px 10px;
-    background-color: #ff6a00;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
+    header .search button {
+        padding: 5px 10px;
+        background-color: #ff6a00;
+        color: black;
+        border: none;
+        cursor: pointer;
+    }
 
-header .search button:hover {
-    background-color: #e55b00;
-}
+    header .search button:hover {
+        background-color: #e55b00;
+    }
 
-header .user-actions i {
-    font-size: 1.5rem;
-    color: #333;
-    margin-left: 10px;
-    cursor: pointer;
-}
+    header .user-actions i {
+        font-size: 1.5rem;
+        color: #333;
+        margin-left: 10px;
+        cursor: pointer;
+    }
 
-header .user-actions a {
-    text-decoration: none;
-    color: #333;
-}
+    header .user-actions a {
+        text-decoration: none;
+        color: #333;
+    }
 
-header .user-actions a:hover,
-header .user-actions i:hover {
-    color: #ff6a00;
-}
+    header .user-actions a:hover,
+    header .user-actions i:hover {
+        color: #ff6a00;
+    }
 
-.container {
-    padding-top: 60px; 
-}
+    .container {
+        padding-top: 60px;
+    }
 
-.root{
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font-size: 100%;
-    font: inherit;
-    vertical-align: baseline;
-}
+    .root {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+    }
 </style>
 
 <body>
@@ -156,12 +159,12 @@ header .user-actions i:hover {
 
         <header class="header">
             <div class="logo">
-                <a href="#">F8</a>
+                <a href="/">F8</a>
                 <span>Học Lập Trình Để Đi Làm</span>
             </div>
             <div class="search">
                 <input type="text" placeholder="Tìm kiếm khóa học, bài viết, video, ..." />
-                <button><i class="fa fa-search"></i></button>
+                <button><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <div class="user-actions">
                 <a href="/login">Khóa học của tôi</a>
@@ -169,7 +172,7 @@ header .user-actions i:hover {
                 <i class="fa fa-user-circle"></i>
             </div>
         </header>
-    
+
         <div class="sidebar">
             <div class="sidebar-item active">
                 <i class="fas fa-home"></i>
@@ -177,7 +180,7 @@ header .user-actions i:hover {
             </div>
             <div class="sidebar-item">
                 <i class="fas fa-link"></i>
-                <a href="#" class="text-decoration-none">Lộ Trình</a>
+                <a href="/line" class="text-decoration-none">Lộ Trình</a>
             </div>
             <div class="sidebar-item">
                 <i class="fas fa-file-alt"></i>
@@ -188,7 +191,7 @@ header .user-actions i:hover {
                 <a href="#" class="text-decoration-none">Thông Báo</a>
             </div>
         </div>
-        
+
         <div class="container mt-3">
             @yield('content')
         </div>

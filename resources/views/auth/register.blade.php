@@ -19,7 +19,7 @@
     <div class="text-center mt-3">
         <p>Hoặc đăng ký với</p>
         <div class="social-btn">
-            <a href="#" class="google-btn">
+            <a href="#" class="google-btn" style="margin-bottom: 10px">
                 <i class="fab fa-google"></i> Đăng ký với Google
             </a>
             <a href="#" class="facebook-btn">
