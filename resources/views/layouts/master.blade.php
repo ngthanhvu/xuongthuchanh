@@ -7,6 +7,9 @@
     <title>{{ $title ?? '' }}</title>
     <!-- link css -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/footer.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/post.css') }}">
+
     <!-- boostrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
@@ -39,18 +42,19 @@
     }
 
     .sidebar {
-        width: 80px;
-        height: 100vh;
-        background-color: #f8f9fa;
-        position: fixed;
-        top: 0;
-        left: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 100px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    }
+    width: 80px;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0); /* Transparent background */
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Keep shadow to make it visible */
+}
+
 
     .sidebar-item {
         width: 100%;
@@ -184,18 +188,86 @@
             </div>
             <div class="sidebar-item">
                 <i class="fas fa-file-alt"></i>
-                <a href="#" class="text-decoration-none">Bài Viết</a>
+                <a href="/post" class="text-decoration-none">Bài Viết</a>
             </div>
-            <div class="sidebar-item">
+            {{-- <div class="sidebar-item">
                 <i class="fas fa-volume-up"></i>
                 <a href="#" class="text-decoration-none">Thông Báo</a>
-            </div>
+            </div> --}}
         </div>
 
         <div class="container mt-3">
             @yield('content')
         </div>
     </div>
+   
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="logo">
+                        <a href="#">F8</a>
+                        <span>Học Lập Trình Để Đi Làm</span>
+                    </div>
+                    <div class="contact-info">
+                        <p>Điện thoại: 08 1919 8989</p>
+                        <p>Email: contact@fullstack.edu.vn</p>
+                        <p>Địa chỉ: Số 1, ngõ 41, Trần Duy Hưng, Cầu Giấy, Hà Nội</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="footer-links">
+                        <h5>Về F8</h5>
+                        <a href="#">Giới thiệu</a>
+                        <a href="#">Liên hệ</a>
+                        <a href="#">Điều khoản</a>
+                        <a href="#">Bảo mật</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="footer-links">
+                        <h5>Sản phẩm</h5>
+                        <a href="#">Game Nester</a>
+                        <a href="#">Game CSS Diner</a>
+                        <a href="#">Game CSS Selectors</a>
+                        <a href="#">Game Froggy</a>
+                        <a href="#">Game Froggy Pro</a>
+                        <a href="#">Game Scoops</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="footer-links">
+                        <h5>Công cụ</h5>
+                        <a href="#">Tạo CV xin việc</a>
+                        <a href="#">Rút gọn liên kết</a>
+                        <a href="#">Clip-path maker</a>
+                        <a href="#">Snippet generator</a>
+                        <a href="#">CSS Grid generator</a>
+                        <a href="#">Cảnh báo sổ tay lên mặt</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="social-icons text-center">
+                        <a href="https://www.youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="copyright text-center">
+                        <p>&copy; 2018 - 2025 F8. Nền tảng học lập trình hàng đầu Việt Nam</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>

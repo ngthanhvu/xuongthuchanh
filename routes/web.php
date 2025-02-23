@@ -14,3 +14,7 @@ Route::get('/register', function () {
 Route::get('/line', function () {
     return view('line/line');
 });
+
+Route::get('/post', function () {
+    return view('post/index');
+});
