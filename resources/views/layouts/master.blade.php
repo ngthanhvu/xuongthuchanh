@@ -55,6 +55,10 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Keep shadow to make it visible */
 }
 
+    .sidebar a{
+        color: black;
+    }
+
 
     .sidebar-item {
         width: 100%;
@@ -177,7 +181,7 @@
             </div>
         </header>
 
-        <div class="sidebar">
+        <div class="sidebar" style="background-color:rgb(255, 255, 255)">
             <div class="sidebar-item active">
                 <i class="fas fa-home"></i>
                 <a href="/" class="text-decoration-none">Trang Chủ</a>
