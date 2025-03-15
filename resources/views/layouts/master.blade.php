@@ -103,7 +103,7 @@
 
                     <!-- Nút đăng nhập -->
                     <div class="d-flex align-items-center">
-                        <a href="/register" class="btn btn-outline-secondary me-2">Đăng ký</a>
+                        <a href="/dang-ky" class="btn btn-outline-secondary me-2">Đăng ký</a>
                         <a href="#" class="btn btn-primary btn-login">Đăng nhập</a>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\RegisterController;
 
 Route::get('/', function () {
     $title = "Trang chủ";
@@ -14,10 +15,10 @@ Route::get('/bai-hoc', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
 });
-Route::get('/register', function () {
-    return view('auth.register');
 // Admin
 Route::get('/admin', function () {
     $title = "Admin";
     return view('admin.index', compact('title'));
 });
+Route::get('/dang-ky', [RegisterController::class, 'showRegistrationForm'])->name('dang-ky');
+Route::post('/dang-ky', [RegisterController::class, 'register']);
