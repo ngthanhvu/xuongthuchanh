@@ -16,6 +16,7 @@ Route::get('/bai-hoc', function () {
 });
 Route::get('/register', function () {
     return view('auth.register');
+});
 // Admin
 Route::get('/admin', function () {
     $title = "Admin";
