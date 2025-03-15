@@ -22,3 +22,9 @@ Route::get('/admin', function () {
     $title = "Admin";
     return view('admin.index', compact('title'));
 });
+
+//khoa hoc
+Route::get('/admin/khoa-hoc', function () {
+    $title = "Khoá học";
+    return view('admin.khoa-hoc.index', compact('title'));
+});
