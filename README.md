@@ -18,3 +18,4 @@ php artisan key:generate
 ```bash
 php artisan serve
 ```
+mạnh đã ở đây
