@@ -22,3 +22,8 @@ Route::get('/admin', function () {
 });
 Route::get('/dang-ky', [RegisterController::class, 'showRegistrationForm'])->name('dang-ky');
 Route::post('/dang-ky', [RegisterController::class, 'register']);
+Route::get('/admin/khoa-hoc', function () {
+    $title = "Khoá học";
+    return view('admin.khoa-hoc.index', compact('title'));
+});
+
