@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_enrollments', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->decimal('amount', 10, 2);
+            $table->string('payment_method');
+            $table->string('payment_status');
+            $table->string('status');
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->foreignId('course_id')->constrained('courses', 'id');
-            $table->timestamp('enrolled_at')->useCurrent();
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('course_enrollments');
+        Schema::dropIfExists('payments');
     }
 };

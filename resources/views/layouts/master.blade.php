@@ -5,12 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? '' }} | Học Lập Trình Để Làm</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="https://fullstack.edu.vn/favicon/favicon_32x32.png">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- boostrap icon -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- FontAwesome 6 Free CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .header {
             background-color: #fff;
@@ -44,11 +51,9 @@
 
         .navbar-nav .nav-link.active {
             color: #ff6200;
-            /* Màu cam khi active */
             font-weight: bold;
         }
 
-        /* Tùy chỉnh màu nút thành cam */
         .btn-login {
             background-color: #ff6200;
             border-color: #ff6200;
@@ -56,11 +61,9 @@
 
         .btn-login:hover {
             background-color: #e55a00;
-            /* Màu cam đậm hơn khi hover */
             border-color: #e55a00;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 991px) {
             .btn-login {
                 margin-left: 0;
@@ -75,7 +78,7 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <!-- Logo -->
-                <a class="navbar-brand logo d-flex align-items-center" href="#">
+                <a class="navbar-brand logo d-flex align-items-center" href="/">
                     <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png" alt="Logo">
                     <span>Học Lập Trình Để Làm</span>
                 </a>
@@ -99,12 +102,15 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#">Bài viết</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin">Admin</a>
+                        </li>
                     </ul>
 
                     <!-- Nút đăng nhập -->
                     <div class="d-flex align-items-center">
-                        <a href="/dang-ky" class="btn btn-outline-secondary me-2">Đăng ký</a>
-                        <a href="#" class="btn btn-primary btn-login">Đăng nhập</a>
+                        <a href="/register" class="btn btn-outline-secondary me-2">Đăng ký</a>
+                        <a href="/login" class="btn btn-primary btn-login">Đăng nhập</a>
                     </div>
                 </div>
             </div>

@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('category_id')->constrained('categories', 'id');
-            $table->string('name', 255);
-            $table->string('description', 255)->nullable();
-            $table->decimal('original_price', 10, 2);
-            $table->decimal('discounted_price', 10, 2)->nullable();
-            $table->integer('total_lessons')->nullable();
-            $table->string('total_duration', 20)->nullable();
-            $table->enum('status', ['new', 'ongoing', 'completed'])->default('new');
+            $table->string('title');
+            $table->text('description');
+            $table->string('thumbnail');
+            $table->decimal('price', 10, 2);
+            $table->decimal('discount')->default(0);
+            $table->foreignId('user_id')->constrained('users', 'id');
             $table->timestamps();
         });
     }

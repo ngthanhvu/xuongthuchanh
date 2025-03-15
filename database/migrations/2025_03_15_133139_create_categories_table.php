@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('progress', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('user_id')->constrained('users', 'id');
-            $table->foreignId('lesson_id')->constrained('lessons', 'id');
-            $table->boolean('completed')->default(false);
-            $table->timestamp('completed_at')->nullable();
+            $table->string('name');
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('progress');
+        Schema::dropIfExists('categories');
     }
 };
