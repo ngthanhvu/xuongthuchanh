@@ -18,4 +18,15 @@ php artisan key:generate
 ```bash
 php artisan serve
 ```
-mạnh đã ở đây
+### Thêm code vào git
+```bash
+git add .
+```
+### Ghi commit 
+```bash
+git commit -m "nội dung commit"
+```
+### push lên git nhánh manh/dev
+```bash
+git push origin manh/dev
+```
