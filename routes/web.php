@@ -14,7 +14,10 @@ Route::get('/bai-hoc', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
 });
-
 Route::get('/register', function () {
     return view('auth.register');
+// Admin
+Route::get('/admin', function () {
+    $title = "Admin";
+    return view('admin.index', compact('title'));
 });
