@@ -14,3 +14,8 @@ Route::get('/bai-hoc', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
 });
+//dang nhap
+Route::get('/dang-nhap', function () {
+    $title = "Dang nhap";
+    return view('auth.login', compact('title'));
+});
