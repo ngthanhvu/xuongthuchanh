@@ -166,7 +166,7 @@
                     <div class="card-body text-center">
                         <h5 class="card-title">Miễn phí</h5>
                         <p class="text-muted">Đăng ký học</p>
-                        <button class="btn btn-custom btn-lg w-100">ĐĂNG KÝ HỌC</button>
+                        <a href="/bai-hoc" class="btn btn-custom btn-lg w-100">ĐĂNG KÝ HỌC</a>
                         <ul class="list-unstyled mt-3">
                             <li><i class="bi bi-check-circle me-2"></i> Trình độ cơ bản</li>
                             <li><i class="bi bi-check-circle me-2"></i> Tổng số 12 bài học</li>
