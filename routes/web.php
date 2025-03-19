@@ -5,7 +5,7 @@ use App\Http\Controllers\UserController;
 
 
 //Admin
-Route::middleware('check.role.admin')->group(function () {
+Route::middleware('check.role:admin')->group(function () {
     Route::get('/admin', function () {
         $title = 'Trang quản trị';
         return view('admin.index', compact('title'));
@@ -31,12 +31,6 @@ Route::get('/lesson', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
 });
-// Admin
-Route::get('/admin', function () {
-    $title = "Admin";
-    return view('admin.index', compact('title'));
-});
-
 
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
