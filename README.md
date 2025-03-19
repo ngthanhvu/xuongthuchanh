@@ -30,3 +30,7 @@ git commit -m "nội dung commit"
 ```bash
 git push origin manh/dev
 ```
+### chuẵ cháy
+```bash
+php artisan session:table
+```

@@ -53,7 +53,7 @@
     <div class="container">
         <div class="form-container" id="loginForm">
             <h2 class="text-center mb-4">Đăng Nhập</h2>
-            <form method="POST" action="/login">
+            <form method="POST" action="/dang-nhap">
                 @csrf
                 <div class="mb-3">
                     <label for="loginEmail" class="form-label">Email</label>

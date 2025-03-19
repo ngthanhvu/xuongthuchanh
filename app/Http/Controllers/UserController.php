@@ -32,7 +32,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
         ]);
-        return redirect('/login')->with('success', 'Đăng ký thành công');
+        return redirect('/dang-nhap')->with('success', 'Đăng ký thành công');
     }
 
     public function login(Request $request)
@@ -55,6 +55,6 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        return redirect('/login');
+        return redirect('/dang-nhap');
     }
 }

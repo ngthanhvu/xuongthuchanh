@@ -102,16 +102,32 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#">Bài viết</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin">Admin</a>
-                        </li>
+                        @if(Auth::check() && Auth::user()->role === 'admin')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/admin') }}">Admin</a>
+                            </li>
+                        @endif
+
                     </ul>
 
                     <!-- Nút đăng nhập -->
+               
                     <div class="d-flex align-items-center">
-                        <a href="/register" class="btn btn-outline-secondary me-2">Đăng ký</a>
-                        <a href="/login" class="btn btn-primary btn-login">Đăng nhập</a>
+                        @if(Auth::check())
+                            <span class="me-3">Xin chào, {{ Auth::user()->fullname }}</span>
+                            <a href="{{ route('logout') }}" class="btn btn-danger"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Đăng xuất
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        @else
+                            <a href="/register" class="btn btn-outline-secondary me-2">Đăng ký</a>
+                            <a href="/dang-nhap" class="btn btn-primary btn-login">Đăng nhập</a>
+                        @endif
                     </div>
+                    
                 </div>
             </div>
         </nav>
