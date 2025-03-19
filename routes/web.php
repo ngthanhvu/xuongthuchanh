@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoriesController;
 
 
 //Admin
@@ -14,6 +15,15 @@ Route::middleware('check.role:admin')->group(function () {
     Route::get('/admin/users', function () {
         $title = 'Khoá học';
         return view('admin.course.index', compact('title'));
+    });
+
+    Route::prefix('admin/category')->name('admin.category.')->group(function () {
+        Route::get('/', [CategoriesController::class, 'index'])->name('index');
+        Route::get('/create', [CategoriesController::class, 'create'])->name('create');
+        Route::post('/store', [CategoriesController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [CategoriesController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [CategoriesController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
     });
 });
 

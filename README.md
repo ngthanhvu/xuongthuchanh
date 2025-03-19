@@ -34,3 +34,7 @@ git push origin manh/dev
 ```bash
 php artisan session:table
 ```
+### Cài thư viện tải hình ảnh
+```bash
+php artisan storage:link
+```
