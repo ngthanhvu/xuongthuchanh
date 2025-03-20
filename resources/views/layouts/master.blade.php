@@ -115,7 +115,7 @@
                
                     <div class="d-flex align-items-center">
                         @if(Auth::check())
-                            <span class="me-3">Xin chào, {{ Auth::user()->fullname }}</span>
+                            <span class="me-3">Xin chào, {{ Auth::user()->username }}</span>
                             <a href="{{ route('logout') }}" class="btn btn-danger"
                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 Đăng xuất
