@@ -104,8 +104,7 @@
                 </a>
                 <div class="collapse" id="productsMenu">
                     <ul class="nav flex-column ps-3">
-                        <li><a class="nav-link" href="/admin/products#list-products">Danh sách khoá học</a></li>
-                        <li><a class="nav-link" href="/admin/products/create#add-product">Thêm khoá học</a></li>
+                        <li><a class="nav-link" href="{{route ('admin.course.index')}}">Danh sách khoá học</a></li>
                         <li><a class="nav-link" href="{{route ('admin.category.index')}}">Danh mục</a></li>
                     </ul>
                 </div>
