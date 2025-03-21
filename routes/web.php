@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\Home;
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
@@ -39,10 +40,13 @@ Route::middleware('check.role:admin')->group(function () {
 
 
 //User
-Route::get('/', function () {
-    $title = "Trang chủ";
-    return view('index', compact('title'));
-});
+// Route::get('/', function () {
+//     $title = "Trang chủ";
+//     return view('index', compact('title', 'course'));
+// });
+
+Route::get('/', [Home::class, 'index'])->name('home');
+
 
 Route::get('/lesson', function () {
     $title = "Bài học";

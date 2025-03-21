@@ -34,11 +34,11 @@
                     <td>{{ number_format($courses->discount, 2) }}%</td>
                     <td>{{ $courses->category->name ?? 'No Category' }}</td> 
                     <td>
-                        <a href="{{ route('admin.course.edit', $courses->id) }}" class="btn btn-warning btn-sm">Edit</a> 
+                        <a href="{{ route('admin.course.edit', $courses->id) }}" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a> |
                         <form action="{{ route('admin.course.delete', $courses->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this course?')">Delete</button>
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this course?')"><i class="bi bi-trash"></i></button>
                         </form> 
                     </td>
                 </tr>
