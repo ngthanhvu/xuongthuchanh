@@ -24,7 +24,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::post('/store', [CategoriesController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [CategoriesController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [CategoriesController::class, 'update'])->name('update');
-        Route::delete('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
+        Route::post('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
     });
 });
 
@@ -54,3 +54,15 @@ Route::get('/register', function () {
     $title = "Đăng ký";
     return view('auth.register', compact('title'));
 });
+
+Route::get('/quen-mat-khau', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+
+Route::post('/quen-mat-khau', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Hiển thị form đặt lại mật khẩu
+Route::get('/dat-lai-mat-khau/{token}', function ($token) {
+    return view('auth.resetpassword', ['token' => $token]);
+})->name('password.reset');
+
+// Xử lý việc đặt lại mật khẩu
+Route::post('/dat-lai-mat-khau', [ResetPasswordController::class, 'reset'])->name('password.update');
