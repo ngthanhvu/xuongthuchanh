@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/style.css">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- boostrap icon -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -46,7 +46,6 @@
 
         .navbar-nav .nav-link:hover {
             color: #ff6200;
-            /* Màu cam khi hover */
         }
 
         .navbar-nav .nav-link.active {
@@ -69,6 +68,58 @@
                 margin-left: 0;
                 width: 100%;
             }
+        }
+
+        /* CSS cho avatar và dropdown */
+        .avatar-container {
+            position: relative;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            padding: 10px;
+        }
+
+        .dropdown-menu .dropdown-item {
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f0f2f5;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .user-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .user-info .user-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .user-info .user-handle {
+            color: #606770;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -102,33 +153,53 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#">Bài viết</a>
                         </li>
-                        
-                        @if(Auth::check() && Auth::user()->role === 'admin')
-                        <li class="nav-item">
+                        @if (Auth::check() && Auth::user()->role === 'admin')
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{ url('/admin') }}">Admin</a>
                             </li>
                         @endif
-
                     </ul>
 
-                    <!-- Nút đăng nhập -->
-               
+                    <!-- Nút đăng nhập hoặc avatar -->
                     <div class="d-flex align-items-center">
-                        @if(Auth::check())
-                            <span class="me-3">Xin chào, {{ Auth::user()->username }}</span>
-                            <a href="{{ route('logout') }}" class="btn btn-danger"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                Đăng xuất
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
+                        @if (Auth::check())
+                            <!-- Avatar với dropdown -->
+                            <div class="avatar-container">
+                                <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png" class="avatar"
+                                    alt="Avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                                <!-- Dropdown Menu -->
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <!-- Thông tin người dùng -->
+                                    <li class="user-info">
+                                        <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png"
+                                            alt="User Avatar">
+                                        <div>
+                                            <div class="user-name">{{ Auth::user()->username }}</div>
+                                            <div class="user-handle">{{ Auth::user()->username }}</div>
+                                        </div>
+                                    </li>
+                                    <!-- Các mục trong dropdown -->
+                                    <li><a class="dropdown-item" href="#">Trang cá nhân</a></li>
+                                    <li><a class="dropdown-item" href="#">Viết blog</a></li>
+                                    <li><a class="dropdown-item" href="#">Bài viết của tui</a></li>
+                                    <li><a class="dropdown-item" href="#">Cài đặt</a></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            Đăng xuất
+                                        </a>
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            class="d-none">
+                                            @csrf
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
                         @else
                             <a href="/register" class="btn btn-outline-secondary me-2">Đăng ký</a>
                             <a href="/dang-nhap" class="btn btn-primary btn-login">Đăng nhập</a>
                         @endif
                     </div>
-                    
                 </div>
             </div>
         </nav>
