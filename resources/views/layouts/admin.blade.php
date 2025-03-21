@@ -87,7 +87,7 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <h4 class="text-white text-center mb-4">Admin Panel</h4>
+        <h4 class="text-white text-center mb-4"><a href="/" class="text-decoration-none text-white">Admin Panel</a></h4>
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link active" href="/admin#dashboard">

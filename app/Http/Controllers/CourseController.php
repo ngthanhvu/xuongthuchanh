@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
 class CourseController extends Controller
 {
     /**
@@ -13,7 +13,9 @@ class CourseController extends Controller
      */
     public function index()
     {
-        //
+        $title = 'Khoá học';
+        $course = Course::all();
+        return view('admin.course.index', compact('course', 'title'));
     }
 
     /**
@@ -21,7 +23,9 @@ class CourseController extends Controller
      */
     public function create()
     {
-        //
+        $title = 'Thêm khoá học';
+        $categories = DB::table('categories')->get();
+        return view('admin.course.create', compact('title', 'course'));
     }
 
     /**
@@ -29,8 +33,28 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $request -> validate([
+            'title' => 'required',
+            'description' => 'required',
+            'thumbnail' => 'required|image|max:2048',
+            'price' => 'required',
+            'discount' => 'required',
+            'category_id' => 'required'
+        ]);
+
+        $thumbnailPath = $request->file('thumbnail')->store('courses', 'public');
+
+        Course::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'thumbnail' => $thumbnailPath,
+            'price' => $request->price,
+            'discount' => $request->discount,
+            'category_id' => $request->category_id,
+
+        ]);
+        return redirect()->route('admin.course.index')->with('success', 'Them thanh cong');
+    }   
 
     /**
      * Display the specified resource.
