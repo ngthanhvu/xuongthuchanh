@@ -6,6 +6,8 @@ use App\Models\Users;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -56,5 +58,66 @@ class UserController extends Controller
     {
         Auth::logout();
         return redirect('/dang-nhap');
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'username' => 'required|string|max:255',
+            'fullname' => 'nullable|string|max:255',
+            'password' => 'nullable|min:6|confirmed',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'username.required' => 'Vui lòng nhập tên người dùng',
+            'fullname.max' => 'Họ và tên không được vượt quá 255 ký tự',
+            'password.min' => 'Mật khẩu phải ít nhất 6 ký tự',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp',
+            'avatar.image' => 'Ảnh đại diện phải là định dạng ảnh hợp lệ',
+            'avatar.mimes' => 'Ảnh đại diện phải có định dạng jpeg, png, jpg, gif',
+            'avatar.max' => 'Ảnh đại diện không được vượt quá 2MB',
+        ]);
+
+        $user->username = $request->username;
+        $user->fullname = $request->fullname;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && File::exists(public_path($user->avatar))) {
+                File::delete(public_path($user->avatar));
+            }
+
+            $avatarName = time() . '.' . $request->avatar->getClientOriginalExtension();
+            $avatarPath = 'avatars/' . $avatarName;
+            $request->avatar->move(public_path('avatars'), $avatarName);
+
+            $user->avatar = $avatarPath;
+        }
+
+        // $user->save();
+
+        return back()->with('success', 'Cập nhật hồ sơ thành công');
+    }
+    public function deleteAvatar()
+    {
+        $user = Auth::user();
+
+        if ($user->avatar && File::exists(public_path($user->avatar))) {
+            File::delete(public_path($user->avatar));
+            $user->avatar = null;
+            // $user->save();
+        }
+
+        return response()->json(['success' => true]);
     }
 }

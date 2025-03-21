@@ -3,8 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
-use App\Http\Controllers\ForgotPasswordController;
-use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\CourseController;
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
@@ -26,6 +25,16 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [CategoriesController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
     });
+
+    Route::prefix('admin/course')->name('admin.course.')->group(function () {
+        Route::get('/', [CourseController::class, 'index'])->name('index');
+        Route::get('/create', [CourseController::class, 'create'])->name('create');
+        Route::post('/store', [CourseController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
+    });
+
 });
 
 
@@ -34,10 +43,7 @@ Route::get('/', function () {
     $title = "Trang chủ";
     return view('index', compact('title'));
 });
-Route::get('/course', function () {
-    $title = "Chi tiết khoá học";
-    return view('detail', compact('title'));
-});
+
 Route::get('/lesson', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
@@ -55,14 +61,7 @@ Route::get('/register', function () {
     return view('auth.register', compact('title'));
 });
 
-Route::get('/quen-mat-khau', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.deleteAvatar');
 
-Route::post('/quen-mat-khau', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-
-// Hiển thị form đặt lại mật khẩu
-Route::get('/dat-lai-mat-khau/{token}', function ($token) {
-    return view('auth.resetpassword', ['token' => $token]);
-})->name('password.reset');
-
-// Xử lý việc đặt lại mật khẩu
-Route::post('/dat-lai-mat-khau', [ResetPasswordController::class, 'reset'])->name('password.update');

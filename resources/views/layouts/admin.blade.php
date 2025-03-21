@@ -95,22 +95,33 @@
                 </a>
             </li>
 
-
-            <li class="nav-item">
+             {{-- Danh mục khóa học --}}
+             <li class="nav-item">
                 <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
                     href="#productsMenu" role="button">
-                    <div><i class="bi bi-box me-2"></i>Khoá học</div>
+                    <div><i class="bi bi-bookmark-check"></i> Danh Mục</div>
                     <i class="bi bi-chevron-down"></i>
                 </a>
                 <div class="collapse" id="productsMenu">
                     <ul class="nav flex-column ps-3">
-                        <li><a class="nav-link" href="/admin/products#list-products">Danh sách khoá học</a></li>
-                        <li><a class="nav-link" href="/admin/products/create#add-product">Thêm khoá học</a></li>
-                        <li><a class="nav-link" href="{{route ('admin.category.index')}}">Danh mục</a></li>
+                        <li><a class="nav-link" href="{{route ('admin.category.index')}}">Quản lí danh mục</a></li>
                     </ul>
                 </div>
             </li>
-            
+
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    href="#courseMenu" role="button">
+                    <div><i class="bi bi-book-half"></i> Khoá học</div>
+                    <i class="bi bi-chevron-down"></i>
+                </a>
+                <div class="collapse" id="courseMenu">
+                    <ul class="nav flex-column ps-3">
+                        <li><a class="nav-link" href="{{route ('admin.course.index')}}">Quản lí khóa học</a></li>
+                    </ul>
+                </div>
+            </li>
+
 
             <li class="nav-item">
                 <a class="nav-link" href="/admin/users#users">
