@@ -98,4 +98,30 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('#loginForm form');
+            const emailInput = document.querySelector('#loginEmail');
+            const passwordInput = document.querySelector('#loginPassword');
+            const rememberMeCheckbox = document.querySelector('#rememberMe');
+
+            if (localStorage.getItem('rememberMe') === 'true') {
+                emailInput.value = localStorage.getItem('email') || '';
+                passwordInput.value = localStorage.getItem('password') || '';
+                rememberMeCheckbox.checked = true;
+            }
+
+            loginForm.addEventListener('submit', function(e) {
+                if (rememberMeCheckbox.checked) {
+                    localStorage.setItem('email', emailInput.value);
+                    localStorage.setItem('password', passwordInput.value);
+                    localStorage.setItem('rememberMe', 'true');
+                } else {
+                    localStorage.removeItem('email');
+                    localStorage.removeItem('password');
+                    localStorage.removeItem('rememberMe');
+                }
+            });
+        });
+    </script>
 @endsection
