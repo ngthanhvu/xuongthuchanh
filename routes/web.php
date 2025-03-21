@@ -54,8 +54,7 @@ Route::get('/register', function () {
     return view('auth.register', compact('title'));
 });
 
-//profile
-Route::get('/profile', function () {
-    $title = "Trang ca nhan";
-    return view('profile', compact('title'));
-});
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.deleteAvatar');
+
