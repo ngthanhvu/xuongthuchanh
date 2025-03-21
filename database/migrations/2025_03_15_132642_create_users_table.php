@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 return new class extends Migration
 {
@@ -21,6 +23,14 @@ return new class extends Migration
             $table->string('role')->default('user');
             $table->timestamps();
         });
+        DB::table('users')->insert([
+            'username' => 'admin',
+            'email' => 'admin@cc.cc',
+            'password' => Hash::make('123456'),
+            'role' => 'admin',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**
