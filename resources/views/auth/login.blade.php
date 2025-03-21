@@ -75,6 +75,7 @@
                     <input type="checkbox" class="form-check-input" id="rememberMe">
                     <label class="form-check-label" for="rememberMe">Ghi nhớ tôi</label>
                 </div>
+                <a href="{{ route('password.request') }}" class="text-decoration-none">Quên mật khẩu?</a>
                 <button type="submit" class="btn btn-primary w-100">Đăng Nhập</button>
             </form>
 

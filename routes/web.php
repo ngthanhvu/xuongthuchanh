@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
-
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ResetPasswordController;
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
@@ -53,3 +54,13 @@ Route::get('/register', function () {
     $title = "Đăng ký";
     return view('auth.register', compact('title'));
 });
+
+Route::get('/quen-mat-khau', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/quen-mat-khau', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+Route::get('/dat-lai-mat-khau/{token}', function ($token) {
+    return view('auth.resetpassword', ['token' => $token]);
+})->name('password.reset');
+
+
+Route::post('/dat-lai-mat-khau', [ResetPasswordController::class, 'reset'])->name('password.update');

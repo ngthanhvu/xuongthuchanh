@@ -38,3 +38,7 @@ php artisan session:table
 ```bash
 php artisan storage:link
 ```
+### Cập nhật
+```bash
+git pull origin dev
+```
