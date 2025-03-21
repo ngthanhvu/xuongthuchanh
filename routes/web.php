@@ -23,7 +23,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::post('/store', [CategoriesController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [CategoriesController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [CategoriesController::class, 'update'])->name('update');
-        Route::post('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
+        Route::delete('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
     });
 });
 
@@ -52,4 +52,10 @@ Route::post('/register', [UserController::class, 'register']);
 Route::get('/register', function () {
     $title = "Đăng ký";
     return view('auth.register', compact('title'));
+});
+
+//profile
+Route::get('/profile', function () {
+    $title = "Trang ca nhan";
+    return view('profile', compact('title'));
 });

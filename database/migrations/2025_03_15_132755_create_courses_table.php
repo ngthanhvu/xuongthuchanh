@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('thumbnail');
             $table->decimal('price', 10, 2);
             $table->decimal('discount')->default(0);
+            $table->foreignId('category_id')->constrained('categories', 'id');
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->timestamps();
         });

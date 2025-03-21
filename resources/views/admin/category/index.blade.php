@@ -32,8 +32,11 @@
                 </td>
                 <td>
                     <a href="{{ route('admin.category.edit', $category->id) }}" class="btn btn-sm btn-warning">Sửa</a>
-                    <a href="{{ route('admin.category.delete', $category->id) }}" class="btn btn-sm btn-danger"
-                        onclick="return confirm('Bạn có chắc muốn xóa danh mục?')">Xóa</a>
+                    <form action="{{ route('admin.category.delete', $category->id) }}" method="POST" onsubmit="return('Bạn có chức muốn xóa danh mục?');" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                    </form>
                 </td>
             </tr>
             @endforeach
