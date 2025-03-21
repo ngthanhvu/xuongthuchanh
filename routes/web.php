@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
-
+use App\Http\Controllers\CourseController;
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
@@ -25,6 +25,13 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [CategoriesController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
     });
+
+    Route::prefix('admin/course')->name('admin.course.')->group(function () {
+        Route::get('/', [CourseController::class, 'index'])->name('index');
+        Route::get('/create', [CourseController::class, 'create'])->name('create');
+        Route::post('/store', [CourseController::class, 'store'])->name('store');
+    });
+
 });
 
 
@@ -33,10 +40,7 @@ Route::get('/', function () {
     $title = "Trang chủ";
     return view('index', compact('title'));
 });
-Route::get('/course', function () {
-    $title = "Chi tiết khoá học";
-    return view('detail', compact('title'));
-});
+
 Route::get('/lesson', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
