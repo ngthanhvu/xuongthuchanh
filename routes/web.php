@@ -30,6 +30,9 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [CourseController::class, 'index'])->name('index');
         Route::get('/create', [CourseController::class, 'create'])->name('create');
         Route::post('/store', [CourseController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
     });
 
 });
