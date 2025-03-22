@@ -36,10 +36,12 @@ class CategoriesController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255',
-            'description' => 'nullable',
+            'description' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ], [
             'name.required' => 'Vui lòng nhập tên danh mục',
+            'name.max' => 'Tên danh mục vụt quá 255 ký tự',
+            'description.required' => 'Vui nhập mô tả danh mục',
             'image.required' => 'Vui lòng chọn hình ảnh',
             'image.max' => 'hình ảnh vượt quá dungg lượng cho phép',
         ]);

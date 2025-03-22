@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+use Laravel\Socialite\Facades\Socialite;
+
 
 class UserController extends Controller
 {
@@ -72,28 +74,26 @@ class UserController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'username' => 'required|string|max:255',
-            'fullname' => 'nullable|string|max:255',
-            'password' => 'nullable|min:6|confirmed',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'full_name' => 'nullable|string|max:255',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
-            'username.required' => 'Vui lòng nhập tên người dùng',
-            'fullname.max' => 'Họ và tên không được vượt quá 255 ký tự',
-            'password.min' => 'Mật khẩu phải ít nhất 6 ký tự',
-            'password.confirmed' => 'Mật khẩu xác nhận không khớp',
+            'email.required' => 'Vui lòng nhập email',
+            'email.email' => 'Email không hợp lệ',
+            'email.unique' => 'Email đã được sử dụng',
+            'full_name.max' => 'Họ và tên không được vượt quá 255 ký tự',
             'avatar.image' => 'Ảnh đại diện phải là định dạng ảnh hợp lệ',
             'avatar.mimes' => 'Ảnh đại diện phải có định dạng jpeg, png, jpg, gif',
             'avatar.max' => 'Ảnh đại diện không được vượt quá 2MB',
         ]);
 
-        $user->username = $request->username;
-        $user->fullname = $request->fullname;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
+        $data = [
+            'email' => $request->email,
+            'fullname' => $request->full_name,
+        ];
 
         if ($request->hasFile('avatar')) {
+            // Xóa avatar cũ nếu có
             if ($user->avatar && File::exists(public_path($user->avatar))) {
                 File::delete(public_path($user->avatar));
             }
@@ -102,13 +102,16 @@ class UserController extends Controller
             $avatarPath = 'avatars/' . $avatarName;
             $request->avatar->move(public_path('avatars'), $avatarName);
 
-            $user->avatar = $avatarPath;
+            $data['avatar'] = $avatarPath;
         }
 
-        // $user->save();
+        $user->update($data);
 
         return back()->with('success', 'Cập nhật hồ sơ thành công');
     }
+
+
+
     public function deleteAvatar()
     {
         $user = Auth::user();

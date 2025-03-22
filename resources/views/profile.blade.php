@@ -161,14 +161,15 @@
             <!-- Cột bên phải: Thông tin cá nhân -->
             <div class="col-md-9 col-lg-10 profile-content">
                 <div class="profile-header">
-                    <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png" alt="Avatar">
+                    <img src="{{ asset($user->avatar) }}" alt="Avatar">
                     <h2>{{ Auth::user()->username }}</h2>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Thông tin cá nhân</h5>
-                        <form class="profile-form" action="{{ route('profile.update') }}" method="POST">
+                        <form class="profile-form" action="{{ route('profile.update') }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="mb-3">

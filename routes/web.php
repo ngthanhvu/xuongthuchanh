@@ -35,7 +35,6 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
     });
-
 });
 
 
@@ -48,9 +47,13 @@ Route::middleware('check.role:admin')->group(function () {
 Route::get('/', [Home::class, 'index'])->name('home');
 
 
-Route::get('/lesson', function () {
+Route::get('/lession', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
+});
+Route::get('/chi-tiet', function () {
+    $title = "Chi tiết";
+    return view('detail', compact('title'));
 });
 
 Route::get('/dang-nhap', function () {
@@ -66,6 +69,5 @@ Route::get('/register', function () {
 });
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.deleteAvatar');
-

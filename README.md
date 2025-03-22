@@ -38,3 +38,7 @@ php artisan session:table
 ```bash
 php artisan storage:link
 ```
+### Thư viện socialite
+```bash
+composer require laravel/socialite
+```
