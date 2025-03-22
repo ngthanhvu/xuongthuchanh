@@ -3,64 +3,67 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $reviews = Review::with('user', 'course')->get();
+        return view('reviews.index', compact('reviews'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $users = User::all();
+        $courses = Course::all();
+        return view('reviews.create', compact('users', 'courses'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'course_id' => 'required|exists:courses,id',
+            'rating' => 'required|numeric|min:1|max:5',
+            'comment' => 'nullable',
+        ]);
+
+        Review::create($request->all());
+        return redirect()->route('reviews.index')->with('success', 'Review created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Review $review)
     {
-        //
+        $review->load('user', 'course');
+        return view('reviews.show', compact('review'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Review $review)
     {
-        //
+        $users = User::all();
+        $courses = Course::all();
+        return view('reviews.edit', compact('review', 'users', 'courses'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Review $review)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'course_id' => 'required|exists:courses,id',
+            'rating' => 'required|numeric|min:1|max:5',
+            'comment' => 'nullable',
+        ]);
+
+        $review->update($request->all());
+        return redirect()->route('reviews.index')->with('success', 'Review updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Review $review)
     {
-        //
+        $review->delete();
+        return redirect()->route('reviews.index')->with('success', 'Review deleted successfully.');
     }
 }
