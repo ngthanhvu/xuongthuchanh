@@ -36,13 +36,12 @@
                                         <h3 class="fs-5">{{ $courses->title }}</h3>
                                     </div>
                                     <div class="price">
-                                        <span class="old-price text-decoration-line-through">{{ number_format($courses->price, 0, ',', '.') }}đ</span>
-                                        <span class="new-price fw-bold">{{ number_format($courses->price - $courses->discount, 0, ',', '.') }}đ</span>
-                                    </div>
+                                        <span class="text-decoration-line-through ">{{ number_format($courses->price, 0, ',', '.') }}đ</span>
+                                        <span class="new-pricex">{{ number_format($courses->price * (1 - ($courses->discount / 100)), 0, ',', '.') }}đ</span></div>
                                     <div class="meta d-flex justify-content-between">
                                         <span><i class="fas fa-user"></i> {{ $courses->user->username }}</span> 
-                                        <span><i class="fas fa-book"></i> 591</span>
-                                        <span><i class="fas fa-clock"></i> 116h50p</span>
+                                        <span><i class="fas fa-book"></i> Null </span>
+                                        <span><i class="fas fa-clock"></i> {{ $courses->created_at->format('d/m/Y') }}</span>
                                     </div>
                                 </div>
                             </div>

@@ -176,6 +176,9 @@
             font-size: 12px;
             color: #606770;
         }
+        .new-pricex {
+            color: #ff6200;
+        }
     </style>
 </head>
 
