@@ -28,19 +28,18 @@
                         <a href="/chi-tiet" class="text-decoration-none">
                             <div class="card course-card">
                                 <div class="card-header html-css">
-                                    <img src="{{ asset('storage/' . $courses->thumbnail) }}" class="img-fluid w-100 h-100"
-                                        alt="{{ $courses->title }}">
+                                    <img src="{{ asset('storage/' . $courses->thumbnail) }}" class="img-fluid w-100 h-100" alt="{{ $courses->title }}">
+
                                     <span class="badge">Mới</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="title">
                                         <h3 class="fs-5">{{ $courses->title }}</h3>
                                     </div>
-                                    <div class="price">
-                                        <span
-                                            class="text-decoration-line-through ">{{ number_format($courses->price, 0, ',', '.') }}đ</span>
-                                        <span
-                                            class="new-pricex">{{ number_format($courses->price * (1 - $courses->discount / 100), 0, ',', '.') }}đ</span>
+                                  
+                                    <div class="meta d-flex justify-content-between">
+                                        <span class="text-decoration-line-through ">{{ number_format($courses->price, 0, ',', '.') }}đ</span>
+                                        <span class="new-pricex fw-bold">{{ number_format($courses->price * (1 - $courses->discount / 100), 0, ',', '.') }}đ</span>
                                     </div>
                                     <div class="meta d-flex justify-content-between">
                                         <span><i class="fas fa-user"></i> {{ $courses->user->username }}</span>

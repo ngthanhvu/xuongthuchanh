@@ -24,7 +24,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::post('/store', [CategoriesController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [CategoriesController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [CategoriesController::class, 'update'])->name('update');
-        Route::delete('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
+        Route::post('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
     });
 
     Route::prefix('admin/course')->name('admin.course.')->group(function () {
@@ -38,7 +38,7 @@ Route::middleware('check.role:admin')->group(function () {
 });
 
 
-//User
+// // User
 // Route::get('/', function () {
 //     $title = "Trang chủ";
 //     return view('index', compact('title', 'course'));
@@ -70,4 +70,11 @@ Route::get('/register', function () {
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+<<<<<<< HEAD
 Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.deleteAvatar');
+=======
+Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.delete.avatar');
+Route::get('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
+Route::put('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
+
+>>>>>>> 7a25916b6f3b250cdfa6fb9fc2a854ff01ba8c51
