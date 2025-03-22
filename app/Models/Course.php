@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Category;
 
 class Course extends Model
 {
+    protected $table = 'courses';
     protected $fillable = ['title', 'description', 'user_id', 'thumbnail', 'price', 'categories_id'];
 
     public function user()

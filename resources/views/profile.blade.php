@@ -82,25 +82,20 @@
             <!-- Cột bên phải: Thông tin cá nhân -->
             <div class="col-md-9 col-lg-10 profile-content">
                 <div class="profile-header">
-<<<<<<< HEAD
-                    <img src="{{ asset($user->avatar) }}" alt="Avatar">
-=======
                     @if ($user->avatar)
                         <img src="{{ asset($user->avatar) }}" alt="Avatar">
                     @else
                         <img src="https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g" alt="Avatar">
                     @endif
->>>>>>> 7a25916b6f3b250cdfa6fb9fc2a854ff01ba8c51
                     <h2>{{ Auth::user()->username }}</h2>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Thông tin cá nhân</h5>
-<<<<<<< HEAD
                         <form class="profile-form" action="{{ route('profile.update') }}" method="POST"
                             enctype="multipart/form-data">
-=======
+
                         @if (session('success'))
                             <div class="alert alert-success">
                                 {{ session('success') }}
@@ -121,7 +116,6 @@
                             </div>
                         @endif
                         <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
->>>>>>> 7a25916b6f3b250cdfa6fb9fc2a854ff01ba8c51
                             @csrf
                             @method('PUT')
                             <div class="mb-3">

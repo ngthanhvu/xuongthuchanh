@@ -38,13 +38,7 @@ php artisan session:table
 ```bash
 php artisan storage:link
 ```
-<<<<<<< HEAD
 ### Thư viện socialite
 ```bash
 composer require laravel/socialite
-=======
-### Cập nhật
-```bash
-git pull origin dev
->>>>>>> 7a25916b6f3b250cdfa6fb9fc2a854ff01ba8c51
 ```

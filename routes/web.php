@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\Home;
 
@@ -19,12 +19,12 @@ Route::middleware('check.role:admin')->group(function () {
     });
 
     Route::prefix('admin/category')->name('admin.category.')->group(function () {
-        Route::get('/', [CategoriesController::class, 'index'])->name('index');
-        Route::get('/create', [CategoriesController::class, 'create'])->name('create');
-        Route::post('/store', [CategoriesController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [CategoriesController::class, 'edit'])->name('edit');
-        Route::put('/update/{id}', [CategoriesController::class, 'update'])->name('update');
-        Route::post('/delete/{id}', [CategoriesController::class, 'delete'])->name('delete');
+        Route::get('/', [CategoryController::class, 'index'])->name('index');
+        Route::get('/create', [CategoryController::class, 'create'])->name('create');
+        Route::post('/store', [CategoryController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [CategoryController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [CategoryController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [CategoryController::class, 'delete'])->name('delete');
     });
 
     Route::prefix('admin/course')->name('admin.course.')->group(function () {
@@ -35,6 +35,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
     });
+
 });
 
 
@@ -47,13 +48,9 @@ Route::middleware('check.role:admin')->group(function () {
 Route::get('/', [Home::class, 'index'])->name('home');
 
 
-Route::get('/lession', function () {
+Route::get('/lesson', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
-});
-Route::get('/chi-tiet', function () {
-    $title = "Chi tiết";
-    return view('detail', compact('title'));
 });
 
 Route::get('/dang-nhap', function () {
@@ -70,3 +67,7 @@ Route::get('/register', function () {
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.delete.avatar');
+Route::get('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
+Route::put('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
+

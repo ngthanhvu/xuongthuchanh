@@ -14,8 +14,7 @@
             <tr>
                 <th>ID</th>
                 <th>Tên Danh Mục</th>
-                <th>Slug</th>
-                <th>Hình Ảnh</th>
+                <th>Mô Tả</th>
                 <th>Hành Động</th>
             </tr>
         </thead>
@@ -24,12 +23,8 @@
             <tr>
                 <td>{{ $category->id }}</td>
                 <td>{{ $category->name }}</td>
-                <td>{{ $category->slug }}</td>
-                <td>
-                    @if($category->image)
-                    <img src="{{ asset('storage/' . $category->image) }}" width="80">
-                    @endif
-                </td>
+                <td>{{ $category->description }}</td>
+                
                 <td>
                     <a href="{{ route('admin.category.edit', $category->id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a> |
                     <form action="{{ route('admin.category.delete', $category->id) }}" method="POST" onsubmit="return('Bạn có chức muốn xóa danh mục?');" class="d-inline">
