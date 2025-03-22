@@ -85,7 +85,7 @@
                     @if ($user->avatar)
                         <img src="{{ asset($user->avatar) }}" alt="Avatar">
                     @else
-                        <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png" alt="Avatar">
+                        <img src="https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g" alt="Avatar">
                     @endif
                     <h2>{{ Auth::user()->username }}</h2>
                 </div>
