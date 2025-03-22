@@ -1,8 +1,6 @@
 @extends('layouts.master')
 
 @section('content')
-    
-
     <style>
         .sidebar {
             background-color: #fff;
@@ -76,7 +74,7 @@
                         <a class="nav-link" href="#">Các khóa học</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Đổi mật khẩu</a>
+                        <a class="nav-link" href="{{ route('profile.changePassword') }}">Đổi mật khẩu</a>
                     </li>
                 </ul>
             </div>
@@ -84,13 +82,36 @@
             <!-- Cột bên phải: Thông tin cá nhân -->
             <div class="col-md-9 col-lg-10 profile-content">
                 <div class="profile-header">
-                    <img src="{{ asset($user->avatar) }}" alt="Avatar">
+                    @if ($user->avatar)
+                        <img src="{{ asset($user->avatar) }}" alt="Avatar">
+                    @else
+                        <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png" alt="Avatar">
+                    @endif
                     <h2>{{ Auth::user()->username }}</h2>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Thông tin cá nhân</h5>
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
@@ -102,17 +123,16 @@
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control" id="email" name="email"
-                                    value="{{ Auth::user()->email }}">
+                                    value="{{ old('email', Auth::user()->email) }}">
                             </div>
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">Họ và tên</label>
-                                <input type="text" class="form-control" id="full_name" name="full_name"
+                                <input type="text" class="form-control" id="fullname" name="fullname"
                                     value="{{ old('fullname', $user->fullname) }}">
                             </div>
                             <div class="mb-3">
                                 <label for="avatar" class="form-label">Ảnh đại diện:</label>
                                 <input type="file" class="form-control" id="avatar" name="avatar">
-
                                 @if ($user->avatar)
                                     <div class="mt-2">
                                         <img src="{{ asset($user->avatar) }}" alt="Avatar"
@@ -121,7 +141,6 @@
                                             onclick="deleteAvatar()">Xóa ảnh</button>
                                     </div>
                                 @endif
-
                                 @error('avatar')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
@@ -133,4 +152,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function deleteAvatar() {
+            if (confirm('Bạn có chắc muốn xóa ảnh đại diện không?')) {
+                fetch('{{ route('profile.delete.avatar') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload(); // Tải lại trang để cập nhật giao diện
+                    } else {
+                        alert('Xóa ảnh thất bại');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Đã xảy ra lỗi');
+                });
+            }
+        }
+    </script>
 @endsection

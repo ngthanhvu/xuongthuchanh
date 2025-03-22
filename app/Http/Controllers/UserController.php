@@ -118,6 +118,38 @@ class UserController extends Controller
             $user->save();
         }
 
-        return response()->json(['success' => true, 'message' => 'Xoa anh thanh cong']);
+        return response()->json(['success' => true, 'message' => 'Xóa ảnh thành công']);
+    }
+
+    public function changePassword()
+    {
+        $title = "Đổi mật khẩu";
+        $user = Auth::user();
+        return view('change-password', compact('user', 'title'));
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại',
+            'password.required' => 'Vui lòng nhập mật khẩu mới',
+            'password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp',
+        ]);
+
+        $user = Auth::user();
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->with('error', 'Mật khẩu hiện tại không đúng');
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return back()->with('success', 'Đổi mật khẩu thành công');
     }
 }
