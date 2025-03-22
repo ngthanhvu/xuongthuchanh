@@ -14,7 +14,7 @@
             <div class="form-group mt-3">
                 <label for="title">Tiêu đề</label>
                 <input type="text" id="title" name="title" class="form-control" value="{{ old('title') }}"
-                    placeholder="Nhập tiêu đề">
+                    placeholder="Nhập tiêu đề">
                 @error('title')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -28,7 +28,6 @@
                 @enderror
             </div>
 
-
             <div class="form-group mt-3">
                 <label for="thumbnail">Thumbnail</label>
                 <input type="file" id="thumbnail" name="thumbnail" class="form-control"
@@ -37,8 +36,6 @@
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
             </div>
-
-            <!-- Image Preview -->
 
             <div class="form-group mt-3">
                 <img id="thumbnail-preview" src="" alt="Image Preview" class="img-fluid"
@@ -54,26 +51,17 @@
             </div>
 
             <div class="form-group mt-3">
-                <label for="discount">Phần trăm giảm giá</label>
-                <input type="number" id="discount" name="discount" class="form-control" value="{{ old('discount') }}">
-                @error('discount')
-                    <p class="text-danger">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="form-group mt-3">
-                <label for="category_id">Danh mục</label>
-                <select name="category_id" id="category_id" class="form-control">
+                <label for="categories_id">Danh mục</label>
+                <select name="categories_id" id="categories_id" class="form-control">
                     <option value="">Chọn danh mục</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
                 </select>
-                @error('category_id')
+                @error('categories_id')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
             </div>
-
 
             <div class="form-group mt-3">
                 <button type="submit" class="btn btn-primary w-100">Thêm ngay</button>
