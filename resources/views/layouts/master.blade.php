@@ -340,11 +340,11 @@
                                 </div>
                             </div>
                             <div class="avatar-container">
-                                <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png" class="avatar"
+                                <img src="{{ Auth::user()->avatar }}" class="avatar"
                                     alt="Avatar" data-bs-toggle="dropdown" aria-expanded="false">
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li class="user-info">
-                                        <img src="https://fullstack.edu.vn/assets/f8-icon-lV2rGpF0.png"
+                                        <img src="{{ Auth::user()->avatar }}"
                                             alt="User Avatar">
                                         <div>
                                             <div class="user-name">{{ Auth::user()->username }}</div>
