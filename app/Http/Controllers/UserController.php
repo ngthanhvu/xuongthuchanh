@@ -62,8 +62,9 @@ class UserController extends Controller
 
     public function profile()
     {
+        $title = "Trang cá nhân";
         $user = Auth::user();
-        return view('profile', compact('user'));
+        return view('profile', compact('user', 'title'));
     }
 
     public function updateProfile(Request $request)
@@ -119,5 +120,38 @@ class UserController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function changePassword()
+    {
+        $title = "Đổi mật khẩu";
+        $user = Auth::user();
+        return view('change-password', compact('user', 'title'));
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại',
+            'password.required' => 'Vui lòng nhập mật khẩu mới',
+            'password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp',
+        ]);
+
+        $user = Auth::user();
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->with('error', 'Mật khẩu hiện tại không đúng');
+        }
+
+        // Cập nhật mật khẩu mới
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return back()->with('success', 'Đổi mật khẩu thành công');
     }
 }

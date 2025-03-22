@@ -66,6 +66,8 @@ Route::get('/register', function () {
 });
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.deleteAvatar');
+Route::get('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
+Route::put('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
 
