@@ -274,6 +274,7 @@
 
         .new-pricex {
             color: #ff6200;
+            font-size: 18px;
         }
     </style>
 </head>
