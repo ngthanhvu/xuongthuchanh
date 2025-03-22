@@ -252,7 +252,7 @@
                                             <div class="user-handle">{{ Auth::user()->username }}</div>
                                         </div>
                                     </li>
-                                    <li><a class="dropdown-item" href="#">Trang cá nhân</a></li>
+                                    <li><a class="dropdown-item" href="{{ url('/profile') }}">Trang cá nhân</a></li>
                                     <li><a class="dropdown-item" href="#">Viết blog</a></li>
                                     <li><a class="dropdown-item" href="#">Bài viết của tui</a></li>
                                     <li><a class="dropdown-item" href="#">Cài đặt</a></li>

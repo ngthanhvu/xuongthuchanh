@@ -28,7 +28,8 @@
                         <a href="/chi-tiet" class="text-decoration-none">
                             <div class="card course-card">
                                 <div class="card-header html-css">
-                                    <img src="{{ asset('storage/' . $courses->thumbnail) }}" class="img-fluid w-100 h-100" alt="{{ $courses->title }}">
+                                    <img src="{{ asset('storage/' . $courses->thumbnail) }}" class="img-fluid w-100 h-100"
+                                        alt="{{ $courses->title }}">
                                     <span class="badge">Mới</span>
                                 </div>
                                 <div class="card-body">
@@ -36,11 +37,13 @@
                                         <h3 class="fs-5">{{ $courses->title }}</h3>
                                     </div>
                                     <div class="price">
-                                        <span class="old-price text-decoration-line-through">{{ number_format($courses->price, 0, ',', '.') }}đ</span>
-                                        <span class="new-price fw-bold">{{ number_format($courses->price - $courses->discount, 0, ',', '.') }}đ</span>
+                                        <span
+                                            class="old-price text-decoration-line-through">{{ number_format($courses->price, 0, ',', '.') }}đ</span>
+                                        <span
+                                            class="new-price fw-bold">{{ number_format($courses->price - $courses->discount, 0, ',', '.') }}đ</span>
                                     </div>
                                     <div class="meta d-flex justify-content-between">
-                                        <span><i class="fas fa-user"></i> {{ $courses->user->username }}</span> 
+                                        <span><i class="fas fa-user"></i> {{ $courses->user->username }}</span>
                                         <span><i class="fas fa-book"></i> 591</span>
                                         <span><i class="fas fa-clock"></i> 116h50p</span>
                                     </div>
@@ -49,6 +52,11 @@
                         </a>
                     </div>
                 @endforeach
+                @if (count($course) == 0)
+                    <div class="col-md-12">
+                        <p class="text-center">Không có khoá học nào</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

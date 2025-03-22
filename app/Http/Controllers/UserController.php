@@ -62,8 +62,9 @@ class UserController extends Controller
 
     public function profile()
     {
+        $title = "Trang cá nhân";
         $user = Auth::user();
-        return view('profile', compact('user'));
+        return view('profile', compact('user', 'title'));
     }
 
     public function updateProfile(Request $request)
