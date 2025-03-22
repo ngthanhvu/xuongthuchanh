@@ -265,7 +265,7 @@
                                             class="d-none">
                                             @csrf
                                         </form>
-                                    </li>
+                                    </li> 
                                 </ul>
                             </div>
                         @else
