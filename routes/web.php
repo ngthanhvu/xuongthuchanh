@@ -7,6 +7,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\EnrollmentController;
 use App\Models\Lesson;
 
 //Admin
@@ -60,16 +61,14 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [LessonController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [LessonController::class, 'delete'])->name('delete');
     });
+    //user
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
 
-Route::get('/lession', function () {
-    $title = "Bài học";
-    return view('lesson', compact('title'));
-});
+
 
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
@@ -88,3 +87,11 @@ Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('p
 Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.delete.avatar');
 Route::get('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
 Route::put('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
+
+//enrollment
+Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
+
+Route::get('/lessons', function () {
+    $title = "Bài học";
+    return view('lesson', compact('title'));
+})->name('lessons');

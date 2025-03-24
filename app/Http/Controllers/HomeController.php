@@ -14,11 +14,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $title = 'Trang chủ'; // Title for the page
-        $course = Course::all(); // Fetch all courses or modify as needed
-
-        return view('index', compact('title', 'course')); // Pass data to view
+        $title = 'Trang chủ';
+        $course = Course::all(); 
+        return view('index', compact('title', 'course')); 
     }
+    
 
     public function detail($course_id)
     {

@@ -27,11 +27,10 @@ class EnrollmentController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'course_id' => 'required|exists:courses,id',
-            'enrollment_at' => 'required|date',
         ]);
 
         Enrollment::create($request->all());
-        return redirect()->route('enrollments.index')->with('success', 'Enrollment created successfully.');
+        return redirect()->route('lessons')->with('success', 'Enrollment created successfully.');
     }
 
     public function show(Enrollment $enrollment)

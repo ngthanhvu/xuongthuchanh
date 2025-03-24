@@ -74,7 +74,12 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ $course->price == 0 ? 'Miễn phí' : number_format($course->price, 2) }}đ</h5>
                     <p class="text-muted">Đăng ký học</p>
-                    <a href="/lession" class="btn btn-custom btn-lg w-100">ĐĂNG KÝ HỌC</a>
+                    <form action="{{ route('enrollments.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="course_id" value="{{ $course->id }}">
+                        <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                        <button type="submit" class="btn btn-primary">Đăng ký</button>
+                    </form>
                     <ul class="list-unstyled mt-3">
                         <li><i class="bi bi-check-circle me-2"></i> Trình độ cơ bản</li>
                         <li><i class="bi bi-check-circle me-2"></i> Tổng số {{ $lessons ? count($lessons) : 0 }} bài học</li>
