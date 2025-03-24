@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\PaymentController;
 use App\Models\Lesson;
 
 //Admin
@@ -95,3 +96,7 @@ Route::get('/lessons/{id}', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
 })->name('lessons');
+
+//vnpay
+Route::post('/payment/create', [PaymentController::class, 'create']);
+Route::get('/payment/callback', [PaymentController::class, 'callback']);

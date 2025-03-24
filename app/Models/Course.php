@@ -9,7 +9,7 @@ use App\Models\Category;
 class Course extends Model
 {
     protected $table = 'courses';
-    protected $fillable = ['title', 'description', 'user_id', 'thumbnail', 'price', 'categories_id'];
+    protected $fillable = ['title', 'description', 'user_id', 'thumbnail', 'price', 'categories_id', 'id'];
 
     public function user()
     {
