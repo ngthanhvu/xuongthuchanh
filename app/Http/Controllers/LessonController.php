@@ -4,20 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Lesson;
 use App\Models\Section;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
 {
     public function index()
     {
-        $lessons = Lesson::with('section')->get();
-        return view('lessons.index', compact('lessons'));
+        $title = 'Quản lí bài học';
+        $section = Section::all();
+        $lessons = DB::table('lessons')->paginate(5);
+        return view('admin.lessons.index', compact('lessons', 'title', 'section'));
     }
 
     public function create()
     {
+        $title = 'Tạo bài học';
         $sections = Section::all();
-        return view('lessons.create', compact('sections'));
+        return view('admin.lessons.create', compact('sections', 'title'));
     }
 
     public function store(Request $request)
@@ -27,11 +32,23 @@ class LessonController extends Controller
             'title' => 'required',
             'type' => 'required',
             'content' => 'nullable',
-            'file_url' => 'nullable',
+            'file_url' => 'nullable|url',
+        ],[
+            'section_id.required' => 'Vui lòng chọn khoa học',
+            'title.required' => 'Vui lòng nhập tên bài học',
+            'type.required' => 'Vui lòng chọn loại bài học',
+            'content.required' => 'Vui lòng nhập nội dung bài học',
+            'file_url.required' => 'Vui lòng nhập link video',
         ]);
 
-        Lesson::create($request->all());
-        return redirect()->route('lessons.index')->with('success', 'Lesson created successfully.');
+        Lesson::create([
+            'section_id' => $request->section_id,
+            'title' => $request->title,
+            'type' => $request->type,
+            'content' => $request->content,
+            'file_url' => $request->file_url
+        ]);
+        return redirect()->route('admin.lessons.index')->with('success', 'Lesson created successfully.');
     }
 
     public function show(Lesson $lesson)
@@ -40,14 +57,16 @@ class LessonController extends Controller
         return view('lessons.show', compact('lesson'));
     }
 
-    public function edit(Lesson $lesson)
+    public function edit($id)
     {
+        $lesson = Lesson::findOrFail($id);
         $sections = Section::all();
         return view('lessons.edit', compact('lesson', 'sections'));
     }
 
-    public function update(Request $request, Lesson $lesson)
-    {
+    public function update(Request $request, $id)
+        {
+        $lesson = Lesson::findOrFail($id);
         $request->validate([
             'section_id' => 'required|exists:sections,id',
             'title' => 'required',
@@ -56,12 +75,19 @@ class LessonController extends Controller
             'file_url' => 'nullable',
         ]);
 
-        $lesson->update($request->all());
-        return redirect()->route('lessons.index')->with('success', 'Lesson updated successfully.');
+        $lesson->update([
+            'section_id' => $request->section_id,
+            'title' => $request->title,
+            'type' => $request->type,
+            'content' => $request->content,
+            'file_url' => $request->file_url
+        ]);
+        return redirect()->route('admin.lessons.index')->with('success', 'Lesson updated successfully.');
     }
 
-    public function destroy(Lesson $lesson)
+    public function delete($id)
     {
+        $lesson = Lesson::findOrFail($id);
         $lesson->delete();
         return redirect()->route('lessons.index')->with('success', 'Lesson deleted successfully.');
     }

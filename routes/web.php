@@ -5,6 +5,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SectionController;
+use App\Http\Controllers\LessonController;
+use App\Models\Lesson;
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
@@ -18,6 +21,7 @@ Route::middleware('check.role:admin')->group(function () {
         return view('admin.course.index', compact('title'));
     });
 
+    //danh mục
     Route::prefix('admin/category')->name('admin.category.')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('index');
         Route::get('/create', [CategoryController::class, 'create'])->name('create');
@@ -27,6 +31,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::post('/delete/{id}', [CategoryController::class, 'delete'])->name('delete');
     });
 
+    //khóa học
     Route::prefix('admin/course')->name('admin.course.')->group(function () {
         Route::get('/', [CourseController::class, 'index'])->name('index');
         Route::get('/create', [CourseController::class, 'create'])->name('create');
@@ -35,6 +40,27 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
     });
+
+    //chương bài học
+    Route::prefix('admin/sections')->name('admin.sections.')->group(function () {
+        Route::get('/', [SectionController::class, 'index'])->name('index');
+        Route::get('/create', [SectionController::class, 'create'])->name('create');
+        Route::post('/store', [SectionController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [SectionController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [SectionController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [SectionController::class, 'delete'])->name('delete');
+    });
+
+    //bài học
+    Route::prefix('admin/lessons')->name('admin.lessons.')->group(function () {
+        Route::get('/', [LessonController::class, 'index'])->name('index');
+        Route::get('/create', [LessonController::class, 'create'])->name('create');
+        Route::post('/store', [LessonController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [LessonController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [LessonController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [LessonController::class, 'delete'])->name('delete');
+    });
+
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');

@@ -4,20 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use App\Models\Course;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class SectionController extends Controller
 {
     public function index()
     {
-        $sections = Section::with('course')->get();
-        return view('sections.index', compact('sections'));
+        $title = 'Quản lí section';
+        $courses = Course::all();
+        $sections = DB::table('sections')->paginate(5);
+        return view('admin.sections.index', compact('sections', 'title', 'courses'));
     }
 
     public function create()
     {
+        $title = 'Thêm section';
         $courses = Course::all();
-        return view('sections.create', compact('courses'));
+        return view('admin.sections.create', compact('courses', 'title'));
     }
 
     public function store(Request $request)
@@ -27,36 +31,46 @@ class SectionController extends Controller
             'title' => 'required',
         ]);
 
-        Section::create($request->all());
-        return redirect()->route('sections.index')->with('success', 'Section created successfully.');
+        Section::create([
+            'course_id' => $request->course_id,
+            'title' => $request->title
+        ]);
+        return redirect()->route('admin.sections.index')->with('success', 'Section created successfully.');
     }
 
     public function show(Section $section)
     {
         $section->load('course', 'lessons');
-        return view('sections.show', compact('section'));
+        return view('admin.sections.show', compact('section'));
     }
 
-    public function edit(Section $section)
+    public function edit($id)
     {
-        $courses = Course::all();
-        return view('sections.edit', compact('section', 'courses'));
+        $title = 'Sửa section';
+        $section = Section::findOrFail($id);
+        $courses = DB::table('courses')->get();
+        return view('admin.sections.edit', compact('section', 'courses', 'title'));
     }
 
-    public function update(Request $request, Section $section)
+    public function update(Request $request, $id)
     {
+        $section = Section::findOrFail($id);
         $request->validate([
             'course_id' => 'required|exists:courses,id',
             'title' => 'required',
         ]);
 
-        $section->update($request->all());
-        return redirect()->route('sections.index')->with('success', 'Section updated successfully.');
+        $section->update([
+            'course_id' => $request->course_id,
+            'title' => $request->title,
+        ]);
+        return redirect()->route('admin.sections.index')->with('success', 'Section updated successfully.');
     }
 
-    public function destroy(Section $section)
+    public function delete($id)
     {
+        $section = Section::findOrFail($id);
         $section->delete();
-        return redirect()->route('sections.index')->with('success', 'Section deleted successfully.');
+        return redirect()->route('admin.sections.index')->with('success', 'Section deleted successfully.');
     }
 }

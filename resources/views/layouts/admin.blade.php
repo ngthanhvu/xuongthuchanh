@@ -75,6 +75,8 @@
                     khiển</a>
                 <a href="/admin/category"><i class="fas fa-folder tw-mr-2"></i> Danh mục</a>
                 <a href="/admin/course"><i class="fas fa-calendar-alt tw-mr-2"></i> Khoá học</a>
+                <a href="/admin/sections"><i class="fa-solid fa-file tw-mr-2"></i> Chương học</a>
+                <a href="/admin/lessons"><i class="fa-solid fa-book tw-mr-2"></i> Bài học</a>
                 <a href="#"><i class="fas fa-file-alt tw-mr-2"></i> Documents</a>
                 <a href="#"><i class="fas fa-users tw-mr-2"></i> Người dùng</a>
                 <a href="#"><i class="fas fa-chart-bar tw-mr-2"></i> Reports</a>
