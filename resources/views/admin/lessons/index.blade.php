@@ -63,17 +63,14 @@
                                     }
                                 @endphp
                                 @if ($videoId)
-                                    <img src="https://img.youtube.com/vi/{{ $videoId }}/default.jpg" 
-                                         alt="{{ $lesson->title }}" 
-                                         style="max-width: 100px; height: auto;">
+                                    <img src="https://img.youtube.com/vi/{{ $videoId }}/default.jpg"
+                                        alt="{{ $lesson->title }}" style="max-width: 100px; height: auto;">
                                 @else
                                     Không có thumbnail
                                 @endif
                             @elseif ($lesson->type === 'file' && $lesson->file_url)
-                                <img src="{{ $lesson->file_url }}" 
-                                     alt="{{ $lesson->title }}" 
-                                     style="max-width: 100px; height: auto;" 
-                                     onerror="this.src='/images/placeholder.jpg';">
+                                <img src="{{ $lesson->file_url }}" alt="{{ $lesson->title }}"
+                                    style="max-width: 100px; height: auto;" onerror="this.src='/images/placeholder.jpg';">
                             @else
                                 Không có file
                             @endif
@@ -94,6 +91,11 @@
                         </td>
                     </tr>
                 @endforeach
+                @if ($lessons->isEmpty())
+                    <tr>
+                        <td colspan="6" class="text-center">Không có dữ liệu</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>
