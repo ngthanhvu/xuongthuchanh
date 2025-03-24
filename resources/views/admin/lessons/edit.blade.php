@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <form action="{{ route('lessons.update', $lesson->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.lessons.update', $lesson->id) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -25,7 +25,7 @@
                 <option value="">Chọn section</option>
                 @foreach ($sections as $section)
                     <option value="{{ $section->id }}" 
-                            {{ $lesson->section_id == $section->id ? 'selected' : '' }}>
+                            {{ old('section_id', $lesson->section_id) == $section->id ? 'selected' : '' }}>
                         {{ $section->title }}
                     </option>
                 @endforeach
@@ -76,16 +76,16 @@
             @enderror
         </div>
 
-        <!-- File URL -->
+        <!-- YouTube Link -->
         <div class="form-group mb-3">
-            <label for="file_url">Tệp đính kèm (nếu có)</label>
-            <input type="file" 
+            <label for="file_url">Link Video YouTube (nếu có)</label>
+            <input type="url" 
                    name="file_url" 
                    id="file_url" 
-                   class="form-control">
-            @if ($lesson->file_url)
-                <small class="form-text text-muted">Tệp hiện tại: <a href="{{ $lesson->file_url }}" target="_blank">Xem tệp</a></small>
-            @endif
+                   class="form-control" 
+                   value="{{ old('file_url', $lesson->file_url) }}"
+                   placeholder="https://www.youtube.com/watch?v=...">
+            <small class="form-text text-muted">Nhập link YouTube nếu loại là Video.</small>
             @error('file_url')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
@@ -94,7 +94,7 @@
         <!-- Buttons -->
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Cập nhật bài học</button>
-            <a href="{{ route('lessons.index') }}" class="btn btn-secondary">Hủy</a>
+            <a href="{{ route('admin.lessons.index') }}" class="btn btn-secondary">Hủy</a>
         </div>
     </form>
 </div>
