@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course; // Assuming you have a Course model
 
-class Home extends Controller
+class HomeController extends Controller
 {
     /**
      * Show the homepage.

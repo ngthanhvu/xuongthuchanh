@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
-use App\Http\Controllers\Home;
+use App\Http\Controllers\HomeController;
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
@@ -35,20 +35,15 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
     });
-
 });
 
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/chi-tiet', function () {
+    $title = "Chi tiết";
+    return view('detail', compact('title'));
+});
 
-// // User
-// Route::get('/', function () {
-//     $title = "Trang chủ";
-//     return view('index', compact('title', 'course'));
-// });
-
-Route::get('/', [Home::class, 'index'])->name('home');
-
-
-Route::get('/lesson', function () {
+Route::get('/lession', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
 });
@@ -70,4 +65,3 @@ Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('p
 Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.delete.avatar');
 Route::get('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
 Route::put('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
-
