@@ -60,14 +60,11 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [LessonController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [LessonController::class, 'delete'])->name('delete');
     });
-    Route::get('/admin/users',[UserController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/chi-tiet', function () {
-    $title = "Chi tiết";
-    return view('detail', compact('title'));
-});
+Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
 
 Route::get('/lession', function () {
     $title = "Bài học";

@@ -8,13 +8,13 @@ class Section extends Model
 {
     protected $fillable = ['course_id', 'title'];
 
-    public function course()
-    {
-        return $this->belongsTo(Course::class);
-    }
-
     public function lessons()
     {
-        return $this->hasMany(Lesson::class);
+        return $this->hasMany(Lesson::class, 'section_id', 'id');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id', 'id');
     }
 }
