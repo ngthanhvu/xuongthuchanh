@@ -60,7 +60,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/update/{id}', [LessonController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [LessonController::class, 'delete'])->name('delete');
     });
-
+    Route::get('/admin/users',[UserController::class, 'index'])->name('admin.users.index');
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');

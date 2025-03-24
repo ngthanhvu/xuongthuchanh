@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
+    public function index ()
+    {
+        $title = 'Quản lý người dung';
+        $users = User::all();
+        return view('admin.users.index', compact('title', 'users'));
+    }
     public function register(Request $request)
     {
         $request->validate([
