@@ -91,7 +91,7 @@ Route::put('/profile/update-password', [UserController::class, 'updatePassword']
 //enrollment
 Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
 
-Route::get('/lessons', function () {
+Route::get('/lessons/{id}', function () {
     $title = "Bài học";
     return view('lesson', compact('title'));
 })->name('lessons');

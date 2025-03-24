@@ -5,7 +5,7 @@
     <div class="banner">
         <div class="content">
             <h1>Mở bán khóa JavaScript Pro <i class="fas fa-crown"></i></h1>
-            <p>Từ 08/08/2024 khóa học sẽ có giá 1.999K. Khí khóa học hoàn thiện sẽ trở về giá gốc.</p>
+            <p>Từ 08/08/2024 khóa học sẽ có giá 1.999K. Khi khóa học hoàn thiện sẽ trở về giá gốc.</p>
             <button class="btn">Học thử miễn phí</button>
         </div>
         <div class="price">
@@ -23,39 +23,47 @@
             <h2>Khóa học Mới <span class="badge bg-primary">Mới</span></h2>
             <div class="row">
                 <!-- Loop through courses -->
-                @foreach ($course as $courses)
+                @foreach ($courses as $course)
                     <div class="col-md-3 mb-4">
-                        <a href="/chi-tiet/{{ $courses->id }}" class="text-decoration-none">
-                            <div class="card course-card">
-                                <div class="card-header html-css">
-                                    <img src="{{ asset('storage/' . $courses->thumbnail) }}" class="img-fluid w-100 h-100"
-                                        alt="{{ $courses->title }}">
+                        @php
+                            // Kiểm tra trạng thái đăng ký
+                            $isEnrolled = isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
+                            $link = $isEnrolled ? route('lessons', $course->id) : route('detail', $course->id);
+                            $buttonText = $isEnrolled ? 'Học ngay' : 'Đăng ký';
+                        @endphp
 
+                        <div class="card course-card">
+                            <a href="{{ $link }}" class="text-decoration-none">
+                                <div class="card-header html-css">
+                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid w-100 h-100"
+                                        alt="{{ $course->title }}">
                                     <span class="badge">Mới</span>
                                 </div>
-                                <div class="card-body">
-                                    <div class="title">
-                                        <h3 class="fs-5">{{ $courses->title }}</h3>
-                                    </div>
-
-                                    <div class="meta d-flex justify-content-between">
-                                        <span
-                                            class="text-decoration-line-through ">{{ number_format($courses->price, 0, ',', '.') }}đ</span>
-                                        <span
-                                            class="new-pricex fw-bold">{{ number_format($courses->price * (1 - $courses->discount / 100), 0, ',', '.') }}đ</span>
-                                    </div>
-                                    <div class="meta d-flex justify-content-between">
-                                        <span><i class="fas fa-user"></i> {{ $courses->user->username }}</span>
-                                        <span><i class="fas fa-book"></i> Null </span>
-                                        <span><i class="fas fa-clock"></i>
-                                            {{ $courses->created_at->format('d/m/Y') }}</span>
-                                    </div>
+                            </a>
+                            <div class="card-body">
+                                <div class="title">
+                                    <h3 class="fs-5">{{ $course->title }}</h3>
                                 </div>
+                                <div class="meta d-flex justify-content-between">
+                                    <span class="text-decoration-line-through">
+                                        {{ number_format($course->price, 0, ',', '.') }}đ
+                                    </span>
+                                    <span class="new-pricex fw-bold">
+                                        {{ number_format($course->price * (1 - ($course->discount ?? 0) / 100), 0, ',', '.') }}đ
+                                    </span>
+                                </div>
+                                <div class="meta d-flex justify-content-between">
+                                    <span><i class="fas fa-user"></i> {{ $course->user->username }}</span>
+                                    <span><i class="fas fa-book"></i> Null </span>
+                                    <span><i class="fas fa-clock"></i> {{ $course->created_at->format('d/m/Y') }}</span>
+                                </div>
+                                <!-- Nút Đăng ký/Học ngay -->
+                                <a href="{{ $link }}" class="btn btn-primary mt-2">{{ $buttonText }}</a>
                             </div>
-                        </a>
+                        </div>
                     </div>
                 @endforeach
-                @if (count($course) == 0)
+                @if (count($courses) == 0)
                     <div class="col-md-12">
                         <p class="text-center">Không có khoá học nào</p>
                     </div>

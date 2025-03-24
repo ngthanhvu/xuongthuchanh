@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use Illuminate\Http\Request;
+use App\Models\Enrollment;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -12,23 +13,34 @@ class HomeController extends Controller
      *
      * @return \Illuminate\View\View
      */
+
     public function index()
     {
         $title = 'Trang chủ';
-        $course = Course::all(); 
-        return view('index', compact('title', 'course')); 
+        $courses = Course::all();
+
+        $userId = Auth::check() ? Auth::id() : null;
+
+        $enrollmentStatus = [];
+        if ($userId) {
+            foreach ($courses as $course) {
+                $isEnrolled = Enrollment::where('user_id', $userId)
+                    ->where('course_id', $course->id)
+                    ->exists();
+                $enrollmentStatus[$course->id] = $isEnrolled;
+            }
+        }
+
+        return view('index', compact('title', 'courses', 'enrollmentStatus'));
     }
-    
+
 
     public function detail($course_id)
     {
-        // Lấy course cùng với sections và lessons
         $course = Course::with('sections.lessons')->findOrFail($course_id);
 
-        // Lấy sections từ course
         $sections = $course->sections;
 
-        // Lấy tất cả lessons từ các sections
         $lessons = $course->sections->flatMap(function ($section) {
             return $section->lessons;
         });
