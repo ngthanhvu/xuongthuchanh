@@ -69,6 +69,11 @@
                         </td>
                     </tr>
                 @endforeach
+                @if ($courses->isEmpty())
+                    <tr>
+                        <td colspan="6" class="text-center">Không có dữ liệu</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>
