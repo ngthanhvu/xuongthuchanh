@@ -26,7 +26,7 @@
             <h3 class="tw-text-2xl tw-font-bold">Quản lý khoá học</h3>
             <p class="tw-text-gray-500 tw-mt-1">Danh sách các khoá học đang có!</p>
         </div>
-        <a href="{{ route('admin.category.create') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('admin.course.create') }}" class="btn btn-outline-secondary">
             <i class="fa-solid fa-plus tw-mr-1"></i> Tạo khoá học mới
         </a>
     </div>
