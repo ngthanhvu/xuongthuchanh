@@ -22,19 +22,17 @@ class HomeController extends Controller
 
     public function detail($course_id)
     {
+        // Lấy course cùng với sections và lessons
         $course = Course::with('sections.lessons')->findOrFail($course_id);
 
-        $sectionIds = $course->sections->pluck('id')->toArray();
+        // Lấy sections từ course
+        $sections = $course->sections;
 
-        $lessonIds = $course->sections->flatMap(function ($section) {
-            return $section->lessons->pluck('id');
-        })->toArray();
+        // Lấy tất cả lessons từ các sections
+        $lessons = $course->sections->flatMap(function ($section) {
+            return $section->lessons;
+        });
 
-        return view('detail', compact('course', 'sectionIds', 'lessonIds'));
-        // return response()->json([
-        //     'course_id' => $course->id,
-        //     'section_ids' => $sectionIds,
-        //     'lesson_ids' => $lessonIds,
-        // ]);
+        return view('detail', compact('course', 'sections', 'lessons'));
     }
 }
