@@ -9,8 +9,9 @@ class CategoryController extends Controller
 {
     public function index()
     {
+        $title = "Quản lý danh mục";
         $categories = Category::with('courses')->get();
-        return view('admin.category.index', compact('categories'));
+        return view('admin.category.index', compact('categories', 'title'));
     }
 
     public function create()
@@ -48,7 +49,7 @@ class CategoryController extends Controller
             'name' => 'required',
             'description' => 'nullable',
         ]);
-        
+
         $categories->update([
             'name' => $request->name,
             'description' => $request->description,
