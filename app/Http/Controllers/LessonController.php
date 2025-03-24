@@ -59,9 +59,10 @@ class LessonController extends Controller
 
     public function edit($id)
     {
+        $title = 'Sửa bài học';
         $lesson = Lesson::findOrFail($id);
         $sections = Section::all();
-        return view('lessons.edit', compact('lesson', 'sections'));
+        return view('admin.lessons.edit', compact('lesson', 'sections', 'title'));
     }
 
     public function update(Request $request, $id)
@@ -72,7 +73,7 @@ class LessonController extends Controller
             'title' => 'required',
             'type' => 'required',
             'content' => 'nullable',
-            'file_url' => 'nullable',
+            'file_url' => 'nullable|url',
         ]);
 
         $lesson->update([
@@ -80,7 +81,7 @@ class LessonController extends Controller
             'title' => $request->title,
             'type' => $request->type,
             'content' => $request->content,
-            'file_url' => $request->file_url
+            'file_url' => $request->file_url,
         ]);
         return redirect()->route('admin.lessons.index')->with('success', 'Lesson updated successfully.');
     }
