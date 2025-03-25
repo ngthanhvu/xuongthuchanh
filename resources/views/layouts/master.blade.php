@@ -318,11 +318,10 @@
 
                     <div class="d-flex align-items-center">
                         @if (Auth::check())
-                            <div class="me-3 d-flex">
-                                <div class="dropdown">
-                                    <button class="border-0 dropdown-toggle"
-                                        style="padding: 5px 10px; background-color: #FFFFFF;" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
+                        <div class="me-3 d-flex">
+                            <div class="dropdown">
+                                @if (isset($enrollments) && $enrollments->where('user_id', Auth::id())->isNotEmpty())
+                                    <button class="border-0 dropdown-toggle" style="padding: 5px 10px; background-color: #FFFFFF;" data-bs-toggle="dropdown" aria-expanded="false">
                                         Khoá học của tôi
                                     </button>
                                     <ul class="dropdown-menu courses-dropdown dropdown-menu-end">
@@ -330,21 +329,30 @@
                                             <h6>Khoá học của tui</h6>
                                             <a href="#">Xem tất cả</a>
                                         </li>
-                                        <li class="course-item">
-                                            <img src="https://via.placeholder.com/60x40" alt="Course Image">
-                                            <div class="course-info">
-                                                <h6>Kiến Thức Nhập Môn IT</h6>
-                                                <p>Bạn chưa học khoá này<br>Bắt đầu học</p>
-                                            </div>
-                                        </li>
+                                        @foreach ($enrollments->where('user_id', Auth::id()) as $enrollment)
+                                            @php
+                                                $course = $courses->firstWhere('id', $enrollment->course_id);
+                                            @endphp
+                                            @if ($course)
+                                                <li class="course-item">
+                                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course thumbnail">
+                                                    <div class="course-info">
+                                                        <h6>{{ $course->title }}</h6>
+                                                        <p>Tiến độ <br><a href="{{ route('lessons', ['id' => $course->id]) }}">Bắt đầu học</a></p>
+                                                    </div>
+                                                </li>
+                                            @endif
+                                        @endforeach
                                     </ul>
-                                </div>
-                                <div>
-                                    <button class="border-0" style="padding: 5px 10px; background-color: #FFFFFF;">
-                                        <i class="fa-solid fa-bell"></i>
-                                    </button>
-                                </div>
+                                @endif
                             </div>
+                            <div>
+                                <button class="border-0" style="padding: 5px 10px; background-color: #FFFFFF;">
+                                    <i class="fa-solid fa-bell"></i>
+                                </button>
+                            </div>
+                        </div>
+                            
                             <div class="avatar-container">
                                 <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
                                     class="avatar" alt="Avatar" data-bs-toggle="dropdown" aria-expanded="false">

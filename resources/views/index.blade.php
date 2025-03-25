@@ -58,7 +58,7 @@
                                     <span><i class="fas fa-clock"></i> {{ $course->created_at->format('d/m/Y') }}</span>
                                 </div>
                                 <!-- Nút Đăng ký/Học ngay -->
-                                <a href="{{ $link }}" class="btn btn-primary mt-2">{{ $buttonText }}</a>
+                                <a href="{{ $link }}" class="btn btn-primary mt-2 w-100">{{ $buttonText }}</a>
                             </div>
                         </div>
                     </div>

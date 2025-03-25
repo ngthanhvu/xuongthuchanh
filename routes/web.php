@@ -71,6 +71,7 @@ Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
 
 
 
+
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
     return view('auth.login', compact('title'));
@@ -100,3 +101,4 @@ Route::get('/lessons/{id}', function () {
 //vnpay
 Route::post('/payment/create', [PaymentController::class, 'create']);
 Route::get('/payment/callback', [PaymentController::class, 'callback']);
+

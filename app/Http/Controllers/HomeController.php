@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Lesson;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -18,7 +19,7 @@ class HomeController extends Controller
     {
         $title = 'Trang chủ';
         $courses = Course::all();
-
+        $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
         $userId = Auth::check() ? Auth::id() : null;
 
         $enrollmentStatus = [];
@@ -31,7 +32,7 @@ class HomeController extends Controller
             }
         }
 
-        return view('index', compact('title', 'courses', 'enrollmentStatus'));
+        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments'));
     }
 
 
@@ -47,4 +48,6 @@ class HomeController extends Controller
 
         return view('detail', compact('course', 'sections', 'lessons'));
     }
+
+    
 }
