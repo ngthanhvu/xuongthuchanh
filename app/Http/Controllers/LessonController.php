@@ -90,6 +90,6 @@ class LessonController extends Controller
     {
         $lesson = Lesson::findOrFail($id);
         $lesson->delete();
-        return redirect()->route('lessons.index')->with('success', 'Lesson deleted successfully.');
+        return redirect()->route('admin.lessons.index')->with('success', 'Lesson deleted successfully.');
     }
 }
