@@ -99,7 +99,6 @@
             </tbody>
         </table>
     </div>
-
     <!-- Pagination -->
     <div class="tw-flex tw-justify-between tw-items-center tw-mt-4 tw-px-1">
         <span class="tw-text-sm tw-text-gray-600">

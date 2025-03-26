@@ -9,6 +9,8 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\QuizController;
+
 use App\Models\Lesson;
 
 //Admin
@@ -64,6 +66,18 @@ Route::middleware('check.role:admin')->group(function () {
     });
     //user
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+
+    //quizz
+    Route::prefix('admin/quizzes')->name('admin.quizzes.')->group(function () {
+        Route::get('/', [QuizController::class, 'index'])->name('index');
+        Route::get('/create', [QuizController::class, 'create'])->name('create');
+        Route::post('/', [QuizController::class, 'store'])->name('store');
+        Route::get('/{quiz}', [QuizController::class, 'show'])->name('show'); 
+        Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
+        Route::put('/{quiz}', [QuizController::class, 'update'])->name('update');
+        Route::delete('/{quiz}', [QuizController::class, 'destroy'])->name('destroy');
+    });
+
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');

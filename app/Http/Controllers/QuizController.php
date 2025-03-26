@@ -9,15 +9,16 @@ use Illuminate\Http\Request;
 class QuizController extends Controller
 {
     public function index()
-    {
+    {   
+        $title = 'Quizzes';   
         $quizzes = Quiz::with('lesson')->get();
-        return view('quizzes.index', compact('quizzes'));
+        return view('admin.quizzes.index', compact('quizzes' , 'title'));
     }
 
     public function create()
     {
         $lessons = Lesson::all();
-        return view('quizzes.create', compact('lessons'));
+        return view('admin.quizzes.create', compact('lessons'));
     }
 
     public function store(Request $request)
@@ -29,19 +30,19 @@ class QuizController extends Controller
         ]);
 
         Quiz::create($request->all());
-        return redirect()->route('quizzes.index')->with('success', 'Quiz created successfully.');
+        return redirect()->route('admin.quizzes.index')->with('success', 'Quiz created successfully.');
     }
 
     public function show(Quiz $quiz)
     {
         $quiz->load('lesson', 'questions', 'userQuizResults');
-        return view('quizzes.show', compact('quiz'));
+        return view('admin.quizzes.show', compact('quiz'));
     }
 
     public function edit(Quiz $quiz)
     {
         $lessons = Lesson::all();
-        return view('quizzes.edit', compact('quiz', 'lessons'));
+        return view('admin.quizzes.edit', compact('quiz', 'lessons'));
     }
 
     public function update(Request $request, Quiz $quiz)
@@ -53,12 +54,12 @@ class QuizController extends Controller
         ]);
 
         $quiz->update($request->all());
-        return redirect()->route('quizzes.index')->with('success', 'Quiz updated successfully.');
+        return redirect()->route('admin.quizzes.index')->with('success', 'Quiz updated successfully.');
     }
 
     public function destroy(Quiz $quiz)
     {
         $quiz->delete();
-        return redirect()->route('quizzes.index')->with('success', 'Quiz deleted successfully.');
+        return redirect()->route('admin.quizzes.index')->with('success', 'Quiz deleted successfully.');
     }
 }
