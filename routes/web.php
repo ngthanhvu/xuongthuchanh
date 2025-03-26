@@ -11,8 +11,6 @@ use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QuizController;
 
-use App\Models\Lesson;
-
 //Admin
 Route::middleware('check.role:admin')->group(function () {
     Route::get('/admin', function () {
@@ -72,19 +70,15 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [QuizController::class, 'index'])->name('index');
         Route::get('/create', [QuizController::class, 'create'])->name('create');
         Route::post('/', [QuizController::class, 'store'])->name('store');
-        Route::get('/{quiz}', [QuizController::class, 'show'])->name('show'); 
+        Route::get('/{quiz}', [QuizController::class, 'show'])->name('show');
         Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
         Route::put('/{quiz}', [QuizController::class, 'update'])->name('update');
         Route::delete('/{quiz}', [QuizController::class, 'destroy'])->name('destroy');
     });
-
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
-
-
-
 
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
@@ -116,5 +110,3 @@ Route::get('/lessons/{id}', function () {
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
-
-

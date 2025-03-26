@@ -35,8 +35,8 @@
                         <div class="card course-card">
                             <a href="{{ $link }}" class="text-decoration-none">
                                 <div class="card-header html-css">
-                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid w-100 h-100"
-                                        alt="{{ $course->title }}">
+                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid"
+                                        alt="{{ $course->title }}" style="width: 460px; height: 200px;">
                                     <span class="badge">Mới</span>
                                 </div>
                             </a>
@@ -58,7 +58,7 @@
                                     <span><i class="fas fa-clock"></i> {{ $course->created_at->format('d/m/Y') }}</span>
                                 </div>
                                 <!-- Nút Đăng ký/Học ngay -->
-                                <a href="{{ $link }}" class="btn btn-primary mt-2 w-100">{{ $buttonText }}</a>
+                                {{-- <a href="{{ $link }}" class="btn btn-primary mt-2 w-100">{{ $buttonText }}</a> --}}
                             </div>
                         </div>
                     </div>
