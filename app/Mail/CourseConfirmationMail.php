@@ -2,10 +2,10 @@
 
 namespace App\Mail;
 
-use App\Models\Course;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Course;
 
 class CourseConfirmationMail extends Mailable
 {
@@ -15,8 +15,6 @@ class CourseConfirmationMail extends Mailable
 
     /**
      * Create a new message instance.
-     *
-     * @param Course $course
      */
     public function __construct(Course $course)
     {
@@ -25,15 +23,14 @@ class CourseConfirmationMail extends Mailable
 
     /**
      * Build the message.
-     *
-     * @return $this
      */
     public function build()
     {
-        return $this->subject('Xác Nhận Thanh Toán Thành Công')
-                    ->view('emails.Course_confirmation')
+        return $this->subject('Xác nhận đăng ký khóa học')
+                    ->view('emails.CoureConfirmation')
                     ->with([
-                        'courses' => $this->course,
+                        'courseTitle' => $this->course->title,
+                        'courseId' => $this->course->id,
                     ]);
     }
 }

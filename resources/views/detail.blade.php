@@ -81,10 +81,10 @@
                         <h5 class="card-title">{{ $course->price == 0 ? 'Miễn phí' : number_format($course->price, 2) }}đ
                         </h5>
                         <p class="text-muted">Đăng ký học</p>
-                        <form action="{{ route('enrollments.store') }}" method="POST">
+                        <form method="POST" action="{{ route('payment.create') }}">
                             @csrf
                             <input type="hidden" name="course_id" value="{{ $course->id }}">
-                            <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                            <input type="hidden" name="price" value="{{ $course->price }}">
                             <button type="submit" class="btn btn-primary">Đăng ký</button>
                         </form>
                         <ul class="list-unstyled mt-3">

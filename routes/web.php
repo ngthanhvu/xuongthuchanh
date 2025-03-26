@@ -99,6 +99,8 @@ Route::get('/lessons/{id}', function () {
 })->name('lessons');
 
 //vnpay
-Route::post('/payment/create', [PaymentController::class, 'create']);
-Route::get('/payment/callback', [PaymentController::class, 'callback']);
+Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
+Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
+Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
+
 
