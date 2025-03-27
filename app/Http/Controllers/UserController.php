@@ -110,7 +110,7 @@ class UserController extends Controller
             $user->avatar = $avatarPath;
         }
 
-        // $user->save();
+        $user->save();
 
         return back()->with('success', 'Cập nhật hồ sơ thành công');
     }
@@ -122,7 +122,7 @@ class UserController extends Controller
         if ($user->avatar && File::exists(public_path($user->avatar))) {
             File::delete(public_path($user->avatar));
             $user->avatar = null;
-            // $user->save();
+            $user->save();
         }
 
         return response()->json(['success' => true, 'message' => 'Xóa ảnh thành công']);
@@ -154,7 +154,7 @@ class UserController extends Controller
         }
 
         $user->password = Hash::make($request->password);
-        // $user->save();
+        $user->save();
 
         return back()->with('success', 'Đổi mật khẩu thành công');
     }

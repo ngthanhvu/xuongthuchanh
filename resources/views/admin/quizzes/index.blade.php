@@ -41,7 +41,6 @@
                     <th scope="col" class="tw-px-6 tw-py-4">Bài học</th>
                     <th scope="col" class="tw-px-6 tw-py-4">Thao tác</th>
                 </tr>
-<<<<<<< HEAD
                         </thead>
                         <tbody>
                             @foreach ($quizzes as $quiz)
@@ -76,7 +75,6 @@
                 </div>
             </div>
         </div>
-=======
             </thead>
             <tbody>
                 @foreach ($quizzes as $quiz)
@@ -106,6 +104,5 @@
                 @endif
             </tbody>
         </table>
->>>>>>> f0f5c04f4230fd458519438476439c29dfdf17a5
     </div>
 @endsection
