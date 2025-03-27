@@ -10,15 +10,17 @@ class PostController extends Controller
 {
     public function index()
     {
+        $title = 'Quản lí bài viết';
         $posts = Post::with('course')->paginate(10); 
-        return view('admin.posts.index', compact('posts'));
+        return view('admin.posts.index', compact('posts', 'title'));
     }
     
 
     public function create()
     {
+        $title = 'Tạo bài viết';
         $courses = Course::all();
-        return view('admin.posts.create', compact('courses'));
+        return view('admin.posts.create', compact('courses', 'title'));
     }
 
     public function store(Request $request)
@@ -41,6 +43,7 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
+        $title = 'Sửa bài viết';
         $courses = Course::all();
         return view('admin.posts.edit', compact('post', 'courses'));
     }
@@ -70,8 +73,9 @@ class PostController extends Controller
     
     public function showForUser($id)
     {
+        // $title = $post->title;
         $post = Post::with('course')->findOrFail($id);
-    
+        
         // Lấy các bài viết khác thuộc cùng khóa học
         $relatedPosts = Post::where('course_id', $post->course_id)
                             ->where('id', '!=', $post->id)
