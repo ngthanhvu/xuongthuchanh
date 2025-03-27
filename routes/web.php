@@ -73,7 +73,6 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [QuizController::class, 'index'])->name('index');
         Route::get('/create', [QuizController::class, 'create'])->name('create');
         Route::post('/', [QuizController::class, 'store'])->name('store');
-
         Route::get('/{quiz}', [QuizController::class, 'show'])->name('show');
         Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
         Route::put('/{quiz}', [QuizController::class, 'update'])->name('update');

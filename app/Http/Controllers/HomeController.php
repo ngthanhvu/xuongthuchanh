@@ -46,5 +46,5 @@ class HomeController extends Controller
     
         return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
-    
+
 }

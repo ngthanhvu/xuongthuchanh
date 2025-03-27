@@ -23,11 +23,11 @@
     <!-- Header -->
     <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
         <div>
-            <h3 class="tw-text-2xl tw-font-bold">Danh sách câu hỏi</h3>
-            <p class="tw-text-gray-500 tw-mt-1">Danh sách câu hỏi đang có!</p>
+            <h3 class="tw-text-2xl tw-font-bold">Danh sách bài thi</h3>
+            <p class="tw-text-gray-500 tw-mt-1">Danh sách bài thi đang có!</p>
         </div>
         <a href="{{ route('admin.quizzes.create') }}" class="btn btn-outline-secondary">
-            <i class="fa-solid fa-plus tw-mr-1"></i> Thêm câu hỏi
+            <i class="fa-solid fa-plus tw-mr-1"></i> Thêm bài thi
         </a>
     </div>
 
@@ -38,7 +38,7 @@
                 <tr>
                     <th scope="col" class="tw-px-6 tw-py-4">#</th>
                     <th scope="col" class="tw-px-6 tw-py-4">Tiêu đề</th>
-                    <th scope="col" class="tw-px-6 tw-py-4">Bài học</th>
+                    <th scope="col" class="tw-px-6 tw-py-4">Bài thi</th>
                     <th scope="col" class="tw-px-6 tw-py-4">Thao tác</th>
                 </tr>
                         </thead>
