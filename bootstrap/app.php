@@ -17,9 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.role' => CheckAdmin::class,
         ]));
 
-        $middleware->alias(([
-            'check.enrollment' => CheckEnrollment::class,
-        ]));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
