@@ -49,5 +49,24 @@ class HomeController extends Controller
         return view('detail', compact('course', 'sections', 'lessons'));
     }
 
-    
+    public function lesson($id)
+    {
+        $lesson = Lesson::with('section.course')->findOrFail($id);
+
+        $course = $lesson->section->course;
+
+        $sections = $course->sections()->with('lessons')->get();
+
+        $totalLessons = $sections->flatMap->lessons->count();
+
+        $allLessons = $sections->flatMap->lessons;
+        $currentLessonIndex = $allLessons->search(function ($item) use ($id) {
+            return $item->id == $id;
+        });
+
+        $previousLesson = $currentLessonIndex > 0 ? $allLessons[$currentLessonIndex - 1] : null;
+        $nextLesson = $currentLessonIndex < $totalLessons - 1 ? $allLessons[$currentLessonIndex + 1] : null;
+
+        return view('lessons', compact('lesson', 'course', 'sections', 'totalLessons', 'currentLessonIndex', 'previousLesson', 'nextLesson'));
+    }
 }

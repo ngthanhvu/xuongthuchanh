@@ -54,7 +54,7 @@ class LessonController extends Controller
     public function show(Lesson $lesson)
     {
         $lesson->load('section', 'quizzes');
-        return view('lessons.show', compact('lesson'));
+        return view('lessons', compact('lessons'));
     }
 
     public function edit($id)
