@@ -23,11 +23,11 @@
     <!-- Header -->
     <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
         <div>
-            <h3 class="tw-text-2xl tw-font-bold">Danh sách câu hỏi</h3>
-            <p class="tw-text-gray-500 tw-mt-1">Danh sách câu hỏi đang có!</p>
+            <h3 class="tw-text-2xl tw-font-bold">Danh sách bài thi</h3>
+            <p class="tw-text-gray-500 tw-mt-1">Danh sách bài thi đang có!</p>
         </div>
         <a href="{{ route('admin.quizzes.create') }}" class="btn btn-outline-secondary">
-            <i class="fa-solid fa-plus tw-mr-1"></i> Thêm câu hỏi
+            <i class="fa-solid fa-plus tw-mr-1"></i> Thêm bài thi
         </a>
     </div>
 
@@ -38,10 +38,9 @@
                 <tr>
                     <th scope="col" class="tw-px-6 tw-py-4">#</th>
                     <th scope="col" class="tw-px-6 tw-py-4">Tiêu đề</th>
-                    <th scope="col" class="tw-px-6 tw-py-4">Bài học</th>
+                    <th scope="col" class="tw-px-6 tw-py-4">Bài thi</th>
                     <th scope="col" class="tw-px-6 tw-py-4">Thao tác</th>
                 </tr>
-<<<<<<< HEAD
                         </thead>
                         <tbody>
                             @foreach ($quizzes as $quiz)
@@ -76,36 +75,5 @@
                 </div>
             </div>
         </div>
-=======
-            </thead>
-            <tbody>
-                @foreach ($quizzes as $quiz)
-                    <tr class="border-b bg-white dark:border-neutral-500 dark:bg-neutral-600">
-                        <td class="tw-px-6 tw-py-4">{{ $quiz->id }}</td>
-                        <td class="tw-px-6 tw-py-4">{{ $quiz->title }}</td>
-                        <td class="tw-px-6 tw-py-4">{{ $quiz->lesson->title }}</td>
-                        <td class="tw-px-6 tw-py-4">
-                            <a href="{{ route('admin.quizzes.edit', $quiz->id) }}" class="btn btn-outline-primary">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            <form action="{{ route('admin.quizzes.destroy', $quiz->id) }}" method="POST"
-                                onsubmit="return confirm('Ban co chac muon xoa bai hoc nay?');" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-                @if ($quizzes->isEmpty())
-                    <tr>
-                        <td colspan="6" class="text-center">Không có dữ liệu</td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
->>>>>>> f0f5c04f4230fd458519438476439c29dfdf17a5
     </div>
 @endsection
