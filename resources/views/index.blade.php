@@ -26,9 +26,8 @@
                 @foreach ($courses as $course)
                     <div class="col-md-3 mb-4">
                         @php
-                            // Kiểm tra trạng thái đăng ký
                             $isEnrolled = isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
-                            $link = $isEnrolled ? route('lessons', $course->id) : route('detail', $course->id);
+                            $link = $isEnrolled ? route('lesson', $course->id) : route('detail', $course->id);
                             $buttonText = $isEnrolled ? 'Học ngay' : 'Đăng ký';
                         @endphp
 

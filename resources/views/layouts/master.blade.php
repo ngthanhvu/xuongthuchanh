@@ -338,7 +338,7 @@
                                                     <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course thumbnail">
                                                     <div class="course-info">
                                                         <h6>{{ $course->title }}</h6>
-                                                        <p>Tiến độ <br><a href="{{ route('lessons', ['id' => $course->id]) }}">Bắt đầu học</a></p>
+                                                        {{-- <p>Tiến độ <br><a href="{{ route('lessons', ['id' => $course->id]) }}">Bắt đầu học</a></p> --}}
                                                     </div>
                                                 </li>
                                             @endif

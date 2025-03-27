@@ -28,7 +28,7 @@ class Course extends Model
 
     public function sections()
     {
-        return $this->hasMany(Section::class, 'course_id', 'id');
+        return $this->hasMany(Section::class);
     }
 
     public function posts()
