@@ -11,13 +11,13 @@ class AnswerController extends Controller
     public function index()
     {
         $answers = Answer::with('question')->get();
-        return view('answers.index', compact('answers'));
+        return view('admin.answers.index', compact('answers'));
     }
 
     public function create()
     {
         $questions = Question::all();
-        return view('answers.create', compact('questions'));
+        return view('admin.answers.create', compact('questions'));
     }
 
     public function store(Request $request)
@@ -29,19 +29,19 @@ class AnswerController extends Controller
         ]);
 
         Answer::create($request->all());
-        return redirect()->route('answers.index')->with('success', 'Answer created successfully.');
+        return redirect()->route('admin.answers.index')->with('success', 'Answer created successfully.');
     }
 
     public function show(Answer $answer)
     {
         $answer->load('question');
-        return view('answers.show', compact('answer'));
+        return view('admin.answers.show', compact('answer'));
     }
 
     public function edit(Answer $answer)
     {
         $questions = Question::all();
-        return view('answers.edit', compact('answer', 'questions'));
+        return view('admin.answers.edit', compact('answer', 'questions'));
     }
 
     public function update(Request $request, Answer $answer)
@@ -53,12 +53,12 @@ class AnswerController extends Controller
         ]);
 
         $answer->update($request->all());
-        return redirect()->route('answers.index')->with('success', 'Answer updated successfully.');
+        return redirect()->route('admin.answers.index')->with('success', 'Answer updated successfully.');
     }
 
     public function destroy(Answer $answer)
     {
         $answer->delete();
-        return redirect()->route('answers.index')->with('success', 'Answer deleted successfully.');
+        return redirect()->route('admin.answers.index')->with('success', 'Answer deleted successfully.');
     }
 }

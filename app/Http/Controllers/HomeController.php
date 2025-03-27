@@ -38,35 +38,13 @@ class HomeController extends Controller
 
     public function detail($course_id)
     {
-        $course = Course::with('sections.lessons')->findOrFail($course_id);
-
+        $course = Course::with('sections.lessons.quizzes')->findOrFail($course_id);
+    
         $sections = $course->sections;
-
-        $lessons = $course->sections->flatMap(function ($section) {
-            return $section->lessons;
-        });
-
-        return view('detail', compact('course', 'sections', 'lessons'));
+        $lessons = $sections->flatMap->lessons;
+        $quizzes = $lessons->flatMap->quizzes; // Lấy tất cả quizzes
+    
+        return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
 
-    public function lesson($id)
-    {
-        $lesson = Lesson::with('section.course')->findOrFail($id);
-
-        $course = $lesson->section->course;
-
-        $sections = $course->sections()->with('lessons')->get();
-
-        $totalLessons = $sections->flatMap->lessons->count();
-
-        $allLessons = $sections->flatMap->lessons;
-        $currentLessonIndex = $allLessons->search(function ($item) use ($id) {
-            return $item->id == $id;
-        });
-
-        $previousLesson = $currentLessonIndex > 0 ? $allLessons[$currentLessonIndex - 1] : null;
-        $nextLesson = $currentLessonIndex < $totalLessons - 1 ? $allLessons[$currentLessonIndex + 1] : null;
-
-        return view('lessons', compact('lesson', 'course', 'sections', 'totalLessons', 'currentLessonIndex', 'previousLesson', 'nextLesson'));
-    }
 }
