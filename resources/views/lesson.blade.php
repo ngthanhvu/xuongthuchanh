@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô hình Client - Server</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+@extends('layouts.master')
+@section('content')
     <style>
         body {
             background-color: #f8f9fa;
@@ -64,23 +55,21 @@
             background-color: #ffe5e5;
         }
 
-        .header {
+        .lesson_name {
             background-color: #343a40;
             color: #fff;
             padding: 10px 20px;
         }
 
-        .footer {
+        .title {
             background-color: #f8f9fa;
             padding: 10px 20px;
             border-top: 1px solid #dee2e6;
         }
     </style>
-</head>
 
-<body>
-    <!-- Header -->
-    <div class="header d-flex justify-content-between align-items-center">
+    <!-- lesson_name -->
+    <div class="lesson_name d-flex justify-content-between align-items-center">
         <a href="/" class="text-decoration-none text-white"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a>
         <div>"Tên bài học"</div>
         <div>0/12 bài học</div>
@@ -95,7 +84,7 @@
                     <!-- Thay thế bằng video hoặc hình ảnh thực tế -->
                     <img src="placeholder-image.jpg" alt="Video Placeholder">
                 </div>
-                <div class="footer d-flex justify-content-between align-items-center">
+                <div class="title d-flex justify-content-between align-items-center">
                     <div>
                         <h5>Mô hình Client - Server là gì?</h5>
                         <p>Cập nhật tháng 11 năm 2022</p>
@@ -114,7 +103,7 @@
                     <div class="accordion" id="lessonAccordion">
                         <!-- Module 1 -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header">
+                            <h2 class="accordion-lesson_name">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#module1" aria-expanded="true" aria-controls="module1">
                                     1. Khái niệm kỹ thuật cần biết
@@ -134,7 +123,7 @@
                         </div>
                         <!-- Module 2 -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header">
+                            <h2 class="accordion-lesson_name">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#module2" aria-expanded="false" aria-controls="module2">
                                     2. Một số trình, công cụ IT
@@ -154,10 +143,4 @@
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap 5 JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-</body>
-
-</html>
+@endsection
