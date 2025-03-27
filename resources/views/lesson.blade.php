@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mô hình Client - Server</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
@@ -24,6 +22,7 @@
             font-size: 24px;
         }
 
+        .video-section video,
         .video-section img {
             max-width: 100%;
             height: auto;
@@ -79,25 +78,28 @@
 </head>
 
 <body>
-    <!-- Header -->
     <div class="header d-flex justify-content-between align-items-center">
         <a href="/" class="text-decoration-none text-white"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a>
-        <div>"Tên bài học"</div>
-        <div>0/12 bài học</div>
+        <div>{{ $lesson->title }}</div>
+        <div>0/{{ $sections->sum(fn($section) => $section->lessons->count()) }} bài học</div>
     </div>
 
-    <!-- Main Content -->
     <div class="container-fluid">
         <div class="row">
-            <!-- Video Section -->
             <div class="col-md-8 p-0">
                 <div class="video-section">
-                    <!-- Thay thế bằng video hoặc hình ảnh thực tế -->
-                    <img src="placeholder-image.jpg" alt="Video Placeholder">
+                    @if ($lesson->file_url)
+                    <video controls width="100%" height="100%">
+                        <source src="{{ asset($lesson->file_url) }}" type="video/mp4">
+                        Trình duyệt của bạn không hỗ trợ thẻ video.
+                    </video>
+                    @else
+                    <img src="{{ asset('path-to-video-placeholder.jpg') }}" alt="Video Placeholder">
+                    @endif
                 </div>
                 <div class="footer d-flex justify-content-between align-items-center">
                     <div>
-                        <h5>Mô hình Client - Server là gì?</h5>
+                        <h5>{{ $lesson->title }}</h5>
                         <p>Cập nhật tháng 11 năm 2022</p>
                     </div>
                     <div>
@@ -107,55 +109,42 @@
                 </div>
             </div>
 
-            <!-- Lesson List -->
             <div class="col-md-4 p-0">
                 <div class="lesson-list">
                     <h6 class="p-3 border-bottom">NỘI DUNG KHÓA HỌC</h6>
                     <div class="accordion" id="lessonAccordion">
-                        <!-- Module 1 -->
+                        @foreach ($sections as $index => $section)
                         <div class="accordion-item">
                             <h2 class="accordion-header">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#module1" aria-expanded="true" aria-controls="module1">
-                                    1. Khái niệm kỹ thuật cần biết
+                                <button class="accordion-button {{ $index == 0 ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#module{{ $section->id }}" aria-expanded="{{ $index == 0 ? 'true' : 'false' }}"
+                                    aria-controls="module{{ $section->id }}">
+                                    {{ $index + 1 }}. {{ $section->title }}
                                 </button>
                             </h2>
-                            <div id="module1" class="accordion-collapse collapse show"
+                            <div id="module{{ $section->id }}" class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}"
                                 data-bs-parent="#lessonAccordion">
                                 <div class="accordion-body">
-                                    <div class="lesson-item active">Mô hình Client - Server là gì? <span
-                                            class="float-end">11:35</span></div>
-                                    <div class="lesson-item">Domain là gì? Tên miền là gì? <span
-                                            class="float-end">10:34</span></div>
-                                    <div class="lesson-item">Mua ở F8 / Đăng ký học Offline <span
-                                            class="float-end">01:00</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Module 2 -->
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#module2" aria-expanded="false" aria-controls="module2">
-                                    2. Một số trình, công cụ IT
-                                </button>
-                            </h2>
-                            <div id="module2" class="accordion-collapse collapse" data-bs-parent="#lessonAccordion">
-                                <div class="accordion-body">
-                                    <div class="lesson-item">Phương pháp, định hướng <span
-                                            class="float-end">01:46:14</span></div>
-                                    <div class="lesson-item">Hoàn thành khóa học <span class="float-end">01:30:00</span>
+                                    @if ($section->lessons->isNotEmpty())
+                                    @foreach ($section->lessons as $lessonItem)
+                                    <div class="lesson-item {{ $lessonItem->id == $lesson->id ? 'active' : '' }}">
+                                        {{ $lessonItem->title }}
+                                        <span class="float-end">11:35</span>
                                     </div>
+                                    @endforeach
+                                    @else
+                                    <div class="lesson-item">Chưa có bài học</div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS and Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 </body>
