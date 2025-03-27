@@ -10,9 +10,12 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QuizController;
+<<<<<<< HEAD
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Models\Lesson;
+=======
+>>>>>>> f0f5c04f4230fd458519438476439c29dfdf17a5
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
@@ -73,10 +76,15 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [QuizController::class, 'index'])->name('index');
         Route::get('/create', [QuizController::class, 'create'])->name('create');
         Route::post('/', [QuizController::class, 'store'])->name('store');
+<<<<<<< HEAD
+=======
+        Route::get('/{quiz}', [QuizController::class, 'show'])->name('show');
+>>>>>>> f0f5c04f4230fd458519438476439c29dfdf17a5
         Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
         Route::put('/{quiz}', [QuizController::class, 'update'])->name('update');
         Route::delete('/{quiz}', [QuizController::class, 'destroy'])->name('destroy');
     });
+<<<<<<< HEAD
     //questions
     Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
         Route::get('/', [QuestionController::class, 'index'])->name('index');
@@ -97,6 +105,8 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/{answer}', [AnswerController::class, 'update'])->name('update');
         Route::delete('/{answer}', [AnswerController::class, 'destroy'])->name('destroy');
     });
+=======
+>>>>>>> f0f5c04f4230fd458519438476439c29dfdf17a5
 });
 //quizz cho người dùng
 // Route hiển thị quiz cho user
@@ -109,9 +119,6 @@ Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submitQuiz'])->na
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
-
-
-
 
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
