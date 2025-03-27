@@ -141,7 +141,7 @@
                     <a href="/admin/answers"><i class="fas fa-folder tw-mr-2"></i> Quản lý đáp án</a>
                 </div>
             </div>
-
+            <a href="/admin/posts"><i class="fas fa-newspaper tw-mr-2"></i> Bài viết</a>
             <a href="/admin/users"><i class="fas fa-users tw-mr-2"></i> Người dùng</a>
         </nav>
 

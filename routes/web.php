@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\PostController;
 use App\Models\Lesson;
 
 //Admin
@@ -41,6 +42,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [CourseController::class, 'index'])->name('index');
         Route::get('/create', [CourseController::class, 'create'])->name('create');
         Route::post('/store', [CourseController::class, 'store'])->name('store');
+        
         Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
@@ -98,15 +100,23 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/{answer}', [AnswerController::class, 'update'])->name('update');
         Route::delete('/{answer}', [AnswerController::class, 'destroy'])->name('destroy');
     });
+    //bai viêt
+    Route::prefix('admin/posts')->name('admin.posts.')->group(function () {
+        Route::get('/', [PostController::class, 'index'])->name('index');       
+        Route::get('/create', [PostController::class, 'create'])->name('create');
+        Route::post('/', [PostController::class, 'store'])->name('store');
+        Route::get('/{post}', [PostController::class, 'show'])->name('show');
+        Route::get('/{post}/edit', [PostController::class, 'edit'])->name('edit');
+        Route::put('/{post}', [PostController::class, 'update'])->name('update');
+        Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy');
+    });
 
 });
 //quizz cho người dùng
-// Route hiển thị quiz cho user
 Route::get('/quizzes/{quiz}', [QuizController::class, 'show'])->name('showquizz');
-// Route nộp bài
 Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submitQuiz'])->name('submit.quiz');
 // Route::get('/{quiz}', [QuizController::class, 'show'])->name('show');
-
+Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -143,3 +153,8 @@ Route::get('/lessons/{id}', function () {
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
+
+//post for user
+Route::get('/post', [PostController::class, 'list'])->name('posts.list');
+Route::get('/post/{id}', [PostController::class, 'showForUser'])->name('post.view');
+

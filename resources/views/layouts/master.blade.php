@@ -307,7 +307,7 @@
                             <a class="nav-link" href="#">Lộ trình</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Bài viết</a>
+                            <a class="nav-link" href="/post">Bài viết</a>
                         </li>
                         @if (Auth::check() && Auth::user()->role === 'admin')
                             <li class="nav-item">
