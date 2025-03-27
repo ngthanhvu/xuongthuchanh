@@ -110,6 +110,12 @@ Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submitQuiz'])->na
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
+Route::get('/lessons/{id}', [HomeController::class, 'lesson'])->name('lesson');
+
+// Route::get('/lessons/{id}', function () {
+//     $title = "Bài học";
+//     return view('lesson', compact('title'));
+// })->name('lessons');
 
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
@@ -132,11 +138,6 @@ Route::put('/profile/update-password', [UserController::class, 'updatePassword']
 //enrollment
 Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
 
-// Route::get('/course/{course_id}/lesson/{lesson_id}', [HomeController::class, 'lesstion_detail'])->name('lesson.detail');
-Route::get('/lessons/{id}', function () {
-    $title = "Bài học";
-    return view('lesson', compact('title'));
-})->name('lessons');
 
 //vnpay
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
