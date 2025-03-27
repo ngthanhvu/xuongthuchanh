@@ -30,3 +30,15 @@ git commit -m "nội dung commit"
 ```bash
 git push origin manh/dev
 ```
+### chuẵ cháy
+```bash
+php artisan session:table
+```
+### Cài thư viện tải hình ảnh
+```bash
+php artisan storage:link
+```
+### Thư viện socialite
+```bash
+composer require laravel/socialite
+```

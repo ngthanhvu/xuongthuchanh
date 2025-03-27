@@ -9,16 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            $table->timestamp('payment_date');
             $table->decimal('amount', 10, 2);
             $table->string('payment_method');
-            $table->string('payment_status');
             $table->string('status');
-            $table->foreignId('user_id')->constrained('users', 'id');
-            $table->foreignId('course_id')->constrained('courses', 'id');
             $table->timestamps();
         });
     }

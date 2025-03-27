@@ -37,6 +37,14 @@
                     @enderror
                 </div>
                 <div class="mb-3">
+                    <label for="registerFullname" class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="registerFullname" name="fullname"
+                        placeholder="Nhập họ và tên">
+                    @error('fullname')
+                        <p class="text-danger">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="mb-3">
                     <label for="registerEmail" class="form-label">Email</label>
                     <input type="email" class="form-control" id="registerEmail" name="email"
                         placeholder="Nhập email của bạn">

@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // config/services.php
+    'vnpay' => [
+        'tmn_code' => env('VNPAY_TMN_CODE'),
+        'hash_secret' => env('VNPAY_HASH_SECRET'),
+        'url' => env('VNPAY_URL'),
+        'callback' => env('VNPAY_CALLBACK_URL'),
+    ],
+
 ];

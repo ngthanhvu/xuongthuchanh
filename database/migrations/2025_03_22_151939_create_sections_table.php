@@ -9,14 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('sections', function (Blueprint $table) {
             $table->id();
-            $table->integer('rating');
-            $table->text('comment');
-            $table->foreignId('user_id')->constrained('users', 'id');
-            $table->foreignId('course_id')->constrained('courses', 'id');
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            $table->string('title');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('sections');
     }
 };

@@ -9,14 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('enrrolled_at');
-            $table->string('status')->default('pending');
-            $table->foreignId('user_id')->constrained('users', 'id');
-            $table->foreignId('course_id')->constrained('courses', 'id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            $table->timestamp('enrollment_at')->nullable();
             $table->timestamps();
         });
     }

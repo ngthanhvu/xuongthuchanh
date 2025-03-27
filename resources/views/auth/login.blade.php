@@ -53,7 +53,7 @@
     <div class="container">
         <div class="form-container" id="loginForm">
             <h2 class="text-center mb-4">Đăng Nhập</h2>
-            <form method="POST" action="/login">
+            <form method="POST" action="/dang-nhap">
                 @csrf
                 <div class="mb-3">
                     <label for="loginEmail" class="form-label">Email</label>
@@ -74,7 +74,9 @@
                 <div class="mb-3 form-check">
                     <input type="checkbox" class="form-check-input" id="rememberMe">
                     <label class="form-check-label" for="rememberMe">Ghi nhớ tôi</label>
+                    <a href="#" class="text-decoration-none float-end">Quên mật khẩu?</a>
                 </div>
+                {{-- <a href="{{ route('password.request') }}" class="text-decoration-none">Quên mật khẩu?</a> --}}
                 <button type="submit" class="btn btn-primary w-100">Đăng Nhập</button>
             </form>
 
@@ -98,4 +100,30 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('#loginForm form');
+            const emailInput = document.querySelector('#loginEmail');
+            const passwordInput = document.querySelector('#loginPassword');
+            const rememberMeCheckbox = document.querySelector('#rememberMe');
+
+            if (localStorage.getItem('rememberMe') === 'true') {
+                emailInput.value = localStorage.getItem('email') || '';
+                passwordInput.value = localStorage.getItem('password') || '';
+                rememberMeCheckbox.checked = true;
+            }
+
+            loginForm.addEventListener('submit', function(e) {
+                if (rememberMeCheckbox.checked) {
+                    localStorage.setItem('email', emailInput.value);
+                    localStorage.setItem('password', passwordInput.value);
+                    localStorage.setItem('rememberMe', 'true');
+                } else {
+                    localStorage.removeItem('email');
+                    localStorage.removeItem('password');
+                    localStorage.removeItem('rememberMe');
+                }
+            });
+        });
+    </script>
 @endsection
