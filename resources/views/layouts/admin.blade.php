@@ -104,8 +104,6 @@
                 <a href="/admin/course"><i class="fas fa-calendar-alt tw-mr-2"></i> Khoá học</a>
                 <a href="/admin/sections"><i class="fa-solid fa-file tw-mr-2"></i> Chương học</a>
                 <a href="/admin/lessons"><i class="fa-solid fa-book tw-mr-2"></i> Bài học</a>
-                <a href="/admin/quizzes"><i class="fa-solid fa-question tw-mr-2"></i> Câu hỏi</a>
-
                 <a href="/admin/quizzes"><i class="fa-brands fa-quinscape"></i> Bài thi</a>
                 <a href="/admin/questions"><i class="fa-solid fa-question tw-mr-2"></i> Câu hỏi</a>
                 <a href="/admin/answers"><i class="fa-solid fa-graduation-cap tw-mr-2"></i> Đáp án</a>
