@@ -133,10 +133,7 @@ Route::put('/profile/update-password', [UserController::class, 'updatePassword']
 //enrollment
 Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
 
-Route::get('/lessons/{id}', function () {
-    $title = "Bài học";
-    return view('lesson', compact('title'));
-})->name('lessons');
+Route::get('/course/{course_id}/lesson/{lesson_id}', [HomeController::class, 'lesstion_detail'])->name('lesson.detail');
 
 //vnpay
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');

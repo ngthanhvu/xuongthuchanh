@@ -64,7 +64,7 @@
             <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
 
             <div class="mt-4">
-                <a href="{{ url('/courses/' . $course->id) }}" class="btn btn-success btn-sm">Học Ngay</a>
+                <a href="{{ url('/lessons/' . $course->id) }}" class="btn btn-success btn-sm">Học Ngay</a>
                 <a href="{{ url('/') }}" class="btn btn-outline-secondary btn-sm">Quay lại trang chủ</a>
             </div>
         </div>

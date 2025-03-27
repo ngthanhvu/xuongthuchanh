@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
+use App\Models\Section;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -39,12 +40,19 @@ class HomeController extends Controller
     public function detail($course_id)
     {
         $course = Course::with('sections.lessons.quizzes')->findOrFail($course_id);
-    
+
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
         $quizzes = $lessons->flatMap->quizzes; // Lấy tất cả quizzes
-    
+
         return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
 
+    public function lesstion_detail($lesson_id, $course_id)
+    {
+        $lesson = Lesson::with('quizzes')->findOrFail($lesson_id);
+        $quizzes = $lesson->quizzes;
+        $sections = Section::where('course_id', $course_id)->with('lessons')->get();
+        return view('lesson', compact('lesson', 'quizzes', 'sections', 'course_id'));
+    }
 }
