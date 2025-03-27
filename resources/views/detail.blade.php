@@ -21,12 +21,13 @@
                     <div class="card-body">
                         <h5 class="card-title">Nội dung khóa học</h5>
                         <p>
-                            {{ $sections ? count($sections) : 0 }} chương •
-                            {{ $lessons ? count($lessons) : 0 }} bài học •
+                            {{ is_countable($sections) ? count($sections) : 0 }} chương •
+                            {{ is_countable($lessons) ? count($lessons) : 0 }} bài học •
+                            {{ is_countable($quizzes) ? count($quizzes) : 0 }} bài kiểm tra •
                             Thời lượng {{ $course->duration ?? '03 giờ 26 phút' }}
                         </p>
                         <div class="accordion" id="courseContentAccordion">
-                            @if ($sections && $sections->count() > 0)
+                            @if ($sections->count() > 0)
                                 @foreach ($sections as $index => $section)
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="heading{{ $index }}">
@@ -36,7 +37,7 @@
                                                 aria-expanded="{{ $index == 0 ? 'true' : 'false' }}"
                                                 aria-controls="collapse{{ $index }}">
                                                 {{ $index + 1 }}. {{ $section->title }}
-                                                <span class="float-end">{{ $section->lessons->count() }} bài học</span>
+                                                <span class="float-end">{{ count($section->lessons) }} bài học</span>
                                             </button>
                                         </h2>
                                         <div id="collapse{{ $index }}"
@@ -51,6 +52,19 @@
                                                             <span
                                                                 class="float-end">{{ $lesson->duration ?? '10:00' }}</span>
                                                         </li>
+                                                        @if ($lesson->quizzes->count() > 0)
+                                                            <ul class="list-group ms-4">
+                                                                @foreach ($lesson->quizzes as $quiz)
+                                                                    <li class="list-group-item">
+                                                                        <a href="{{ route('showquizz', ['quiz' => $quiz->id]) }}"
+                                                                            class="text-decoration-none">
+                                                                            Quizz {{ $loop->iteration }}:
+                                                                            {{ $quiz->title }}
+                                                                        </a>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        @endif
                                                     @endforeach
                                                 </ul>
                                             </div>
@@ -64,7 +78,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Right Section -->
             <div class="col-md-4">
                 <div class="card video-card mb-4">

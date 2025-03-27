@@ -65,6 +65,11 @@
                                     </td>
                                 </tr>
                             @endforeach
+                            @if ($quizzes->isEmpty())
+                            <tr>
+                                <td colspan="4" class="text-center">Không có dữ liệu</td>
+                            </tr>
+                        @endif
                         </tbody>
                     </table>
                 </div>

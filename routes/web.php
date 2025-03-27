@@ -10,7 +10,8 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QuizController;
-
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
 use App\Models\Lesson;
 
 //Admin
@@ -72,13 +73,39 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [QuizController::class, 'index'])->name('index');
         Route::get('/create', [QuizController::class, 'create'])->name('create');
         Route::post('/', [QuizController::class, 'store'])->name('store');
-        Route::get('/{quiz}', [QuizController::class, 'show'])->name('show'); 
         Route::get('/{quiz}/edit', [QuizController::class, 'edit'])->name('edit');
         Route::put('/{quiz}', [QuizController::class, 'update'])->name('update');
         Route::delete('/{quiz}', [QuizController::class, 'destroy'])->name('destroy');
     });
-
+    //questions
+    Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
+        Route::get('/', [QuestionController::class, 'index'])->name('index');
+        Route::get('/create', [QuestionController::class, 'create'])->name('create');
+        Route::post('/', [QuestionController::class, 'store'])->name('store');
+        Route::get('/{question}', [QuestionController::class, 'show'])->name('show');
+        Route::get('/{question}/edit', [QuestionController::class, 'edit'])->name('edit');
+        Route::put('/{question}', [QuestionController::class, 'update'])->name('update');
+        Route::delete('/{question}', [QuestionController::class, 'destroy'])->name('destroy');
+    });
+    //answers
+    Route::prefix('admin/answers')->name('admin.answers.')->group(function () {
+        Route::get('/', [AnswerController::class, 'index'])->name('index');
+        Route::get('/create', [AnswerController::class, 'create'])->name('create');
+        Route::post('/', [AnswerController::class, 'store'])->name('store');
+        Route::get('/{answer}', [AnswerController::class, 'show'])->name('show');
+        Route::get('/{answer}/edit', [AnswerController::class, 'edit'])->name('edit');
+        Route::put('/{answer}', [AnswerController::class, 'update'])->name('update');
+        Route::delete('/{answer}', [AnswerController::class, 'destroy'])->name('destroy');
+    });
 });
+//quizz cho người dùng
+// Route hiển thị quiz cho user
+Route::get('/quizzes/{quiz}', [QuizController::class, 'show'])->name('showquizz');
+// Route nộp bài
+Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submitQuiz'])->name('submit.quiz');
+// Route::get('/{quiz}', [QuizController::class, 'show'])->name('show');
+
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
@@ -116,5 +143,3 @@ Route::get('/lessons/{id}', function () {
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
-
-
