@@ -48,7 +48,7 @@
         </div>
 
         <!-- Cột phải: Khóa học & Bài viết liên quan -->
-        <div class="col-lg-4">
+        <div class="col-lg-4 sticky-sidebar">
             <!-- Thông tin khóa học -->
             @if ($post->course)
                 <div class="card mb-4">
@@ -108,6 +108,7 @@
         line-height: 1.8;
         font-size: 1.1rem;
     }
+ 
     .content p {
         margin-bottom: 1.5rem;
     }
@@ -135,6 +136,27 @@
     }
     .post-meta span {
         font-size: 0.95rem;
+    }
+        /* CSS cho sidebar sticky */
+        .sticky-sidebar {
+        position: sticky;
+        top: 20px; /* Điều chỉnh khoảng cách từ đỉnh */
+        max-height: calc(100vh - 40px); /* Giới hạn chiều cao */
+        overflow-y: auto; /* Cho phép cuộn nếu nội dung dài */
+        padding-bottom: 20px; /* Tạo khoảng cách ở dưới */
+    }
+
+    /* Điều chỉnh các thẻ con trong sidebar */
+    .sticky-sidebar .card {
+        margin-bottom: 20px; /* Khoảng cách giữa các thẻ */
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .sticky-sidebar {
+            position: static; /* Tắt sticky ở màn hình nhỏ */
+            max-height: none;
+        }
     }
 </style>
 @endsection
