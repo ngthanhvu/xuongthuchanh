@@ -21,11 +21,13 @@ class PaymentController extends Controller
         return view('admin.order.index', compact('title', 'payments'));
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $payment = Payment::find($id);
         $payment->delete();
         return redirect()->route('admin.order.index')->with('success', 'Xóa Hóa Đơn Thành Công');
     }
+
     public function create(Request $request)
     {
         $vnp_TmnCode = config('services.vnpay.tmn_code');
@@ -43,14 +45,39 @@ class PaymentController extends Controller
             return redirect()->route('login');
         }
 
-        $payment = Payment::create([
-            'user_id' => $user->id,
-            'course_id' => $request->course_id,
-            'payment_date' => now(),
-            'amount' => $request->price,
-            'payment_method' => 'VNPay',
-            'status' => 'pending',
-        ]);
+        $enrollment = Enrollment::where('user_id', $user->id)
+            ->where('course_id', $request->course_id)
+            ->first();
+
+        if ($enrollment) {
+            return redirect()->route('payment.result', [
+                'status' => 'already_enrolled',
+                'course_id' => $request->course_id,
+            ]);
+        }
+
+        $existingPayment = Payment::where('user_id', $user->id)
+            ->where('course_id', $request->course_id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingPayment) {
+            $payment = $existingPayment;
+        } else {
+            Payment::where('user_id', $user->id)
+                ->where('course_id', $request->course_id)
+                ->where('status', 'pending')
+                ->delete();
+
+            $payment = Payment::create([
+                'user_id' => $user->id,
+                'course_id' => $request->course_id,
+                'payment_date' => now(),
+                'amount' => $request->price,
+                'payment_method' => 'VNPay',
+                'status' => 'pending',
+            ]);
+        }
 
         $vnp_TxnRef = $payment->id;
         $vnp_OrderInfo = 'Thanh toán khóa học ' . $request->course_id;
@@ -198,6 +225,7 @@ class PaymentController extends Controller
                 '24' => 'Thanh toán bị hủy.',
                 '97' => 'Vui lòng đăng nhập để hoàn tất đăng ký.',
                 '01' => 'Thanh toán thất bại. Vui lòng thử lại.',
+                'already_enrolled' => 'Bạn đã đăng ký khóa học này rồi.',
                 default => 'Có lỗi xảy ra trong quá trình thanh toán.',
             };
 
