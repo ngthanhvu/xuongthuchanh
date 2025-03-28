@@ -134,6 +134,8 @@ Route::get('/courses/{course}', [CourseController::class, 'show'])->name('course
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
 Route::get('/lessons/{id}', [HomeController::class, 'lesson'])->name('lesson');
+Route::get('/thanh-toan/{course_id}', [HomeController::class, 'loading'])->name('loading');
+
 
 // Route::get('/lessons/{id}', function () {
 //     $title = "Bài học";
@@ -153,6 +155,7 @@ Route::get('/register', function () {
     $title = "Đăng ký";
     return view('auth.register', compact('title'));
 });
+
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');

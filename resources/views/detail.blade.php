@@ -99,12 +99,10 @@
                         <h5 class="card-title">{{ $course->price == 0 ? 'Miễn phí' : number_format($course->price, 2) }}đ
                         </h5>
                         <p class="text-muted">Đăng ký học</p>
-                        <form method="POST" action="{{ route('payment.create') }}">
-                            @csrf
-                            <input type="hidden" name="course_id" value="{{ $course->id }}">
-                            <input type="hidden" name="price" value="{{ $course->price }}">
+                        <form id="paymentForm" method="GET" action="{{ route('loading', ['course_id' => $course->id]) }}">
                             <button type="submit" class="btn btn-primary">Đăng ký</button>
                         </form>
+                        
                         <ul class="list-unstyled mt-3">
                             <li><i class="bi bi-check-circle me-2"></i> Trình độ cơ bản</li>
                             <li><i class="bi bi-check-circle me-2"></i> Tổng số {{ $lessons ? count($lessons) : 0 }} bài

@@ -65,6 +65,16 @@ class HomeController extends Controller
         return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
 
+    public function loading($course_id)
+    {
+        $course = Course::with('sections.lessons.quizzes')->findOrFail($course_id);
+
+        $sections = $course->sections;
+        $lessons = $sections->flatMap->lessons;
+        $quizzes = $lessons->flatMap->quizzes; 
+        return view('loading', compact('course', 'sections', 'lessons', 'quizzes'));
+    }
+
     public function lesson($lesson_id)
     {
         $lessons = Lesson::findOrFail($lesson_id);
