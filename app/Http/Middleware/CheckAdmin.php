@@ -17,13 +17,13 @@ class CheckAdmin
         if (!Auth::check()) {
             return redirect('/dang-nhap')->with('error', 'Vui lòng đăng nhập để tiếp tục');
         }
-        
+
         $user = Auth::user();
-        
-        if ($user->role != 'admin') {
+
+        if ($user->role != 'admin' && $user->role != 'owner') {
             return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
         }
-        
+
         return $next($request);
     }
 }
