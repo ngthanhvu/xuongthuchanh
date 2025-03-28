@@ -142,6 +142,7 @@
                 </div>
             </div>
             <a href="/admin/posts"><i class="fas fa-newspaper tw-mr-2"></i> Bài viết</a>
+            <a href="/admin/order"><i class="fa-solid fa-money-bill tw-mr-2"></i> Hóa Đơn</a>
             <a href="/admin/users"><i class="fas fa-users tw-mr-2"></i> Người dùng</a>
         </nav>
 

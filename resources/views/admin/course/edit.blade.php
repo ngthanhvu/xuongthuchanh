@@ -14,8 +14,8 @@
 
             <div class="form-group mt-3">
                 <label for="title">Tiêu đề</label>
-                <input type="text" id="title" name="title" class="form-control" value="{{ old('title', $course->title) }}"
-                    placeholder="Nhập tiêu đề">
+                <input type="text" id="title" name="title" class="form-control"
+                    value="{{ old('title', $course->title) }}" placeholder="Nhập tiêu đề">
                 @error('title')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -39,8 +39,8 @@
             </div>
 
             <div class="form-group mt-3">
-                <img id="thumbnail-preview" src="{{ asset('uploads/' . $course->thumbnail) }}" alt="Image Preview"
-                    class="img-fluid" style="max-height: 100px; {{ $course->thumbnail ? '' : 'display: none;' }}">
+                <img id="thumbnail-preview" src="{{ asset('storage/' . $course->thumbnail) }}" alt="Image Preview"
+                    class="img-fluid" style="max-height: 50px; {{ $course->thumbnail ? '' : 'display: none;' }}">
             </div>
 
             <div class="form-group mt-3">
@@ -57,7 +57,8 @@
                 <select name="categories_id" id="categories_id" class="form-control">
                     <option value="">Chọn danh mục</option>
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ $category->id == $course->categories_id ? 'selected' : '' }}>
+                        <option value="{{ $category->id }}"
+                            {{ $category->id == $course->categories_id ? 'selected' : '' }}>
                             {{ $category->name }}
                         </option>
                     @endforeach
@@ -68,8 +69,8 @@
             </div>
 
             <div class="form-group mt-3">
-                <button type="submit" class="btn btn-primary w-100">Cập nhật</button>
-                <a href="{{ route('admin.course.index') }}" class="btn btn-secondary w-100 mt-2">Hủy</a>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <a href="{{ route('admin.course.index') }}" class="btn btn-secondary">Hủy</a>
             </div>
         </form>
     </div>

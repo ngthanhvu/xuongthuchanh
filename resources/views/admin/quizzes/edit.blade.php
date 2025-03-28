@@ -25,6 +25,7 @@
                 <textarea name="description" id="description" class="form-control">{{ $quiz->description }}</textarea>
             </div>
             <button type="submit" class="btn btn-primary">Cập nhật</button>
+            <a href="{{ route('admin.quizzes.index') }}" class="btn btn-secondary">Thoát</a>
         </form>
     </div>
 @endsection

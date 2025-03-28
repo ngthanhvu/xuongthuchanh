@@ -10,14 +10,16 @@ class QuestionController extends Controller
 {
     public function index()
     {
+        $title = 'Danh sách Câu Hỏi';
         $questions = Question::with('quiz')->get();
-        return view('admin.questions.index', compact('questions'));
+        return view('admin.questions.index', compact('questions', 'title'));
     }
 
     public function create()
     {
+        $title = 'Tạo Câu Hỏi';
         $quizzes = Quiz::all();
-        return view('admin.questions.create', compact('quizzes'));
+        return view('admin.questions.create', compact('quizzes', 'title'));
     }
 
     public function store(Request $request)

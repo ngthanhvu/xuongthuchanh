@@ -20,8 +20,9 @@ class QuizController extends Controller
 
     public function create()
     {
+        $title = 'Tạo quizz';
         $lessons = Lesson::all();
-        return view('admin.quizzes.create', compact('lessons'));
+        return view('admin.quizzes.create', compact('lessons', 'title'));
     }
 
     public function store(Request $request)

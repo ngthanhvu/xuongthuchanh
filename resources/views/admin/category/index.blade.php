@@ -47,8 +47,8 @@
                 @foreach ($categories as $category)
                     <tr>
                         <td class="text-center">{{ $index++ }}</td>
-                        <td>{{ $category->name }}</td>
-                        <td>{{ $category->description }}</td>
+                        <td class="text-center">{{ $category->name }}</td>
+                        <td class="text-center">{{ $category->description }}</td>
                         <td class="text-center">
                             <a href="{{ route('admin.category.edit', $category->id) }}"
                                 class="btn btn-sm btn-outline-primary tw-me-1">

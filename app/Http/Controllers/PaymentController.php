@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +14,18 @@ use App\Mail\CourseConfirmationMail;
 
 class PaymentController extends Controller
 {
+    public function index()
+    {
+        $title = 'Quản Lí Hóa Đơn';
+        $payments = Payment::with(['user', 'course'])->paginate(12);
+        return view('admin.order.index', compact('title', 'payments'));
+    }
+
+    public function delete($id){
+        $payment = Payment::find($id);
+        $payment->delete();
+        return redirect()->route('admin.order.index')->with('success', 'Xóa Hóa Đơn Thành Công');
+    }
     public function create(Request $request)
     {
         $vnp_TmnCode = config('services.vnpay.tmn_code');

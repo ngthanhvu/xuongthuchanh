@@ -49,10 +49,10 @@
                 @foreach ($courses as $course)
                     <tr>
                         <td class="text-center">{{ $index++ }}</td>
-                        <td>{{ $course->title }}</td>
-                        <td>{{ $course->category->name ?? 'No Category' }}</td>
-                        <td><img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Thumbnail" width="80"></td>
-                        <td>{{ number_format($course->price, 0) }}đ</td>
+                        <td class="text-center">{{ $course->title }}</td>
+                        <td class="text-center">{{ $course->category->name ?? 'No Category' }}</td>
+                        <td class="text-center"><img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Thumbnail" width="80"></td>
+                        <td class="text-center">{{ number_format($course->price, 0) }}đ</td>
                         <td class="text-center">
                             <a href="{{ route('admin.course.edit', $course->id) }}"
                                 class="btn btn-sm btn-outline-primary tw-me-1">

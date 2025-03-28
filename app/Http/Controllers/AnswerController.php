@@ -10,14 +10,16 @@ class AnswerController extends Controller
 {
     public function index()
     {
+        $title = 'Danh sách Câu Hỏi';
         $answers = Answer::with('question')->get();
-        return view('admin.answers.index', compact('answers'));
+        return view('admin.answers.index', compact('answers', 'title'));
     }
 
     public function create()
     {
+        $title = 'Tạo Câu Hỏi';
         $questions = Question::all();
-        return view('admin.answers.create', compact('questions'));
+        return view('admin.answers.create', compact('questions', 'title'));
     }
 
     public function store(Request $request)
@@ -40,8 +42,9 @@ class AnswerController extends Controller
 
     public function edit(Answer $answer)
     {
+        $title = 'Sửa Câu Hỏi';
         $questions = Question::all();
-        return view('admin.answers.edit', compact('answer', 'questions'));
+        return view('admin.answers.edit', compact('answer', 'questions', 'title'));
     }
 
     public function update(Request $request, Answer $answer)

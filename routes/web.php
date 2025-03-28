@@ -114,6 +114,13 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/{post}', [PostController::class, 'update'])->name('update');
         Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy');
     });
+
+    //thanh toan
+    Route::prefix('admin/order')->name('admin.order.')->group(function () {
+        Route::get('/', [PaymentController::class, 'index'])->name('index');
+        Route::delete('/delete/{id}', [PaymentController::class, 'delete'])->name('delete');
+
+    });
 });
 //quizz cho người dùng
 Route::get('/quizzes/{lessonId}', [HomeController::class, 'showQuiz'])->name('quizzes');

@@ -22,7 +22,7 @@
 
             <div class="form-group mt-3">
                 <label for="description">Mô tả</label>
-                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+                <textarea id="description" name="description" class="form-control" placeholder="Nhập mô tả">{{ old('description') }}</textarea>
                 @error('description')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -44,7 +44,7 @@
 
             <div class="form-group mt-3">
                 <label for="price">Giá</label>
-                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}">
+                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -62,11 +62,11 @@
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
             </div>
-
             <div class="form-group mt-3">
-                <button type="submit" class="btn btn-primary w-100">Thêm ngay</button>
-                <a href="{{ route('admin.course.index') }}" class="btn btn-secondary w-100 mt-2">Hủy</a>
+                <button type="submit" class="btn btn-primary ">Thêm ngay</button>
+                <a href="{{ route('admin.course.index') }}" class="btn btn-secondary ">Hủy</a>
             </div>
+   
         </form>
     </div>
 

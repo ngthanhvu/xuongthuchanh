@@ -47,8 +47,8 @@
                 @foreach ($sections as $section)
                     <tr>
                         <td class="text-center">{{ $index++ }}</td>
-                        <td>{{ $section->title }}</td>
-                        <td>{{ $courses->find($section->course_id)->title ?? 'Không xác định' }}</td>
+                        <td class="text-center">{{ $section->title }}</td>
+                        <td class="text-center">{{ $courses->find($section->course_id)->title ?? 'Không xác định' }}</td>
                         <td class="text-center">
                             <a href="{{ route('admin.sections.edit', $section->id) }}"
                                 class="btn btn-sm btn-outline-primary tw-me-1">

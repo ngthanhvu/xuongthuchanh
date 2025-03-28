@@ -42,7 +42,7 @@
                     <th scope="col" class="tw-px-6 tw-py-4">Thao tác</th>
                 </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="text-center">
                             @foreach ($quizzes as $quiz)
                                 <tr class="border-b bg-white dark:border-neutral-500 dark:bg-neutral-600">
                                     <td class="tw-px-6 tw-py-4">{{ $quiz->id }}</td>

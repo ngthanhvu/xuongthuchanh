@@ -286,7 +286,7 @@ class UserController extends Controller
                 ['email' => $googleUser->email],
                 [
                     'username' => $googleUser->name,
-                    'password' => bcrypt(uniqid()), // Mật khẩu ngẫu nhiên
+                    'password' => bcrypt(uniqid()), 
                     'avatar' => $googleUser->avatar
                 ]
             );
@@ -310,12 +310,11 @@ class UserController extends Controller
         try {
             $facebookUser = Socialite::driver('facebook')->user();
 
-            // Tìm hoặc tạo user
             $user = User::firstOrCreate(
                 ['email' => $facebookUser->email],
                 [
                     'username' => $facebookUser->name,
-                    'password' => bcrypt(uniqid()), // Mật khẩu ngẫu nhiên
+                    'password' => bcrypt(uniqid()), 
                     'avatar' => $facebookUser->avatar
                 ]
             );
@@ -329,31 +328,31 @@ class UserController extends Controller
     }
     // Thêm vào UserController.php
     public function updateRole(Request $request, $id)
-{
-    $user = User::findOrFail($id);
-    
-    // Ngăn chặn thay đổi role của chính mình hoặc admin khác
-    if ($user->id === Auth::id() || $user->role === 'admin') {
-        return back()->with('error', 'Không được phép thay đổi role của admin hoặc chính mình');
+    {
+        $user = User::findOrFail($id);
+
+        // Ngăn chặn thay đổi role của chính mình hoặc admin khác
+        if ($user->id === Auth::id() || $user->role === 'admin') {
+            return back()->with('error', 'Không được phép thay đổi role của admin hoặc chính mình');
+        }
+
+        $user->role = $request->role;
+        $user->save();
+
+        return back()->with('success', 'Cập nhật role thành công');
     }
 
-    $user->role = $request->role;
-    $user->save();
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
 
-    return back()->with('success', 'Cập nhật role thành công');
-}
+        // Ngăn chặn xóa chính mình hoặc admin khác
+        if ($user->id === Auth::id() || $user->role === 'admin') {
+            return back()->with('error', 'Không được phép xóa admin hoặc chính mình');
+        }
 
-public function destroy($id)
-{
-    $user = User::findOrFail($id);
-    
-    // Ngăn chặn xóa chính mình hoặc admin khác
-    if ($user->id === Auth::id() || $user->role === 'admin') {
-        return back()->with('error', 'Không được phép xóa admin hoặc chính mình');
+        $user->delete();
+
+        return back()->with('success', 'Xóa người dùng thành công');
     }
-
-    $user->delete();
-
-    return back()->with('success', 'Xóa người dùng thành công');
-}
 }
