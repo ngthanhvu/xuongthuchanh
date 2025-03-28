@@ -141,3 +141,11 @@ Route::get('/lessons/{id}', function () {
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
+
+//quen mat khau
+Route::get('/quen-mat-khau', [UserController::class, 'forgotPassword'])->name('password.forgot');
+Route::post('/quen-mat-khau', [UserController::class, 'sendResetLink'])->name('password.send-link');
+Route::get('/xac-nhan-otp', [UserController::class, 'verifyOtp'])->name('password.verify-otp');
+Route::post('/xac-nhan-otp', [UserController::class, 'validateOtp'])->name('password.validate-otp');
+Route::get('/dat-lai-mat-khau', [UserController::class, 'showResetForm'])->name('password.reset');
+Route::post('/dat-lai-mat-khau', [UserController::class, 'resetPassword'])->name('password.update');
