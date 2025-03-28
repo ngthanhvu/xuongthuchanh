@@ -85,13 +85,12 @@
             </div>
             <!-- Right Section -->
             <div class="col-md-4">
-                <div class="card video-card mb-4">
+                <div class="card iframe-card mb-4">
                     <h5 class="card-title">{{ $course->title }}</h5>
                     <p class="card-text">Xem giới thiệu khóa học</p>
-                    <video controls width="100%">
-                        <source src="{{ $lessons->first()->file_url ?? 'path-to-video.mp4' }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+                    <iframe width="380" height="200" src="https://www.youtube.com/embed/1nA33oSe0Qc?autoplay=1&mute=1">
+                    </iframe>
+                    
                 </div>
 
                 <div class="card card-custom">
@@ -124,7 +123,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .video-card {
+        .iframe-card {
             background: linear-gradient(to right, #ff4b1f, #ff9068);
             color: white;
             border-radius: 10px;
