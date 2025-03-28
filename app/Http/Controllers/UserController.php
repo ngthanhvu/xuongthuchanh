@@ -14,8 +14,11 @@ class UserController extends Controller
 
     public function index()
     {
-        $title = 'Quản lý người dung';
-        $users = User::all();
+        $title = 'Quản lý người dùng';
+        $users = User::orderBy('role', 'desc') // Sắp xếp theo role (owner -> admin -> user)
+            ->orderBy('created_at', 'desc')
+            ->paginate(12); // Phân trang 12 item/trang
+
         return view('admin.users.index', compact('title', 'users'));
     }
     public function register(Request $request)
@@ -327,33 +330,57 @@ class UserController extends Controller
             return redirect('/dang-nhap')->with('error', 'Đăng nhập bằng Facebook thất bại');
         }
     }
-    // Thêm vào UserController.php
     public function updateRole(Request $request, $id)
-{
-    $user = User::findOrFail($id);
-    
-    // Ngăn chặn thay đổi role của chính mình hoặc admin khác
-    if ($user->id === Auth::id() || $user->role === 'admin') {
-        return back()->with('error', 'Không được phép thay đổi role của admin hoặc chính mình');
+    {
+        $currentUser = Auth::user();
+        $targetUser = User::findOrFail($id);
+
+
+        if ($currentUser->role === 'owner') {
+            if ($targetUser->role === 'owner') {
+                return back()->with('error', 'Không được thao tác với owner khác');
+            }
+            if (!in_array($request->role, ['user', 'admin'])) {
+                return back()->with('error', 'Role không hợp lệ');
+            }
+        } else if ($currentUser->role === 'admin') {
+            if ($targetUser->role === 'owner') {
+                return back()->with('error', 'Không được thao tác với owner');
+            }
+            if (!in_array($request->role, ['user', 'admin'])) {
+                return back()->with('error', 'Role không hợp lệ');
+            }
+        } else {
+            return back()->with('error', 'Bạn không có quyền thực hiện thao tác này');
+        }
+
+        $targetUser->update(['role' => $request->role]);
+
+        return back()->with('success', 'Cập nhật role thành công');
     }
 
-    $user->role = $request->role;
-    $user->save();
+    public function destroy($id)
+    {
+        $currentUser = Auth::user();
+        $targetUser = User::findOrFail($id);
 
-    return back()->with('success', 'Cập nhật role thành công');
-}
 
-public function destroy($id)
-{
-    $user = User::findOrFail($id);
-    
-    // Ngăn chặn xóa chính mình hoặc admin khác
-    if ($user->id === Auth::id() || $user->role === 'admin') {
-        return back()->with('error', 'Không được phép xóa admin hoặc chính mình');
+        if ($currentUser->role === 'owner') {
+            if ($targetUser->id === $currentUser->id) {
+                return back()->with('error', 'Không thể xóa chính mình');
+            }
+            if ($targetUser->role === 'owner') {
+                return back()->with('error', 'Không thể xóa owner khác');
+            }
+        } else if ($currentUser->role === 'admin') {
+            if ($targetUser->role !== 'user') {
+                return back()->with('error', 'Bạn chỉ được xóa user thường');
+            }
+        } else {
+            return back()->with('error', 'Bạn không có quyền thực hiện thao tác này');
+        }
+
+        $targetUser->delete();
+        return back()->with('success', 'Xóa người dùng thành công');
     }
-
-    $user->delete();
-
-    return back()->with('success', 'Xóa người dùng thành công');
-}
 }
