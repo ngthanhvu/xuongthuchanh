@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $lesson->title }}</title>
+    <title>{{ $lessons->title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -72,18 +71,18 @@
 <body>
     <div class="header d-flex justify-content-between align-items-center">
         <a href="{{ route('home') }}" class="text-decoration-none text-white"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a>
-        <div>{{ $lesson->title }}</div>
-        <div>0/{{ $sections->sum(fn($section) => $section->lessons->count()) }} bài học</div>
+        <div>{{ $lessons->title }}</div>
+        <div>{{ $sections->sum(fn($section) => $section->lessons->count()) }} bài học</div> 
     </div>
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8 p-0">
                 <div class="iframe-section">
-                    @if ($lesson->file_url)
+                    @if ($lessons->file_url)
                         <iframe width="100%" height="100%"
-                            src="{{ preg_replace('/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', 'https://www.youtube.com/embed/$1', $lesson->file_url) }}?controls=0&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3&fs=1"
-                            title="{{ $lesson->title }}"
+                            src="{{ preg_replace('/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', 'https://www.youtube.com/embed/$1', $lessons->file_url) }}?controls=0&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3&fs=1"
+                            title="{{ $lessons->title }}"
                             frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen>
@@ -94,19 +93,19 @@
                 </div>
                 <div class="footer d-flex justify-content-between align-items-center">
                     <div>
-                        <h5>{{ $lesson->title }}</h5>
-                        <p>Cập nhật {{ $lesson->updated_at->format('F Y') }}</p>
-                        <p class="mt-3">{{ $lesson->content }}</p>
+                        <h5>{{ $lessons->title }}</h5>
+                        <p>Cập nhật {{ $lessons->updated_at->format('F Y') }}</p>
+                        <p class="mt-3">{{ $lessons->content }}</p>
                     </div>
                 </div>
                 <div class="d-flex justify-content-end">
                     @if ($prevLesson)
-                        <a href="{{ route('lesson', $prevLesson) }}" class="btn btn-light me-2">BÀI TRƯỚC</a>
+                        <a href="{{ route('lesson', $prevLesson->id) }}" class="btn btn-light me-2">BÀI TRƯỚC</a>
                     @else
                         <button class="btn btn-light me-2" disabled>BÀI TRƯỚC</button>
                     @endif
                     @if ($nextLesson)
-                        <a href="{{ route('lesson', $nextLesson) }}" class="btn btn-primary">BÀI TIẾP THEO</a>
+                        <a href="{{ route('lesson', $nextLesson->id) }}" class="btn btn-primary">BÀI TIẾP THEO</a>
                     @else
                         <button class="btn btn-primary" disabled>BÀI TIẾP THEO</button>
                     @endif
@@ -132,11 +131,11 @@
                                     data-bs-parent="#lessonAccordion">
                                     <div class="accordion-body">
                                         @if ($section->lessons->isNotEmpty())
-                                            @foreach ($section->lessons as $lessonItem)
-                                                <a href="{{ route('lesson', $lessonItem->id) }}"
-                                                    class="lesson-item {{ $lessonItem->id == $lesson->id ? 'active' : '' }}">
-                                                    {{ $lessonItem->title }}
-                                                    <span class="float-end">11:35</span>
+                                            @foreach ($section->lessons as $lessonsItem)
+                                                <a href="{{ route('lesson', $lessonsItem->id) }}"
+                                                    class="lesson-item {{ $lessonsItem->id == $lessons->id ? 'active' : '' }}">
+                                                    {{ $lessonsItem->title }}
+                                                    <span class="float-end">11:35</span> <!-- Có thể thay bằng thời lượng thực tế -->
                                                 </a>
                                             @endforeach
                                         @else

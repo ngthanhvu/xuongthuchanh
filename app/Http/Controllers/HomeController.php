@@ -16,25 +16,40 @@ class HomeController extends Controller
      * @return \Illuminate\View\View
      */
 
-    public function index()
-    {
-        $title = 'Trang chủ';
-        $courses = Course::all();
-        $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
-        $userId = Auth::check() ? Auth::id() : null;
-
-        $enrollmentStatus = [];
-        if ($userId) {
-            foreach ($courses as $course) {
-                $isEnrolled = Enrollment::where('user_id', $userId)
-                    ->where('course_id', $course->id)
-                    ->exists();
-                $enrollmentStatus[$course->id] = $isEnrolled;
-            }
-        }
-
-        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments'));
-    }
+     public function index()
+     {
+         $title = 'Trang chủ';
+         $courses = Course::all();
+         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
+         $userId = Auth::check() ? Auth::id() : null;
+     
+         $enrollmentStatus = [];
+         $links = [];
+     
+         if ($userId) {
+             foreach ($courses as $course) {
+                 $isEnrolled = Enrollment::where('user_id', $userId)
+                     ->where('course_id', $course->id)
+                     ->exists();
+                 $enrollmentStatus[$course->id] = $isEnrolled;
+     
+                 if ($isEnrolled) {
+                     $firstSection = Section::where('course_id', $course->id)->first();
+                     if ($firstSection) {
+                         $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
+                         $lessonId = $firstLesson ? $firstLesson->id : null;
+                         $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
+                     } else {
+                         $links[$course->id] = route('detail', $course->id);
+                     }
+                 } else {
+                     $links[$course->id] = route('detail', $course->id);
+                 }
+             }
+         }
+     
+         return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links'));
+     }
 
 
     public function detail($course_id)
@@ -50,14 +65,17 @@ class HomeController extends Controller
 
     public function lesson($lesson_id)
     {
-        $sections = Section::all();
-        $lesson = Lesson::with('quizzes')->findOrFail($lesson_id);
+        $lessons = Lesson::findOrFail($lesson_id);
+        $sections = $lessons->section;
+        $course = $sections->course;
+        
+        $sections = Section::where('course_id', $course->id)->with('lessons')->get();
 
-        $allLessons = Lesson::all();
-        $currentIndex = $allLessons->pluck('id')->search($lesson_id);
-
+        $allLessons = Lesson::whereIn('section_id', $sections->pluck('id'))->orderBy('id')->get();
+        $currentIndex = $allLessons->search(fn($item) => $item->id == $lessons->id);
         $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
-        $nextLesson = $currentIndex < count($allLessons) - 1 ? $allLessons[$currentIndex + 1] : null;
-        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson'));
+        $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
+
+        return view('lesson', compact('lessons', 'sections', 'prevLesson', 'nextLesson'));
     }
 }
