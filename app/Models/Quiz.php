@@ -22,4 +22,15 @@ class Quiz extends Model
     {
         return $this->hasMany(UserQuizResult::class);
     }
+    
+    public function isCompletedBy($user)
+    {
+        return $this->userQuizResults()->where('user_id', $user->id)->exists();
+    }
+
+    public function getUserScore($user)
+    {
+        $result = $this->userQuizResults()->where('user_id', $user->id)->first();
+        return $result ? $result->score : null;
+    }
 }
