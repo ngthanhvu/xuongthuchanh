@@ -34,7 +34,7 @@
             <thead class="tw-bg-gray-100 tw-text-gray-700 text-center">
                 <tr>
                     <th class="tw-py-3">#</th>
-                    <th class="tw-py-3">Tên </th>
+                    <th class="tw-py-3">Tên</th>
                     <th class="tw-py-3">Email</th>
                     <th class="tw-py-3">Full name</th>
                     <th class="tw-py-3">Avatar</th>
@@ -43,49 +43,74 @@
                 </tr>
             </thead>
             <tbody>
-                @php $index = 1; @endphp
-                @foreach ($users as $user)
+                @forelse ($users as $index => $user)
                     <tr>
-                        <td class="text-center">{{ $index++ }}</td>
-                        <td class="text-center">{{ $user->username }}</td>
-                        <td class="text-center">{{ $user->email }}</td>
-                        <td class="text-center">{{ $user->fullname }}</td>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td class="text-center">{{ $user->username ?? 'N/A' }}</td>
+                        <td class="text-center">{{ $user->email ?? 'N/A' }}</td>
+                        <td class="text-center">{{ $user->fullname ?? 'N/A' }}</td>
                         <td class="text-center">
-                            <img src="{{ asset(  $user->avatar) }}" alt="avatar" width="50px">
+                            @if($user->avatar)
+                                <img src="{{ asset($user->avatar) }}" alt="avatar" width="50px" class="tw-rounded-full">
+                            @else
+                                <div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                                    <i class="fas fa-user tw-text-gray-500"></i>
+                                </div>
+                            @endif
                         </td>
                         <td class="text-center">
                             @if ($user->role == 'admin')
-                                Admin
-                            @elseif ($user->role == 'user')
-                                user
+                                <span class="tw-bg-blue-100 tw-text-blue-800 tw-px-2 tw-py-1 tw-rounded tw-text-sm">Admin</span>
+                            @else
+                                <span class="tw-bg-green-100 tw-text-green-800 tw-px-2 tw-py-1 tw-rounded tw-text-sm">User</span>
                             @endif
-
                         </td>
-                        <td class="text-center">
-                            <a href="#"
-                                class="btn btn-sm btn-outline-primary tw-me-1">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-                            @if ($user->role != 'admin')
-                            <form action="#" method="POST"
-                                onsubmit="return confirm('Ban co chac muon xoa user?');" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="fa-solid fa-trash"></i>
+                        <td class="text-center tw-space-x-1">
+                            <!-- Dropdown để thay đổi role -->
+                            <div class="dropdown d-inline-block">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="roleDropdown{{ $user->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-cog"></i>
                                 </button>
-                            </form>
-                            @elseif ($user->role == 'admin')
-                            <button type="button" class="btn btn-outline-primary disabled" aria_disabled="true">Không đủ quyền hạn!</button>
+                                <ul class="dropdown-menu" aria-labelledby="roleDropdown{{ $user->id }}">
+                                    <li>
+                                        <form action="{{ route('admin.users.update-role', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" name="role" value="admin" class="dropdown-item {{ $user->role == 'admin' ? 'active' : '' }}">
+                                                <i class="fas fa-user-shield me-2"></i> Chuyển thành Admin
+                                            </button>
+                                            <button type="submit" name="role" value="user" class="dropdown-item {{ $user->role == 'user' ? 'active' : '' }}">
+                                                <i class="fas fa-user me-2"></i> Chuyển thành User
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Nút xóa -->
+                            @if ($user->role != 'admin')
+                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
+                                    <i class="fas fa-ban"></i>
+                                </button>
                             @endif
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-4">Không có người dùng nào</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 
-    <!-- Pagination -->
     <div class="tw-flex tw-justify-between tw-items-center tw-mt-4 tw-px-1">
         <span class="tw-text-sm tw-text-gray-600">Hiển thị 12 / 100 mục</span>
         <nav>
