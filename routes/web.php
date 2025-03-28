@@ -119,7 +119,6 @@ Route::middleware('check.role:admin')->group(function () {
     Route::prefix('admin/order')->name('admin.order.')->group(function () {
         Route::get('/', [PaymentController::class, 'index'])->name('index');
         Route::delete('/delete/{id}', [PaymentController::class, 'delete'])->name('delete');
-
     });
 });
 //quizz cho người dùng
@@ -185,7 +184,7 @@ Route::get('/post/{id}', [PostController::class, 'showForUser'])->name('post.vie
 
 //dang nhap voi google va facebook
 Route::get('/auth/google', [UserController::class, 'redirectToGoogle']);
-Route::get('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
+Route::get('/login/google/callback', [UserController::class, 'handleGoogleCallback']);
 
 Route::get('/auth/facebook', [UserController::class, 'redirectToFacebook']);
 Route::get('/auth/facebook/callback', [UserController::class, 'handleFacebookCallback']);

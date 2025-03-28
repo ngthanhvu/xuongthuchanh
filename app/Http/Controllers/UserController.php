@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -116,7 +117,15 @@ class UserController extends Controller
             $user->avatar = $avatarPath;
         }
 
-        $user->save();
+        if ($user instanceof User) {
+            if ($user instanceof User) {
+                $user->save();
+            } else {
+                return back()->with('error', 'Không tìm thấy người dùng hợp lệ');
+            }
+        } else {
+            return back()->with('error', 'Không tìm thấy người dùng hợp lệ');
+        }
 
         return back()->with('success', 'Cập nhật hồ sơ thành công');
     }
@@ -128,7 +137,11 @@ class UserController extends Controller
         if ($user->avatar && File::exists(public_path($user->avatar))) {
             File::delete(public_path($user->avatar));
             $user->avatar = null;
-            $user->save();
+            if ($user instanceof User) {
+                $user->save();
+            } else {
+                return back()->with('error', 'Không tìm thấy người dùng hợp lệ');
+            }
         }
 
         return response()->json(['success' => true, 'message' => 'Xóa ảnh thành công']);
@@ -160,7 +173,12 @@ class UserController extends Controller
         }
 
         $user->password = Hash::make($request->password);
-        $user->save();
+
+        if ($user instanceof User) {
+            $user->save();
+        } else {
+            return back()->with('error', 'Không tìm thấy người dùng hợp lệ');
+        }
 
         return back()->with('success', 'Đổi mật khẩu thành công');
     }
@@ -284,51 +302,27 @@ class UserController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
-            // Tìm hoặc tạo user
-            $user = User::firstOrCreate(
-                ['email' => $googleUser->email],
+            $user = User::updateOrCreate(
+                ['email' => $googleUser->getEmail()],
                 [
-                    'username' => $googleUser->name,
-                    'password' => bcrypt(uniqid()), 
-                    'avatar' => $googleUser->avatar
+                    'username' => $googleUser->getName(),
+                    'password' => null,
+                    'oauth_provider' => 'google',
+                    'oauth_id' => $googleUser->getId(),
                 ]
             );
 
             Auth::login($user);
-
-            return redirect('/')->with('success', 'Đăng nhập bằng Google thành công');
+            return redirect()->route('home')->with('success', 'Đăng nhập Google thành công!');
         } catch (\Exception $e) {
-            return redirect('/dang-nhap')->with('error', 'Đăng nhập bằng Google thất bại');
+            Log::error('Lỗi đăng nhập Google: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->route('login')->with('error', 'Đăng nhập Google thất bại.');
         }
     }
 
-    // Phương thức đăng nhập Facebook
-    public function redirectToFacebook()
-    {
-        return Socialite::driver('facebook')->redirect();
-    }
 
-    public function handleFacebookCallback()
-    {
-        try {
-            $facebookUser = Socialite::driver('facebook')->user();
-
-            $user = User::firstOrCreate(
-                ['email' => $facebookUser->email],
-                [
-                    'username' => $facebookUser->name,
-                    'password' => bcrypt(uniqid()), 
-                    'avatar' => $facebookUser->avatar
-                ]
-            );
-
-            Auth::login($user);
-
-            return redirect('/')->with('success', 'Đăng nhập bằng Facebook thành công');
-        } catch (\Exception $e) {
-            return redirect('/dang-nhap')->with('error', 'Đăng nhập bằng Facebook thất bại');
-        }
-    }
     public function updateRole(Request $request, $id)
     {
         $user = User::findOrFail($id);
