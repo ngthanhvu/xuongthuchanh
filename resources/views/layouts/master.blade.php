@@ -309,7 +309,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/post">Bài viết</a>
                         </li>
-                        @if ((Auth::check() && Auth::user()->role === 'admin') || Auth::user()->role === 'owner')
+                        @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'owner'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('/admin') }}">Admin</a>
                             </li>
