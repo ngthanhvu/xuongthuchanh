@@ -55,14 +55,19 @@
                                                         @if ($lesson->quizzes->count() > 0)
                                                             <ul class="list-group ms-4">
                                                                 @foreach ($lesson->quizzes as $quiz)
-                                                                    <li class="list-group-item">
-                                                                        <a href="{{ route('showquizz', ['quiz' => $quiz->id]) }}"
-                                                                            class="text-decoration-none">
-                                                                            Quizz {{ $loop->iteration }}:
-                                                                            {{ $quiz->title }}
+                                                                <li class="list-group-item">
+                                                                    @if (Auth::check() && \App\Models\Enrollment::where('user_id', Auth::id())->where('course_id', $lesson->section->course->id)->exists())
+                                                                        <a href="{{ route('showquizz', ['quiz' => $quiz->id]) }}" class="text-decoration-none">
+                                                                            Quizz {{ $loop->iteration }}: {{ $quiz->title }}
                                                                         </a>
-                                                                    </li>
-                                                                @endforeach
+                                                                    @else
+                                                                        <span class="text-muted">
+                                                                            Quizz {{ $loop->iteration }}: {{ $quiz->title }}
+                                                                            <small class="text-danger">(Đăng kí khóa học mới có thể làm)</small>
+                                                                        </span>
+                                                                    @endif
+                                                                </li>
+                                                            @endforeach
                                                             </ul>
                                                         @endif
                                                     @endforeach

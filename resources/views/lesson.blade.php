@@ -137,7 +137,23 @@
                                                     {{ $lessonsItem->title }}
                                                     <span class="float-end">11:35</span> <!-- Có thể thay bằng thời lượng thực tế -->
                                                 </a>
-                                            @endforeach
+                                                @if ($lessonsItem->quizzes->isNotEmpty())
+                                                @foreach ($lessonsItem->quizzes as $quiz)
+                                                    <div class="ms-3">
+                                                        @if (Auth::check() && Auth::user()->hasEnrolled($lessonsItem->section->course->id))
+                                                            <a href="{{ route('quizzes', $lessonsItem->id) }}" class="lesson-item">
+                                                                Quiz: {{ $quiz->title }}
+                                                            </a>
+                                                        @else
+                                                            <span class="lesson-item text-muted">
+                                                                Quiz: {{ $quiz->title }}
+                                                                <small class="text-danger">(Đăng ký để làm)</small>
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                                @endforeach
                                         @else
                                             <div class="lesson-item">Chưa có bài học</div>
                                         @endif

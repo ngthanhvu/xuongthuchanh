@@ -22,6 +22,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Enrollment::class);
     }
+    public function hasEnrolled($courseId)
+    {
+        return $this->enrollments()
+            ->where('course_id', $courseId)
+            ->exists();
+    }
 
     public function payments()
     {
