@@ -87,23 +87,68 @@ class HomeController extends Controller
         $section = $lesson->section;
         $course = $section->course;
 
-        $quizzes = Quiz::where('lesson_id', $lessonId)->with(['questions.answers' => function ($query) {
-            $query->orderBy('is_correct', 'desc');
-        }])->get();
+        $quizzes = Quiz::where('lesson_id', $lessonId)
+            ->with(['questions.answers' => function ($query) {
+                $query->orderBy('is_correct', 'desc');
+            }])->get();
 
-        $userId = Auth::check() ? Auth::id() : null;
+        $userId = Auth::id();
         $isEnrolled = false;
+        $userQuizResult = null;
+        $selectedAnswers = [];
+        $answerResults = [];
+        $quizCompleted = false;
+
         if ($userId && $course) {
             $isEnrolled = Enrollment::where('user_id', $userId)
                 ->where('course_id', $course->id)
                 ->exists();
+
+            $userQuizResult = UserQuizResult::where('user_id', $userId)
+                ->whereIn('quiz_id', $quizzes->pluck('id'))
+                ->orderByDesc('submitted_at')
+                ->first();
+
+            if ($userQuizResult && $userQuizResult->score >= 100) {
+                $quizCompleted = true;
+                foreach ($quizzes as $quiz) {
+                    foreach ($quiz->questions as $question) {
+                        $correctAnswer = $question->answers->where('is_correct', true)->first();
+                        if ($correctAnswer) {
+                            $selectedAnswers[$question->id] = $correctAnswer->id;
+                            $answerResults[$question->id] = 'correct';
+                        }
+                    }
+                }
+            }
         }
 
-        return view('showquizz', compact('lesson', 'quizzes', 'isEnrolled', 'course'));
+        return view('showquizz', compact(
+            'lesson',
+            'quizzes',
+            'isEnrolled',
+            'course',
+            'userQuizResult',
+            'selectedAnswers',
+            'answerResults',
+            'quizCompleted'
+        ));
     }
 
     public function submitQuiz(Request $request, Quiz $quiz)
     {
+        $userId = Auth::id();
+
+        $existingResult = UserQuizResult::where('user_id', $userId)
+            ->where('quiz_id', $quiz->id)
+            ->where('score', '>=', 100)
+            ->first();
+
+        if ($existingResult) {
+            return redirect()->route('quizzes', $quiz->lesson_id)
+                ->with('error', 'Bạn đã hoàn thành bài kiểm tra này rồi!');
+        }
+
         if (!$request->has('answers')) {
             return redirect()->route('quizzes', $quiz->lesson_id)
                 ->with('error', 'Bạn chưa chọn đáp án nào!');
@@ -112,33 +157,47 @@ class HomeController extends Controller
         $correctAnswers = 0;
         $totalQuestions = $quiz->questions->count();
 
-        foreach ($quiz->questions as $question) {
-            if (isset($request->answers[$question->id])) {
-                $selectedAnswerId = $request->answers[$question->id];
-                $correctAnswer = $question->answers->where('is_correct', true)->first();
-
-                if ($correctAnswer && $correctAnswer->id == $selectedAnswerId) {
-                    $correctAnswers++;
-                }
-            }
-        }
-
-        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
-        $userId = Auth::id();
-
         if (!$userId) {
             return redirect()->route('quizzes', $quiz->lesson_id)
                 ->with('error', 'Bạn cần đăng nhập để làm bài quiz!');
         }
 
-        UserQuizResult::create([
-            'user_id' => $userId,
-            'quiz_id' => $quiz->id,
-            'score' => $score,
-            'submitted_at' => now(),
-        ]);
+        $selectedAnswers = $request->answers;
+        $answerResults = [];
 
-        return redirect()->route('quizzes', $quiz->lesson_id)
-            ->with('success', "Bạn đã trả lời $correctAnswers/$totalQuestions câu! Điểm: $score%");
+        foreach ($quiz->questions as $question) {
+            if (isset($selectedAnswers[$question->id])) {
+                $selectedAnswerId = $selectedAnswers[$question->id];
+                $correctAnswer = $question->answers->where('is_correct', true)->first();
+
+                if ($correctAnswer && $correctAnswer->id == $selectedAnswerId) {
+                    $correctAnswers++;
+                    $answerResults[$question->id] = 'correct';
+                } else {
+                    $answerResults[$question->id] = 'incorrect';
+                }
+            } else {
+                $answerResults[$question->id] = 'unanswered';
+            }
+        }
+
+        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
+
+        $userQuizResult = UserQuizResult::updateOrCreate(
+            ['user_id' => $userId, 'quiz_id' => $quiz->id],
+            ['score' => $score, 'submitted_at' => now()]
+        );
+
+        if ($score >= 100) {
+            return redirect()->route('quizzes', $quiz->lesson_id)
+                ->with('success', "🎉 Chúc mừng! Bạn đã hoàn thành bài kiểm tra với số điểm {$score}%!")
+                ->with('selectedAnswers', $selectedAnswers)
+                ->with('answerResults', $answerResults);
+        } else {
+            return redirect()->route('quizzes', $quiz->lesson_id)
+                ->with('error', "Bạn chỉ đạt {$score}%. Hãy xem lại câu sai.")
+                ->with('selectedAnswers', $selectedAnswers)
+                ->with('answerResults', $answerResults);
+        }
     }
 }
