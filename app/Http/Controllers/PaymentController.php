@@ -58,34 +58,37 @@ class PaymentController extends Controller
 
         $existingPayment = Payment::where('user_id', $user->id)
             ->where('course_id', $request->course_id)
-            ->where('status', 'pending')
             ->first();
 
         if ($existingPayment) {
-            $payment = $existingPayment;
-        } else {
-            Payment::where('user_id', $user->id)
-                ->where('course_id', $request->course_id)
-                ->where('status', 'pending')
-                ->delete();
-
-            $payment = Payment::create([
-                'user_id' => $user->id,
-                'course_id' => $request->course_id,
-                'payment_date' => now(),
-                'amount' => $request->price,
-                'payment_method' => 'VNPay',
-                'status' => 'pending',
-            ]);
+            if ($existingPayment->status === 'success') {
+                return redirect()->route('payment.result', [
+                    'status' => 'already_paid',
+                    'course_id' => $request->course_id,
+                ]);
+            }
+            if ($existingPayment->status === 'pending' || $existingPayment->status === 'failed') {
+                $existingPayment->delete();
+            }
         }
 
-        $vnp_TxnRef = $payment->id;
+        $payment = Payment::create([
+            'user_id' => $user->id,
+            'course_id' => $request->course_id,
+            'payment_date' => now(),
+            'amount' => $request->price,
+            'payment_method' => 'VNPay',
+            'status' => 'pending',
+        ]);
+
+        $randomString = strtoupper(substr(md5(uniqid(rand(), true)), 0, 6)); 
+        $vnp_TxnRef = $payment->id . '_' . $randomString; 
         $vnp_OrderInfo = 'Thanh toán khóa học ' . $request->course_id;
         $vnp_OrderType = 'course_payment';
         $vnp_Amount = $request->price * 100;
         $vnp_Locale = 'vn';
         $vnp_IpAddr = $request->ip();
-        $vnp_CreateDate = now()->format('YmdHis');
+        $vnp_CreateDate = date('YmdHis');
 
         $inputData = [
             "vnp_Version" => "2.1.0",
