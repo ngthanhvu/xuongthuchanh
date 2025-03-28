@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\PostController;
 use App\Models\Lesson;
 
 //Admin
@@ -41,6 +42,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [CourseController::class, 'index'])->name('index');
         Route::get('/create', [CourseController::class, 'create'])->name('create');
         Route::post('/store', [CourseController::class, 'store'])->name('store');
+        
         Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
@@ -98,18 +100,33 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/{answer}', [AnswerController::class, 'update'])->name('update');
         Route::delete('/{answer}', [AnswerController::class, 'destroy'])->name('destroy');
     });
+    //bai viêt
+    Route::prefix('admin/posts')->name('admin.posts.')->group(function () {
+        Route::get('/', [PostController::class, 'index'])->name('index');       
+        Route::get('/create', [PostController::class, 'create'])->name('create');
+        Route::post('/', [PostController::class, 'store'])->name('store');
+        Route::get('/{post}', [PostController::class, 'show'])->name('show');
+        Route::get('/{post}/edit', [PostController::class, 'edit'])->name('edit');
+        Route::put('/{post}', [PostController::class, 'update'])->name('update');
+        Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy');
+    });
+
 });
 //quizz cho người dùng
-// Route hiển thị quiz cho user
 Route::get('/quizzes/{quiz}', [QuizController::class, 'show'])->name('showquizz');
-// Route nộp bài
 Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submitQuiz'])->name('submit.quiz');
 // Route::get('/{quiz}', [QuizController::class, 'show'])->name('show');
-
+Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
+Route::get('/lessons/{id}', [HomeController::class, 'lesson'])->name('lesson');
+
+// Route::get('/lessons/{id}', function () {
+//     $title = "Bài học";
+//     return view('lesson', compact('title'));
+// })->name('lessons');
 
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
@@ -132,10 +149,6 @@ Route::put('/profile/update-password', [UserController::class, 'updatePassword']
 //enrollment
 Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
 
-Route::get('/lessons/{id}', function () {
-    $title = "Bài học";
-    return view('lesson', compact('title'));
-})->name('lessons');
 
 //vnpay
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
@@ -149,3 +162,7 @@ Route::get('/xac-nhan-otp', [UserController::class, 'verifyOtp'])->name('passwor
 Route::post('/xac-nhan-otp', [UserController::class, 'validateOtp'])->name('password.validate-otp');
 Route::get('/dat-lai-mat-khau', [UserController::class, 'showResetForm'])->name('password.reset');
 Route::post('/dat-lai-mat-khau', [UserController::class, 'resetPassword'])->name('password.update');
+//post for user
+Route::get('/post', [PostController::class, 'list'])->name('posts.list');
+Route::get('/post/{id}', [PostController::class, 'showForUser'])->name('post.view');
+

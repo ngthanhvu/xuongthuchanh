@@ -165,24 +165,6 @@ class UserController extends Controller
         return view('auth.forgot-password', compact('title'));
     }
 
-    public function sendResetLink(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|exists:users,email'
-        ], [
-            'email.required' => 'Vui lòng nhập email',
-            'email.email' => 'Email không đúng định dạng',
-            'email.exists' => 'Không tìm thấy tài khoản với email này'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-        $user->sendPasswordResetEmail();
-
-        return redirect()->route('password.verify-otp')
-            ->with('email', $request->email)
-            ->with('success', 'Mã OTP đã được gửi đến email của bạn');
-    }
-
     public function verifyOtp(Request $request)
     {
         $title = 'Xác nhận OTP';
@@ -244,9 +226,31 @@ class UserController extends Controller
 
             $request->session()->forget(['email', 'otp_verified']);
 
-            return redirect()->route('login')->with('success', 'Mật khẩu đã được đặt lại thành công');
+            return redirect()->route('dang-nhap')->with('success', 'Mật khẩu đã được đặt lại thành công');
         }
 
         return back()->with('error', 'Có lỗi xảy ra. Vui lòng thử lại.');
     }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ], [
+            'email.required' => 'Vui lòng nhập email',
+            'email.email' => 'Email không đúng định dạng',
+            'email.exists' => 'Không tìm thấy tài khoản với email này'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        
+        if ($user->sendPasswordResetEmail()) {
+            return redirect()->route('password.verify-otp')
+                ->with('email', $request->email)
+                ->with('success', 'Mã OTP đã được gửi đến email của bạn');
+        } else {
+            return back()->with('error', 'Không thể gửi mã OTP. Vui lòng thử lại sau.');
+        }
+    }
+    
 }

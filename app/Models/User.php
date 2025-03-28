@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Mail;
 
 class User extends Authenticatable
 {
@@ -37,12 +38,31 @@ class User extends Authenticatable
 
     public function sendPasswordResetEmail()
     {
-        $otp = $this->generateResetToken();
+        try {
+            $otp = $this->generateResetToken();
 
-        Mail::send('emails.password-reset', ['otp' => $otp], function($message) {
-            $message->to($this->email)
-                    ->subject('Mã OTP Đặt Lại Mật Khẩu');
-        });
+            Mail::send('emails.password-reset', ['otp' => $otp], function($message) {
+                $message->to($this->email)
+                        ->subject('Mã OTP Đặt Lại Mật Khẩu');
+            });
+
+            // Check if email was actually sent
+            if (count(Mail::failures()) > 0) {
+                \Log::error('Email could not be sent to: ' . $this->email);
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            // Detailed error logging
+            \Log::error('Password reset email failed: ' . $e->getMessage());
+            \Log::error('Email details: ' . json_encode([
+                'to' => $this->email,
+                'otp' => $otp,
+                'trace' => $e->getTraceAsString()
+            ]));
+            return false;
+        }
     }
 
     public function courses()

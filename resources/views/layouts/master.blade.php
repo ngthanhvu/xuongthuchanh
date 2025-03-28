@@ -307,7 +307,7 @@
                             <a class="nav-link" href="#">Lộ trình</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Bài viết</a>
+                            <a class="nav-link" href="/post">Bài viết</a>
                         </li>
                         @if (Auth::check() && Auth::user()->role === 'admin')
                             <li class="nav-item">
@@ -338,7 +338,7 @@
                                                     <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course thumbnail">
                                                     <div class="course-info">
                                                         <h6>{{ $course->title }}</h6>
-                                                        <p>Tiến độ <br><a href="{{ route('lessons', ['id' => $course->id]) }}">Bắt đầu học</a></p>
+                                                        {{-- <p>Tiến độ <br><a href="{{ route('lessons', ['id' => $course->id]) }}">Bắt đầu học</a></p> --}}
                                                     </div>
                                                 </li>
                                             @endif
