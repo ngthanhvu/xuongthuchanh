@@ -20,38 +20,38 @@ class HomeController extends Controller
      * @return \Illuminate\View\View
      */
 
-     public function index()
-     {
-         $title = 'Trang chủ';
-         $courses = Course::all();
-         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
-         $userId = Auth::check() ? Auth::id() : null;
-     
-         $enrollmentStatus = [];
-         $links = [];
-     
-         if ($userId) {
-             foreach ($courses as $course) {
-                 $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
-                 $enrollmentStatus[$course->id] = $isEnrolled;
-     
-                 if ($isEnrolled) {
-                     $firstSection = Section::where('course_id', $course->id)->first();
-                     if ($firstSection) {
-                         $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
-                         $lessonId = $firstLesson ? $firstLesson->id : null;
-                         $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
-                     } else {
-                         $links[$course->id] = route('detail', $course->id);
-                     }
-                 } else {
-                     $links[$course->id] = route('detail', $course->id);
-                 }
-             }
-         }
-     
-         return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links'));
-     }
+    public function index()
+    {
+        $title = 'Trang chủ';
+        $courses = Course::all();
+        $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
+        $userId = Auth::check() ? Auth::id() : null;
+
+        $enrollmentStatus = [];
+        $links = [];
+
+        if ($userId) {
+            foreach ($courses as $course) {
+                $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
+                $enrollmentStatus[$course->id] = $isEnrolled;
+
+                if ($isEnrolled) {
+                    $firstSection = Section::where('course_id', $course->id)->first();
+                    if ($firstSection) {
+                        $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
+                        $lessonId = $firstLesson ? $firstLesson->id : null;
+                        $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
+                    } else {
+                        $links[$course->id] = route('detail', $course->id);
+                    }
+                } else {
+                    $links[$course->id] = route('detail', $course->id);
+                }
+            }
+        }
+
+        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links'));
+    }
 
 
     public function detail($course_id)
@@ -103,42 +103,42 @@ class HomeController extends Controller
     }
 
     public function submitQuiz(Request $request, Quiz $quiz)
-{
-    if (!$request->has('answers')) {
-        return redirect()->route('quizzes', $quiz->lesson_id)
-            ->with('error', 'Bạn chưa chọn đáp án nào!');
-    }
+    {
+        if (!$request->has('answers')) {
+            return redirect()->route('quizzes', $quiz->lesson_id)
+                ->with('error', 'Bạn chưa chọn đáp án nào!');
+        }
 
-    $correctAnswers = 0;
-    $totalQuestions = $quiz->questions->count();
+        $correctAnswers = 0;
+        $totalQuestions = $quiz->questions->count();
 
-    foreach ($quiz->questions as $question) {
-        if (isset($request->answers[$question->id])) {
-            $selectedAnswerId = $request->answers[$question->id];
-            $correctAnswer = $question->answers->where('is_correct', true)->first();
+        foreach ($quiz->questions as $question) {
+            if (isset($request->answers[$question->id])) {
+                $selectedAnswerId = $request->answers[$question->id];
+                $correctAnswer = $question->answers->where('is_correct', true)->first();
 
-            if ($correctAnswer && $correctAnswer->id == $selectedAnswerId) {
-                $correctAnswers++;
+                if ($correctAnswer && $correctAnswer->id == $selectedAnswerId) {
+                    $correctAnswers++;
+                }
             }
         }
-    }
 
-    $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
-    $userId = Auth::id();
+        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
+        $userId = Auth::id();
 
-    if (!$userId) {
+        if (!$userId) {
+            return redirect()->route('quizzes', $quiz->lesson_id)
+                ->with('error', 'Bạn cần đăng nhập để làm bài quiz!');
+        }
+
+        UserQuizResult::create([
+            'user_id' => $userId,
+            'quiz_id' => $quiz->id,
+            'score' => $score,
+            'submitted_at' => now(),
+        ]);
+
         return redirect()->route('quizzes', $quiz->lesson_id)
-            ->with('error', 'Bạn cần đăng nhập để làm bài quiz!');
+            ->with('success', "Bạn đã trả lời $correctAnswers/$totalQuestions câu! Điểm: $score%");
     }
-
-    UserQuizResult::create([
-        'user_id' => $userId,
-        'quiz_id' => $quiz->id,
-        'score' => $score,
-        'submitted_at' => now(),
-    ]);
-
-    return redirect()->route('quizzes', $quiz->lesson_id)
-        ->with('success', "Bạn đã trả lời $correctAnswers/$totalQuestions câu! Điểm: $score%");
-}
 }
