@@ -27,12 +27,11 @@
         <div class="course-section">
             <h2>Khóa học Mới <span class="badge bg-primary">Mới</span></h2>
             <div class="row">
-                <!-- Loop through courses -->
                 @foreach ($courses as $course)
                     <div class="col-md-3 mb-4">
                         @php
                             $isEnrolled = isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
-                            $link = $isEnrolled ? route('lesson', $course->id) : route('detail', $course->id);
+                            $link = $links[$course->id] ?? route('detail', $course->id);
                             $buttonText = $isEnrolled ? 'Học ngay' : 'Đăng ký';
                         @endphp
 

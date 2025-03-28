@@ -113,8 +113,10 @@ Route::middleware('check.role:admin')->group(function () {
 
 });
 //quizz cho người dùng
-Route::get('/quizzes/{quiz}', [QuizController::class, 'show'])->name('showquizz');
-Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submitQuiz'])->name('submit.quiz');
+Route::get('/quizzes/{lessonId}', [HomeController::class, 'showQuiz'])->name('quizzes');
+Route::post('/quizzes/{quiz}/submit', [HomeController::class, 'submitQuiz'])->name('submit.quiz');
+
+
 // Route::get('/{quiz}', [QuizController::class, 'show'])->name('show');
 Route::get('/courses/{course}', [CourseController::class, 'show'])->name('courses.show');
 
