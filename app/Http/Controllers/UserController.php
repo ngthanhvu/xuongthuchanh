@@ -322,21 +322,10 @@ class UserController extends Controller
         }
     }
 
-
     public function updateRole(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-
-        // Ngăn chặn thay đổi role của chính mình hoặc admin khác
-        if ($user->id === Auth::id() || $user->role === 'admin') {
-            return back()->with('error', 'Không được phép thay đổi role của admin hoặc chính mình');
-        }
-
-        $user->role = $request->role;
-        $user->save();
         $currentUser = Auth::user();
         $targetUser = User::findOrFail($id);
-
 
         if ($currentUser->role === 'owner') {
             if ($targetUser->role === 'owner') {

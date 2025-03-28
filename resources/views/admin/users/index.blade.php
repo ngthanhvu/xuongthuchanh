@@ -72,7 +72,6 @@
                         </td>
                         <td class="tw-px-4 tw-text-center tw-space-x-1">
                             @if(Auth::user()->id !== $user->id)
-                                <!-- OWNER: Có thể thay đổi user ↔ admin (trừ owner khác) -->
                                 @if(Auth::user()->role == 'owner' && $user->role != 'owner')
                                     <div class="dropdown d-inline-block">
                                         <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" 
@@ -97,7 +96,6 @@
                                         </ul>
                                     </div>
                                 
-                                <!-- ADMIN: Có thể thay đổi user ↔ admin -->
                                 @elseif(Auth::user()->role == 'admin' && $user->role != 'owner')
                                     <div class="dropdown d-inline-block">
                                         <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" 
@@ -123,7 +121,6 @@
                                     </div>
                                 @endif
 
-                                <!-- Nút xóa -->
                                 @if(($user->role == 'user' && Auth::user()->role == 'admin') || 
                                     (Auth::user()->role == 'owner' && $user->role != 'owner'))
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
@@ -153,8 +150,6 @@
             </tbody>
         </table>
     </div>
-
-    <!-- Pagination -->
     @if($users->hasPages())
     <div class="tw-flex tw-justify-between tw-items-center tw-mt-4">
         <div class="tw-text-sm tw-text-gray-600">
