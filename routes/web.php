@@ -131,8 +131,10 @@ Route::get('/lessons/{id}', [HomeController::class, 'lesson'])->name('lesson');
 Route::get('/dang-nhap', function () {
     $title = "Đăng nhập";
     return view('auth.login', compact('title'));
-});
-Route::post('/dang-nhap', [UserController::class, 'login']);
+})->name('login');
+
+Route::post('/dang-nhap', [UserController::class, 'login'])->name('login.submit');
+
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/register', [UserController::class, 'register']);
 Route::get('/register', function () {
@@ -166,3 +168,9 @@ Route::post('/dat-lai-mat-khau', [UserController::class, 'resetPassword'])->name
 Route::get('/post', [PostController::class, 'list'])->name('posts.list');
 Route::get('/post/{id}', [PostController::class, 'showForUser'])->name('post.view');
 
+//dang nhap voi google va facebook
+Route::get('/auth/google', [UserController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [UserController::class, 'handleGoogleCallback']);
+
+Route::get('/auth/facebook', [UserController::class, 'redirectToFacebook']);
+Route::get('/auth/facebook/callback', [UserController::class, 'handleFacebookCallback']);

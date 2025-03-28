@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
+use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
 {
@@ -54,9 +55,10 @@ class UserController extends Controller
         ]);
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect('/');
+            $request->session()->regenerate(); // Regenerate session for security
+            return redirect()->intended('/')->with('success', 'Đăng nhập thành công');
         } else {
-            return back()->with('error', 'Email hoặc mật khẩu không đúng');
+            return back()->withInput($request->only('email'))->with('error', 'Email hoặc mật khẩu không đúng');
         }
     }
 
@@ -165,6 +167,28 @@ class UserController extends Controller
         return view('auth.forgot-password', compact('title'));
     }
 
+    public function sendResetLink(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ], [
+            'email.required' => 'Vui lòng nhập email',
+            'email.email' => 'Email không đúng định dạng',
+            'email.exists' => 'Không tìm thấy tài khoản với email này'
+        ]);
+    
+        $request->session()->forget(['email', 'otp_verified']);
+    
+        $user = User::where('email', $request->email)->first();
+        
+        $user->sendPasswordResetEmail();
+    
+        $request->session()->put('email', $request->email);
+    
+        return redirect()->route('password.verify-otp')
+            ->with('success', 'Mã OTP đã được gửi đến email của bạn');
+    }
+
     public function verifyOtp(Request $request)
     {
         $title = 'Xác nhận OTP';
@@ -182,13 +206,26 @@ class UserController extends Controller
         ]);
 
         $email = $request->session()->get('email');
+        
+        if (!$email) {
+            return redirect()->route('password.forgot')
+                ->with('error', 'Phiên làm việc đã hết hạn. Vui lòng thực hiện lại quy trình đặt lại mật khẩu.');
+        }
+
         $user = User::where('email', $email)->first();
 
-        if (!$user || !$user->verifyResetToken($request->otp)) {
-            return back()->with('error', 'Mã OTP không hợp lệ hoặc đã hết hạn');
+        if (!$user) {
+            return redirect()->route('password.forgot')
+                ->with('error', 'Không tìm thấy tài khoản');
+        }
+
+        if (!$user->verifyResetToken($request->otp)) {
+            return redirect()->route('password.verify-otp')
+                ->with('error', 'Mã OTP không hợp lệ hoặc đã hết hạn');
         }
 
         $request->session()->put('otp_verified', true);
+        
         return redirect()->route('password.reset');
     }
 
@@ -226,31 +263,67 @@ class UserController extends Controller
 
             $request->session()->forget(['email', 'otp_verified']);
 
-            return redirect()->route('dang-nhap')->with('success', 'Mật khẩu đã được đặt lại thành công');
+            return redirect()->route('login')->with('success', 'Mật khẩu đã được đổi thành công. Vui lòng đăng nhập.');
         }
 
         return back()->with('error', 'Có lỗi xảy ra. Vui lòng thử lại.');
     }
 
-    public function sendResetLink(Request $request)
+    // Phương thức đăng nhập Google
+    public function redirectToGoogle()
     {
-        $request->validate([
-            'email' => 'required|email|exists:users,email'
-        ], [
-            'email.required' => 'Vui lòng nhập email',
-            'email.email' => 'Email không đúng định dạng',
-            'email.exists' => 'Không tìm thấy tài khoản với email này'
-        ]);
+        return Socialite::driver('google')->redirect();
+    }
 
-        $user = User::where('email', $request->email)->first();
-        
-        if ($user->sendPasswordResetEmail()) {
-            return redirect()->route('password.verify-otp')
-                ->with('email', $request->email)
-                ->with('success', 'Mã OTP đã được gửi đến email của bạn');
-        } else {
-            return back()->with('error', 'Không thể gửi mã OTP. Vui lòng thử lại sau.');
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+            
+            // Tìm hoặc tạo user
+            $user = User::firstOrCreate(
+                ['email' => $googleUser->email],
+                [
+                    'username' => $googleUser->name,
+                    'password' => bcrypt(uniqid()), // Mật khẩu ngẫu nhiên
+                    'avatar' => $googleUser->avatar
+                ]
+            );
+
+            Auth::login($user);
+            
+            return redirect('/')->with('success', 'Đăng nhập bằng Google thành công');
+        } catch (\Exception $e) {
+            return redirect('/dang-nhap')->with('error', 'Đăng nhập bằng Google thất bại');
         }
     }
-    
+
+    // Phương thức đăng nhập Facebook
+    public function redirectToFacebook()
+    {
+        return Socialite::driver('facebook')->redirect();
+    }
+
+    public function handleFacebookCallback()
+    {
+        try {
+            $facebookUser = Socialite::driver('facebook')->user();
+            
+            // Tìm hoặc tạo user
+            $user = User::firstOrCreate(
+                ['email' => $facebookUser->email],
+                [
+                    'username' => $facebookUser->name,
+                    'password' => bcrypt(uniqid()), // Mật khẩu ngẫu nhiên
+                    'avatar' => $facebookUser->avatar
+                ]
+            );
+
+            Auth::login($user);
+            
+            return redirect('/')->with('success', 'Đăng nhập bằng Facebook thành công');
+        } catch (\Exception $e) {
+            return redirect('/dang-nhap')->with('error', 'Đăng nhập bằng Facebook thất bại');
+        }
+    }
 }

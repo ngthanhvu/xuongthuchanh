@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 class User extends Authenticatable
 {
@@ -25,8 +25,28 @@ class User extends Authenticatable
 
     public function verifyResetToken($token)
     {
-        return $this->reset_token === $token && 
-               $this->reset_token_expires_at > now();
+        // Kiểm tra xem token có tồn tại không
+        if (!$this->reset_token) {
+            return false;
+        }
+
+        // Kiểm tra token có khớp không
+        if ($this->reset_token !== $token) {
+            return false;
+        }
+
+        // Kiểm tra token có còn hiệu lực không
+        $isValid = $this->reset_token_expires_at && 
+                $this->reset_token_expires_at > now();
+
+        // Nếu token hợp lệ, có thể muốn xóa token để tránh sử dụng lại
+        if ($isValid) {
+            // Không xóa token ngay lập tức để người dùng có thể thử lại
+            // Sẽ xóa sau khi đặt lại mật khẩu thành công
+            return true;
+        }
+
+        return false;
     }
 
     public function clearResetToken()
@@ -38,31 +58,17 @@ class User extends Authenticatable
 
     public function sendPasswordResetEmail()
     {
-        try {
-            $otp = $this->generateResetToken();
+        // Xóa token cũ trước khi tạo mới
+        $this->clearResetToken();
 
-            Mail::send('emails.password-reset', ['otp' => $otp], function($message) {
-                $message->to($this->email)
-                        ->subject('Mã OTP Đặt Lại Mật Khẩu');
-            });
+        // Tạo OTP mới
+        $otp = $this->generateResetToken();
 
-            // Check if email was actually sent
-            if (count(Mail::failures()) > 0) {
-                \Log::error('Email could not be sent to: ' . $this->email);
-                return false;
-            }
-
-            return true;
-        } catch (\Exception $e) {
-            // Detailed error logging
-            \Log::error('Password reset email failed: ' . $e->getMessage());
-            \Log::error('Email details: ' . json_encode([
-                'to' => $this->email,
-                'otp' => $otp,
-                'trace' => $e->getTraceAsString()
-            ]));
-            return false;
-        }
+        // Gửi email
+        Mail::send('emails.password-reset', ['otp' => $otp], function($message) {
+            $message->to($this->email)
+                    ->subject('Mã OTP Đặt Lại Mật Khẩu');
+        });
     }
 
     public function courses()

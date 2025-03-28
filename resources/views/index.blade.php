@@ -1,6 +1,11 @@
 @extends('layouts.master')
 
 @section('content')
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
     <!-- Banner -->
     <div class="banner">
         <div class="content">

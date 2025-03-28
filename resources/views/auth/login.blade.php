@@ -50,9 +50,20 @@
             border: 1px solid #db4437;
         }
     </style>
+
     <div class="container">
         <div class="form-container" id="loginForm">
             <h2 class="text-center mb-4">Đăng Nhập</h2>
+            @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+            @endif
+            @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+            @endif
             <form method="POST" action="/dang-nhap">
                 @csrf
                 <div class="mb-3">
@@ -86,7 +97,7 @@
             <div class="text-center mt-3">
                 <p>Hoặc đăng nhập bằng:</p>
                 <div class="d-flex justify-content-center gap-2">
-                    <a href="#" class="btn btn-facebook social-btn w-100">
+                    <a href="/auth/facebook" class="btn btn-facebook social-btn w-100">
                         <i class="bi bi-facebook me-2"></i> Facebook
                     </a>
                     <a href="/auth/google" class="btn btn-google social-btn w-100">
