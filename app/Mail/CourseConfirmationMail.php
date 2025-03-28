@@ -31,6 +31,7 @@ class CourseConfirmationMail extends Mailable
                     ->with([
                         'courseTitle' => $this->course->title,
                         'courseId' => $this->course->id,
+                        'price' => number_format($this->course->price, 0, ',', '.') . ' VND', 
                     ]);
     }
 }
