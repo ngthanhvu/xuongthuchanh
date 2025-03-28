@@ -11,7 +11,8 @@ use Laravel\Socialite\Facades\Socialite;
 
 class UserController extends Controller
 {
-    public function index ()
+
+    public function index()
     {
         $title = 'Quản lý người dung';
         $users = User::all();
@@ -176,15 +177,15 @@ class UserController extends Controller
             'email.email' => 'Email không đúng định dạng',
             'email.exists' => 'Không tìm thấy tài khoản với email này'
         ]);
-    
+
         $request->session()->forget(['email', 'otp_verified']);
-    
+
         $user = User::where('email', $request->email)->first();
-        
+
         $user->sendPasswordResetEmail();
-    
+
         $request->session()->put('email', $request->email);
-    
+
         return redirect()->route('password.verify-otp')
             ->with('success', 'Mã OTP đã được gửi đến email của bạn');
     }
@@ -206,7 +207,7 @@ class UserController extends Controller
         ]);
 
         $email = $request->session()->get('email');
-        
+
         if (!$email) {
             return redirect()->route('password.forgot')
                 ->with('error', 'Phiên làm việc đã hết hạn. Vui lòng thực hiện lại quy trình đặt lại mật khẩu.');
@@ -225,7 +226,7 @@ class UserController extends Controller
         }
 
         $request->session()->put('otp_verified', true);
-        
+
         return redirect()->route('password.reset');
     }
 
@@ -279,7 +280,7 @@ class UserController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
-            
+
             // Tìm hoặc tạo user
             $user = User::firstOrCreate(
                 ['email' => $googleUser->email],
@@ -291,7 +292,7 @@ class UserController extends Controller
             );
 
             Auth::login($user);
-            
+
             return redirect('/')->with('success', 'Đăng nhập bằng Google thành công');
         } catch (\Exception $e) {
             return redirect('/dang-nhap')->with('error', 'Đăng nhập bằng Google thất bại');
@@ -308,7 +309,7 @@ class UserController extends Controller
     {
         try {
             $facebookUser = Socialite::driver('facebook')->user();
-            
+
             // Tìm hoặc tạo user
             $user = User::firstOrCreate(
                 ['email' => $facebookUser->email],
@@ -320,10 +321,39 @@ class UserController extends Controller
             );
 
             Auth::login($user);
-            
+
             return redirect('/')->with('success', 'Đăng nhập bằng Facebook thành công');
         } catch (\Exception $e) {
             return redirect('/dang-nhap')->with('error', 'Đăng nhập bằng Facebook thất bại');
         }
     }
+    // Thêm vào UserController.php
+    public function updateRole(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+    
+    // Ngăn chặn thay đổi role của chính mình hoặc admin khác
+    if ($user->id === Auth::id() || $user->role === 'admin') {
+        return back()->with('error', 'Không được phép thay đổi role của admin hoặc chính mình');
+    }
+
+    $user->role = $request->role;
+    $user->save();
+
+    return back()->with('success', 'Cập nhật role thành công');
+}
+
+public function destroy($id)
+{
+    $user = User::findOrFail($id);
+    
+    // Ngăn chặn xóa chính mình hoặc admin khác
+    if ($user->id === Auth::id() || $user->role === 'admin') {
+        return back()->with('error', 'Không được phép xóa admin hoặc chính mình');
+    }
+
+    $user->delete();
+
+    return back()->with('success', 'Xóa người dùng thành công');
+}
 }

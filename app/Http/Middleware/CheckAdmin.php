@@ -11,17 +11,19 @@ class CheckAdmin
 {
     /**
      * Handle an incoming request.
-     *
      */
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
-            return redirect('/dang-nhap');
+            return redirect('/dang-nhap')->with('error', 'Vui lòng đăng nhập để tiếp tục');
         }
+        
         $user = Auth::user();
+        
         if ($user->role != 'admin') {
-            abort(404);
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
         }
+        
         return $next($request);
     }
 }

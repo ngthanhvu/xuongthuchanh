@@ -42,7 +42,7 @@ Route::middleware('check.role:admin')->group(function () {
         Route::get('/', [CourseController::class, 'index'])->name('index');
         Route::get('/create', [CourseController::class, 'create'])->name('create');
         Route::post('/store', [CourseController::class, 'store'])->name('store');
-        
+
         Route::get('/edit/{id}', [CourseController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
@@ -68,7 +68,11 @@ Route::middleware('check.role:admin')->group(function () {
         Route::delete('/delete/{id}', [LessonController::class, 'delete'])->name('delete');
     });
     //user
-    Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::prefix('admin/users')->name('admin.users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::post('/{id}/update-role', [UserController::class, 'updateRole'])->name('update-role');
+        Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+    });
 
     //quizz
     Route::prefix('admin/quizzes')->name('admin.quizzes.')->group(function () {
@@ -102,7 +106,7 @@ Route::middleware('check.role:admin')->group(function () {
     });
     //bai viêt
     Route::prefix('admin/posts')->name('admin.posts.')->group(function () {
-        Route::get('/', [PostController::class, 'index'])->name('index');       
+        Route::get('/', [PostController::class, 'index'])->name('index');
         Route::get('/create', [PostController::class, 'create'])->name('create');
         Route::post('/', [PostController::class, 'store'])->name('store');
         Route::get('/{post}', [PostController::class, 'show'])->name('show');
@@ -110,7 +114,6 @@ Route::middleware('check.role:admin')->group(function () {
         Route::put('/{post}', [PostController::class, 'update'])->name('update');
         Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy');
     });
-
 });
 //quizz cho người dùng
 Route::get('/quizzes/{lessonId}', [HomeController::class, 'showQuiz'])->name('quizzes');
