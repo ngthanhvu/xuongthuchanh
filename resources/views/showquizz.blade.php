@@ -10,7 +10,7 @@
     @endif
 
     <div class="container">
-        <h2>Bài kiểm tra cho: {{ $lesson->title }}</h2>
+        <h2>Bài kiểm tra cho bài học: {{ $lesson->title }}</h2>
 
         @if ($isEnrolled)
             @if ($quizzes->isNotEmpty())
@@ -45,11 +45,11 @@
                                     @endforeach
                                 </ul>
                                 <button type="submit" class="btn btn-primary mt-3">Nộp bài</button>
+                                <a href="{{ route('lesson', $lesson->id) }}" class="btn btn-secondary mt-3">Quay lại</a>
                             </form>
                         </div>
                     </div>
                 @endforeach
-                <a href="{{ route('lesson', $lesson->id) }}" class="btn btn-secondary mt-3">Quay lại</a>
             @else
                 <p>Chưa có bài kiểm tra nào cho bài học này.</p>
             @endif
