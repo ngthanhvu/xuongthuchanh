@@ -18,17 +18,17 @@
         @csrf
         <div class="mb-3">
             <label class="form-label">Tiêu đề</label>
-            <input type="text" name="title" class="form-control" required>
+            <input type="text" name="title" class="form-control" placeholder="Nhập tiêu đề">
         </div>
 
         <div class="mb-3">
             <label class="form-label">Nội dung</label>
-            <textarea id="editor" name="content" class="form-control" rows="5" required></textarea>
+            <textarea id="editor" name="content" class="form-control" rows="5" placeholder="Nhập nội dung"></textarea>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Khóa học</label>
-            <select name="course_id" class="form-control" required>
+            <select name="course_id" class="form-control" placeholder="">
                 <option value="">Chọn khóa học</option>
                 @foreach($courses as $course)
                     <option value="{{ $course->id }}">{{ $course->title }}</option>
