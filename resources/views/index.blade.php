@@ -2,9 +2,22 @@
 
 @section('content')
 @if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
+        <script>
+            iziToast.success({
+                title: 'Thành công',
+                message: '{{ session('success') }}',
+                position: 'topRight'
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            iziToast.error({
+                title: 'Lỗi',
+                message: '{{ session('error') }}',
+                position: 'topRight'
+            });
+        </script>
     @endif
     <!-- Banner -->
     <div class="banner">
