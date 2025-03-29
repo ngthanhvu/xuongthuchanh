@@ -16,10 +16,8 @@ class UserController extends Controller
     public function index()
     {
         $title = 'Quản lý người dùng';
-        $users = User::orderBy('role', 'desc') // Sắp xếp theo role (owner -> admin -> user)
-            ->orderBy('created_at', 'desc')
-            ->paginate(12); // Phân trang 12 item/trang
-
+        $users = User::orderBy('created_at', 'asc')   
+            ->paginate(12);
         return view('admin.users.index', compact('title', 'users'));
     }
     public function register(Request $request)
