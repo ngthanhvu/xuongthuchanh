@@ -56,13 +56,14 @@ class HomeController extends Controller
 
     public function detail($course_id)
     {
+        $title = 'Chi tiết khóa học';
         $course = Course::with('sections.lessons.quizzes')->findOrFail($course_id);
 
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
         $quizzes = $lessons->flatMap->quizzes; // Lấy tất cả quizzes
 
-        return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
+        return view('detail', compact('course', 'sections', 'lessons', 'quizzes', 'title'));
     }
 
     public function loading($course_id)
@@ -71,7 +72,7 @@ class HomeController extends Controller
 
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
-        $quizzes = $lessons->flatMap->quizzes; 
+        $quizzes = $lessons->flatMap->quizzes;
         return view('loading', compact('course', 'sections', 'lessons', 'quizzes'));
     }
 
@@ -93,6 +94,7 @@ class HomeController extends Controller
 
     public function showQuiz($lessonId)
     {
+        $title = "Bài kiểm tra";
         $lesson = Lesson::findOrFail($lessonId);
         $section = $lesson->section;
         $course = $section->course;
@@ -141,7 +143,8 @@ class HomeController extends Controller
             'userQuizResult',
             'selectedAnswers',
             'answerResults',
-            'quizCompleted'
+            'quizCompleted',
+            'title'
         ));
     }
 

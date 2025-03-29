@@ -63,17 +63,17 @@
                                             $selected = $selectedAnswers[$question->id] ?? null;
                                         @endphp
 
-                                        <div class="card mb-3 
-                                            @if($score >= 100)
-                                                border border-success
+                                        <div
+                                            class="card mb-3 
+                                            @if ($score >= 100) border border-success
                                             @elseif($score !== null)
-                                                @if(isset($answerResults[$question->id]) && $answerResults[$question->id] == 'incorrect')
-                                                    border border-danger
-                                                @endif
+                                                @if (isset($answerResults[$question->id]) && $answerResults[$question->id] == 'incorrect')
+                                                    border border-danger @endif
                                             @endif
                                         ">
                                             <div class="card-body">
-                                                <h5 class="card-title">Câu {{ $index + 1 }}: {{ $question->question_text }}</h5>
+                                                <h5 class="card-title">Câu {{ $index + 1 }}:
+                                                    {{ $question->question_text }}</h5>
 
                                                 @if ($question->answers->isNotEmpty())
                                                     <div class="list-group">
@@ -81,18 +81,24 @@
                                                             @php
                                                                 $answerClass = '';
                                                                 if ($score !== null) {
-                                                                    if ($answer->is_correct && $selected == $answer->id) {
+                                                                    if (
+                                                                        $answer->is_correct &&
+                                                                        $selected == $answer->id
+                                                                    ) {
                                                                         $answerClass = 'border border-success';
-                                                                    } elseif ($selected == $answer->id && !$answer->is_correct) {
+                                                                    } elseif (
+                                                                        $selected == $answer->id &&
+                                                                        !$answer->is_correct
+                                                                    ) {
                                                                         $answerClass = 'list-group-item-danger';
                                                                     } elseif ($score >= 100 && $answer->is_correct) {
                                                                         $answerClass = 'list-group-item-success';
                                                                     }
                                                                 }
                                                             @endphp
-                                                            <label class="list-group-item list-group-item-action {{ $answerClass }}">
-                                                                <input type="radio" 
-                                                                    name="answers[{{ $question->id }}]"
+                                                            <label
+                                                                class="list-group-item list-group-item-action {{ $answerClass }}">
+                                                                <input type="radio" name="answers[{{ $question->id }}]"
                                                                     value="{{ $answer->id }}"
                                                                     class="form-check-input me-2"
                                                                     {{ $selected == $answer->id ? 'checked' : '' }}
@@ -109,13 +115,12 @@
                                     @endforeach
                                 </div>
 
-                                <div class="d-flex justify-content-between mt-3">
+                                <div class="d-flex justify-content-between mt-3 mb-3">
                                     @if ($score !== null && $score < 100)
                                         <button type="submit" class="btn btn-primary">Nộp bài</button>
                                     @elseif ($score === null)
                                         <button type="submit" class="btn btn-primary">Nộp bài</button>
                                     @else
-
                                     @endif
                                 </div>
                                 <a href="{{ route('lesson', $lesson->id) }}" class="btn btn-secondary">Quay lại</a>
