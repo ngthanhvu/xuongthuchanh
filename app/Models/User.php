@@ -12,8 +12,20 @@ class User extends Authenticatable
     use HasFactory;
 
     protected $table = 'users';
-    protected $fillable = ['username', 'email', 'password', 'fullname', 'avatar', 'role', 'token', 'reset_token', 'reset_token_expires_at'];
-
+    protected $fillable = [
+        'username',
+        'email',
+        'password',
+        'fullname',
+        'avatar',
+        'role',
+        'token',
+        'reset_token',
+        'reset_token_expires_at',
+        'is_teacher_requested', // true/false
+        'teacher_request_status', // 'pending', 'approved', 'rejected'
+        'teacher_request_message' // Lý do từ chối (nếu có)
+    ];
     public function generateResetToken()
     {
         $this->reset_token = sprintf("%06d", mt_rand(100000, 999999));
@@ -36,8 +48,8 @@ class User extends Authenticatable
         }
 
         // Kiểm tra token có còn hiệu lực không
-        $isValid = $this->reset_token_expires_at && 
-                $this->reset_token_expires_at > now();
+        $isValid = $this->reset_token_expires_at &&
+            $this->reset_token_expires_at > now();
 
         // Nếu token hợp lệ, có thể muốn xóa token để tránh sử dụng lại
         if ($isValid) {
@@ -65,9 +77,9 @@ class User extends Authenticatable
         $otp = $this->generateResetToken();
 
         // Gửi email
-        Mail::send('emails.password-reset', ['otp' => $otp], function($message) {
+        Mail::send('emails.password-reset', ['otp' => $otp], function ($message) {
             $message->to($this->email)
-                    ->subject('Mã OTP Đặt Lại Mật Khẩu');
+                ->subject('Mã OTP Đặt Lại Mật Khẩu');
         });
     }
 
@@ -100,5 +112,19 @@ class User extends Authenticatable
     public function quizResults()
     {
         return $this->hasMany(UserQuizResult::class);
+    }
+    public function sendTeacherRequestNotification()
+    {
+        Mail::to($this->email)->send(new TeacherRequestSubmitted($this));
+    }
+
+    public function sendTeacherApprovalNotification()
+    {
+        Mail::to($this->email)->send(new TeacherRequestApproved($this));
+    }
+
+    public function sendTeacherRejectionNotification()
+    {
+        Mail::to($this->email)->send(new TeacherRequestRejected($this));
     }
 }
