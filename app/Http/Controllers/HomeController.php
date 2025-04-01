@@ -9,6 +9,7 @@ use App\Models\Section;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use App\Models\UserQuizResult;
+use App\Models\UserCourseProgress;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -26,6 +27,7 @@ class HomeController extends Controller
         $courses = Course::all();
         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
         $userId = Auth::check() ? Auth::id() : null;
+        $courseProgress = [];
 
         $enrollmentStatus = [];
         $links = [];
@@ -50,20 +52,26 @@ class HomeController extends Controller
             }
         }
 
-        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links'));
+        if ($userId) {
+            foreach ($courses as $course) {
+                $progress = UserCourseProgress::where('course_id', $course->id)->where('user_id', $userId)->first();
+                $courseProgress[$course->id] = $progress ? $progress->progress : 0;
+            }
+        }
+
+        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress'));
     }
 
 
     public function detail($course_id)
     {
-        $title = 'Chi tiết khóa học';
         $course = Course::with('sections.lessons.quizzes')->findOrFail($course_id);
 
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
         $quizzes = $lessons->flatMap->quizzes; // Lấy tất cả quizzes
 
-        return view('detail', compact('course', 'sections', 'lessons', 'quizzes', 'title'));
+        return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
 
     public function loading($course_id)
@@ -78,18 +86,97 @@ class HomeController extends Controller
 
     public function lesson($lesson_id)
     {
-        $lessons = Lesson::findOrFail($lesson_id);
-        $sections = $lessons->section;
-        $course = $sections->course;
+        $lesson = Lesson::findOrFail($lesson_id);
+        $section = $lesson->section;
+        $course = $section->course;
+
         $quizzes = Quiz::where('lesson_id', $lesson_id)->get();
         $sections = Section::where('course_id', $course->id)->with('lessons')->get();
 
         $allLessons = Lesson::whereIn('section_id', $sections->pluck('id'))->orderBy('id')->get();
-        $currentIndex = $allLessons->search(fn($item) => $item->id == $lessons->id);
+        $currentIndex = $allLessons->search(fn($item) => $item->id == $lesson->id);
         $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
         $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
 
-        return view('lesson', compact('lessons', 'sections', 'prevLesson', 'nextLesson', 'quizzes'));
+        $totalLessons = $sections->sum(fn($section) => $section->lessons->count());
+
+        $courseProgress = UserCourseProgress::firstOrCreate(
+            ['user_id' => Auth::id(), 'course_id' => $course->id],
+            ['progress' => 0, 'status' => 'in_progress', 'completed_lessons' => json_encode([])]
+        );
+
+        $progress = $courseProgress->progress;
+
+        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson', 'quizzes', 'progress'));
+    }
+
+    public function completeLesson(Request $request, Lesson $lesson)
+    {
+        $user = Auth::user();
+        $course = $lesson->section->course;
+
+        $sections = Section::where('course_id', $course->id)->with('lessons')->get();
+        $totalLessons = $sections->sum(fn($section) => $section->lessons->count());
+
+        $courseProgress = UserCourseProgress::firstOrCreate(
+            ['user_id' => $user->id, 'course_id' => $course->id],
+            ['progress' => 0, 'status' => 'in_progress', 'completed_lessons' => json_encode([])]
+        );
+
+        $completedLessons = json_decode($courseProgress->completed_lessons, true) ?? [];
+        if (!in_array($lesson->id, $completedLessons)) {
+            $completedLessons[] = $lesson->id;
+            $newProgress = $totalLessons > 0 ? round((count($completedLessons) / $totalLessons) * 100) : 0;
+
+            $courseProgress->update([
+                'progress' => min($newProgress, 100),
+                'status' => $newProgress >= 100 ? 'completed' : 'in_progress',
+                'completed_at' => $newProgress >= 100 ? now() : $courseProgress->completed_at,
+                'completed_lessons' => json_encode($completedLessons),
+            ]);
+        }
+
+        return redirect()->route('lesson', $lesson->id)->with('success', 'Bài học đã hoàn thành!');
+    }
+
+    public function nextLesson(Request $request, $next_lesson_id = null)
+    {
+        $currentLessonId = $request->input('current_lesson_id');
+        $currentLesson = Lesson::findOrFail($currentLessonId);
+        $course = $currentLesson->section->course;
+
+        $sections = Section::where('course_id', $course->id)->with('lessons')->get();
+        $allLessons = Lesson::whereIn('section_id', $sections->pluck('id'))->orderBy('id')->get();
+        $totalLessons = $sections->sum(fn($section) => $section->lessons->count());
+        $currentIndex = $allLessons->search(fn($item) => $item->id == $currentLesson->id);
+        $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
+
+        $courseProgress = UserCourseProgress::firstOrCreate(
+            ['user_id' => Auth::id(), 'course_id' => $course->id],
+            ['progress' => 0, 'status' => 'in_progress', 'completed_lessons' => json_encode([])]
+        );
+
+        $completedLessons = json_decode($courseProgress->completed_lessons, true) ?? [];
+        if (!in_array($currentLesson->id, $completedLessons)) {
+            $completedLessons[] = $currentLesson->id;
+            $newProgress = $totalLessons > 0 ? round((count($completedLessons) / $totalLessons) * 100) : 0;
+
+            $courseProgress->update([
+                'progress' => min($newProgress, 100),
+                'status' => $newProgress >= 100 ? 'completed' : 'in_progress',
+                'completed_at' => $newProgress >= 100 ? now() : $courseProgress->completed_at,
+                'completed_lessons' => json_encode($completedLessons),
+            ]);
+        }
+
+        // Kiểm tra bài cuối cùng
+        if (!$nextLesson) {
+            return redirect()->route('lesson', $currentLesson->id)
+                ->with('success', 'Bạn đã hoàn thành toàn bộ khóa học!');
+        }
+
+        return redirect()->route('lesson', $next_lesson_id)
+            ->with('success', 'Đã chuyển sang bài học tiếp theo!');
     }
 
     public function showQuiz($lessonId)
@@ -147,6 +234,7 @@ class HomeController extends Controller
             'title'
         ));
     }
+
 
     public function submitQuiz(Request $request, Quiz $quiz)
     {

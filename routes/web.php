@@ -188,3 +188,7 @@ Route::get('/login/google/callback', [UserController::class, 'handleGoogleCallba
 
 Route::get('/auth/facebook', [UserController::class, 'redirectToFacebook']);
 Route::get('/auth/facebook/callback', [UserController::class, 'handleFacebookCallback']);
+
+//tien do hoc tap
+Route::post('lesson/{lesson}/complete', [HomeController::class, 'completeLesson'])->name('completeLesson')->middleware('auth');
+Route::post('/lesson/next/{next_lesson_id?}', [HomeController::class, 'nextLesson'])->name('nextLesson');

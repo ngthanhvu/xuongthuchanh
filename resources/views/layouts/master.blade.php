@@ -335,16 +335,29 @@
                                                 @php
                                                     $course = $courses->firstWhere('id', $enrollment->course_id);
                                                 @endphp
-                                                @if ($course)
-                                                    <li class="course-item">
-                                                        <img src="{{ asset('storage/' . $course->thumbnail) }}"
-                                                            alt="Course thumbnail">
-                                                        <div class="course-info">
-                                                            <h6>{{ $course->title }}</h6>
-                                                            {{-- <p>Tiến độ <br><a href="{{ route('lessons', ['id' => $course->id]) }}">Bắt đầu học</a></p> --}}
-                                                        </div>
-                                                    </li>
-                                                @endif
+                                                
+                                                @foreach ($courses as $course)
+                                                <li class="course-item">
+                                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course thumbnail">
+                                                    <div class="course-info">
+                                                        <h6>{{ $course->title }}</h6>
+                                                        <p>Tiến độ
+                                                            <div class="progress" style="width: 100%;">
+                                                                <div class="progress-bar" role="progressbar"
+                                                                     style="width: {{ $courseProgress[$course->id] }}%;"
+                                                                     aria-valuenow="{{ $courseProgress[$course->id] }}"
+                                                                     aria-valuemin="0" aria-valuemax="100">
+                                                                    {{ $courseProgress[$course->id] }}%
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <a href="{{ $links[$course->id] }}">Bắt đầu học</a>
+                                                        </p>
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                            
+                                            
                                             @endforeach
                                         </ul>
                                     @endif
