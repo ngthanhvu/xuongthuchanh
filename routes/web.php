@@ -157,6 +157,7 @@ Route::get('/register', function () {
 
 
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+
 Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.delete.avatar');
 Route::get('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
@@ -188,3 +189,17 @@ Route::get('/login/google/callback', [UserController::class, 'handleGoogleCallba
 
 Route::get('/auth/facebook', [UserController::class, 'redirectToFacebook']);
 Route::get('/auth/facebook/callback', [UserController::class, 'handleFacebookCallback']);
+
+Route::get('/teacher-request', [UserController::class, 'showTeacherRequestForm'])
+    ->name('teacher.request.form');
+
+Route::post('/request-teacher', [UserController::class, 'requestTeacher'])
+    ->name('request.teacher');
+Route::middleware(['auth'])->group(function () {});
+Route::prefix('admin/users')->name('admin.users.')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::post('/{id}/update-role', [UserController::class, 'updateRole'])->name('update-role');
+    Route::post('/{id}/approve-teacher', [UserController::class, 'approveTeacherRequest'])->name('approve-teacher');
+    Route::post('/{id}/reject-teacher', [UserController::class, 'rejectTeacherRequest'])->name('reject-teacher');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+});

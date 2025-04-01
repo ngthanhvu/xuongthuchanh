@@ -20,7 +20,7 @@ class CheckAdmin
 
         $user = Auth::user();
 
-        if ($user->role != 'admin' && $user->role != 'owner') {
+        if ($user->role != 'admin' && $user->role != 'owner' ) {
             return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
         }
 
