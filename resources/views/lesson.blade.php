@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $lessons->title }}</title>
+    <title>{{ $lesson->title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -85,22 +85,26 @@
     <div class="header d-flex justify-content-between align-items-center">
         <a href="{{ route('home') }}" class="text-decoration-none text-white"><i class="fa-solid fa-arrow-left"></i>
             Trang chủ</a>
-        <div>{{ $lessons->title }}</div>
+        <div>{{ $lesson->title }}</div>
         <div>{{ $sections->sum(fn($section) => $section->lessons->count()) }} bài học</div>
+        <div class="progress" style="width: 200px;">
+            <div class="progress-bar" role="progressbar" style="width: {{ $progress }}%"
+                aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100">
+                {{ $progress }}%
+            </div>
+        </div>
     </div>
 
     <div class="container-fluid">
         <div class="row">
-            
             <div class="col-md-8 p-0">
                 <div class="iframe-section">
-                    @if ($lessons->file_url)
+                    @if ($lesson->file_url)
                         <iframe width="100%" height="100%"
-                            src="{{ preg_replace('/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', 'https://www.youtube.com/embed/$1', $lessons->file_url) }}?controls=0&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3&fs=1"
-                            title="{{ $lessons->title }}" frameborder="0"
+                            src="{{ preg_replace('/^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', 'https://www.youtube.com/embed/$1', $lesson->file_url) }}?controls=0&rel=0&showinfo=0&modestbranding=1&iv_load_policy=3&fs=1"
+                            title="{{ $lesson->title }}" frameborder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
+                            allowfullscreen></iframe>
                     @else
                         <img src="{{ asset('path-to-iframe-placeholder.jpg') }}" alt="Video Placeholder">
                     @endif
@@ -112,17 +116,36 @@
                         <button class="btn btn-light me-2" disabled>BÀI TRƯỚC</button>
                     @endif
                     @if ($nextLesson)
-                        <a href="{{ route('lesson', $nextLesson->id) }}" class="btn btn-primary">BÀI TIẾP THEO</a>
+                        <form action="{{ route('nextLesson', $nextLesson->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            <input type="hidden" name="current_lesson_id" value="{{ $lesson->id }}">
+                            <button type="submit" class="btn btn-primary">BÀI TIẾP THEO</button>
+                        </form>
                     @else
-                        <button class="btn btn-primary" disabled>BÀI TIẾP THEO</button>
+                        <form action="{{ route('nextLesson') }}" method="POST" class="d-inline">
+                            @csrf
+                            <input type="hidden" name="current_lesson_id" value="{{ $lesson->id }}">
+                            <button type="submit" class="btn btn-primary">HOÀN THÀNH KHÓA HỌC</button>
+                        </form>
                     @endif
+
+                    {{-- <form action="{{ route('completeLesson', $lesson->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success ms-2">HOÀN THÀNH BÀI HỌC</button>
+                    </form> --}}
                 </div>
+
+                @if (session('success'))
+                    <div class="alert alert-success mt-3">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
                 <div class="footer d-flex justify-content-between align-items-center">
                     <div>
-                        <h5>{{ $lessons->title }}</h5>
-                        <p>Cập nhật {{ $lessons->updated_at->format('F Y') }}</p>
-                        <p class="mt-3">{{ $lessons->content }}</p>
+                        <h5>{{ $lesson->title }}</h5>
+                        <p>Cập nhật {{ $lesson->updated_at->format('F Y') }}</p>
+                        <p class="mt-3">{{ $lesson->content }}</p>
                     </div>
                 </div>
             </div>
@@ -147,24 +170,22 @@
                                     data-bs-parent="#lessonAccordion">
                                     <div class="accordion-body">
                                         @if ($section->lessons->isNotEmpty())
-                                            @foreach ($section->lessons as $lessonsItem)
-                                                <a href="{{ route('lesson', $lessonsItem->id) }}"
-                                                    class="lesson-item {{ $lessonsItem->id == $lessons->id ? 'active' : '' }}">
-                                                    {{ $lessonsItem->title }}
-                                                    {{-- <span class="float-end">11:35</span> --}}
-                                                    <!-- Có thể thay bằng thời lượng thực tế -->
+                                            @foreach ($section->lessons as $lessonItem)
+                                                <a href="{{ route('lesson', $lessonItem->id) }}"
+                                                    class="lesson-item {{ $lessonItem->id == $lesson->id ? 'active' : '' }}">
+                                                    {{ $lessonItem->title }}
                                                 </a>
-                                                @if ($lessonsItem->quizzes->isNotEmpty())
-                                                    @foreach ($lessonsItem->quizzes as $quiz)
+                                                @if ($lessonItem->quizzes->isNotEmpty())
+                                                    @foreach ($lessonItem->quizzes as $quiz)
                                                         <div class="ms-3">
-                                                            @if (Auth::check() && Auth::user()->hasEnrolled($lessonsItem->section->course->id))
-                                                                <a href="{{ route('quizzes', $lessonsItem->id) }}"
+                                                            @if (Auth::check() && Auth::user()->hasEnrolled($lessonItem->section->course->id))
+                                                                <a href="{{ route('quizzes', $lessonItem->id) }}"
                                                                     class="lesson-item">
                                                                     Quiz: {{ $quiz->title }}
                                                                     @if ($quiz->isCompletedBy(Auth::user()))
                                                                         <span class="float-end text-success">
                                                                             Điểm:
-                                                                            {{number_format($quiz->getUserScore(Auth::user()), 0)}}/100
+                                                                            {{ number_format($quiz->getUserScore(Auth::user()), 0) }}/100
                                                                         </span>
                                                                     @else
                                                                         <span class="float-end text-danger">

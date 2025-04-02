@@ -16,7 +16,7 @@
         
         <div class="mb-3">
             <label for="answer_text" class="form-label">Câu trả lời</label>
-            <input type="text" name="answer_text" id="answer_text" class="form-control" required>
+            <input type="text" name="answer_text" id="answer_text" class="form-control" placeholder="Nhập câu trả lời">
         </div>
 
         <div class="mb-3">

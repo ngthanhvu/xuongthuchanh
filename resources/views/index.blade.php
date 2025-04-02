@@ -1,10 +1,31 @@
 @extends('layouts.master')
 
 @section('content')
-@if (session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
+    <style>
+        .ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+    </style>
+    @if (session('success'))
+        <script>
+            iziToast.success({
+                title: 'Thành công',
+                message: '{{ session('success') }}',
+                position: 'topRight'
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            iziToast.error({
+                title: 'Lỗi',
+                message: '{{ session('error') }}',
+                position: 'topRight'
+            });
+        </script>
     @endif
     <!-- Banner -->
     <div class="banner">
@@ -45,7 +66,7 @@
                             </a>
                             <div class="card-body">
                                 <div class="title">
-                                    <h3 class="fs-5">{{ $course->title }}</h3>
+                                    <h3 class="fs-5 ellipsis">{{ $course->title }}</h3>
                                 </div>
                                 <div class="meta d-flex justify-content-between">
                                     <span class="text-decoration-line-through">
