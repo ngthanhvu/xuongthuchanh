@@ -23,46 +23,47 @@ class HomeController extends Controller
      * @return \Illuminate\View\View
      */
 
-    public function index()
-    {
-        $title = 'Trang chủ';
-        $courses = Course::all();
-        $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
-        $userId = Auth::check() ? Auth::id() : null;
-        $courseProgress = [];
-
-        $enrollmentStatus = [];
-        $links = [];
-
-        if ($userId) {
-            foreach ($courses as $course) {
-                $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
-                $enrollmentStatus[$course->id] = $isEnrolled;
-
-                if ($isEnrolled) {
-                    $firstSection = Section::where('course_id', $course->id)->first();
-                    if ($firstSection) {
-                        $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
-                        $lessonId = $firstLesson ? $firstLesson->id : null;
-                        $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
-                    } else {
-                        $links[$course->id] = route('detail', $course->id);
-                    }
-                } else {
-                    $links[$course->id] = route('detail', $course->id);
-                }
-            }
-        }
-
-        if ($userId) {
-            foreach ($courses as $course) {
-                $progress = UserCourseProgress::where('course_id', $course->id)->where('user_id', $userId)->first();
-                $courseProgress[$course->id] = $progress ? $progress->progress : 0;
-            }
-        }
-
-        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress'));
-    }
+     public function index()
+     {
+         $title = 'Trang chủ';
+         $courses = Course::all();
+         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
+         $userId = Auth::check() ? Auth::id() : null;
+         $courseProgress = [];
+ 
+         $enrollmentStatus = [];
+         $links = [];
+         $posts = Post::with('course')->latest()->get();
+ 
+         if ($userId) {
+             foreach ($courses as $course) {
+                 $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
+                 $enrollmentStatus[$course->id] = $isEnrolled;
+ 
+                 if ($isEnrolled) {
+                     $firstSection = Section::where('course_id', $course->id)->first();
+                     if ($firstSection) {
+                         $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
+                         $lessonId = $firstLesson ? $firstLesson->id : null;
+                         $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
+                     } else {
+                         $links[$course->id] = route('detail', $course->id);
+                     }
+                 } else {
+                     $links[$course->id] = route('detail', $course->id);
+                 }
+             }
+         }
+ 
+         if ($userId) {
+             foreach ($courses as $course) {
+                 $progress = UserCourseProgress::where('course_id', $course->id)->where('user_id', $userId)->first();
+                 $courseProgress[$course->id] = $progress ? $progress->progress : 0;
+             }
+         }
+ 
+         return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'posts'));
+     }
 
 
     public function detail($course_id)

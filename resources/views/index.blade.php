@@ -95,4 +95,56 @@
             </div>
         </div>
     </div>
+    <div class="container mt-5">
+        <div class="course-section">
+            <h2>Khóa học Mới <span class="badge bg-primary">Mới</span></h2>
+            <div class="col-12 text-center">
+                <p class="lead text-muted">Khám phá các bài viết mới nhất của chúng tôi</p>
+            </div>
+        </div>
+    
+        <div class="row g-4">
+            @forelse ($posts as $post)
+                <div class="col-md-4 col-sm-6">
+                    <a href="{{ route('post.view', $post->id) }}" class="text-decoration-none">
+                        <div class="card course-card h-100 shadow-sm border-0">
+                            @if ($post->course && $post->course->thumbnail)
+                                <div class="position-relative overflow-hidden">
+                                    <img src="{{ asset('storage/' . $post->course->thumbnail) }}" class="card-img-top"
+                                        alt="{{ $post->course->title }}" 
+                                        style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1">Mới</span>
+                                </div>
+                            @else
+                                <div class="position-relative">
+                                    <img src="{{ asset('images/default-thumbnail.jpg') }}" class="card-img-top" 
+                                        alt="Default thumbnail" 
+                                        style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+                                </div>
+                            @endif
+                            <div class="card-body">
+                                <div class="title">
+                                    <h3 class="fs-5 ellipsis">{{ Str::limit($post->title, 50) }}</h3>
+                                </div>
+                                <div class="meta d-flex justify-content-between">
+                                    <span><i class="fas fa-book"></i> {{ $post->course->title ?? 'Không có khóa học' }}</span>
+                                    <span><i class="fas fa-clock"></i> {{ $post->created_at->format('d/m/Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <span class="btn btn-outline-primary btn-sm">Đọc thêm</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            @empty
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Hiện tại chưa có bài viết nào.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+    
+    <br>
+    <br>
 @endsection
