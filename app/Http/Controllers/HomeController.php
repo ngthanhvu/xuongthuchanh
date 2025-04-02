@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\UserQuizResult;
 use App\Models\UserCourseProgress;
 
+use \Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -300,5 +301,22 @@ class HomeController extends Controller
                 ->with('selectedAnswers', $selectedAnswers)
                 ->with('answerResults', $answerResults);
         }
+    }
+
+    public function reveal()
+    {
+        $title = 'Lộ trình học tập';
+        $user = Auth::user();
+        $courses = $user->enrolledCourses()->with('sections.lessons.quizzes')->get();
+        $course = Course::with('sections.lessons.quizzes')->first();
+        foreach ($courses as $course) {
+            if ($course->pivot->status === 'completed' && $course->pivot->completed_at) {
+                $course->pivot->completed_at = Carbon::parse($course->pivot->completed_at);
+            }
+            $course->firstLesson = $course->sections->flatMap->lessons->first();
+
+        }
+
+        return view('reveal', compact('courses', 'course', 'title')); // Hoặc 'reveal'
     }
 }

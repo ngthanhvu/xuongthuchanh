@@ -50,4 +50,17 @@ class Course extends Model
     {
         return $this->hasMany(UserCourseProgress::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_course_progress')
+                    ->withPivot('progress', 'status', 'completed_lessons', 'completed_at')
+                    ->withTimestamps();
+    }
+
+    public function getUserProgress($user)
+    {
+        $progress = $this->users()->where('user_id', $user->id)->first();
+        return $progress ? $progress->pivot->progress : 0;
+    }
 }

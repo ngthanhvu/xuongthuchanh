@@ -192,8 +192,10 @@ Route::get('/auth/facebook/callback', [UserController::class, 'handleFacebookCal
 //tien do hoc tap
 Route::post('lesson/{lesson}/complete', [HomeController::class, 'completeLesson'])->name('completeLesson')->middleware('auth');
 Route::post('/lesson/next/{next_lesson_id?}', [HomeController::class, 'nextLesson'])->name('nextLesson');
-
-//teacher
+Route::middleware('auth')->group(function () {
+    Route::middleware('auth')->get('/lo-trinh', [HomeController::class, 'reveal'])->name('reveal');
+        Route::post('/lo-trinh-lesson/{id}', [LessonController::class, 'completeLesson'])->name('completeLesson');
+});//teacher
 Route::get('/teacher-request', [UserController::class, 'showTeacherRequestForm'])
     ->name('teacher.request.form');
 

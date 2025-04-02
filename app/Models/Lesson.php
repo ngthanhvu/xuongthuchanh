@@ -21,4 +21,23 @@ class Lesson extends Model
     {
         return $this->hasMany(UserCourseProgress::class);
     }
+
+    public function isCompletedBy($user)
+    {
+        $course = $this->section->course;
+        $progress = $course->users()->where('user_id', $user->id)->first();
+        
+        if ($progress && $progress->pivot->completed_lessons) {
+            $completedLessons = json_decode($progress->pivot->completed_lessons, true);
+    
+            if (!is_array($completedLessons)) {
+                $completedLessons = [];
+            }
+    
+            return in_array($this->id, $completedLessons);
+        }
+        
+        return false;
+    }
+    
 }

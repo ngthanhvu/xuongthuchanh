@@ -127,4 +127,11 @@ class User extends Authenticatable
     {
         Mail::to($this->email)->send(new TeacherRequestRejected($this));
     }
+
+    public function enrolledCourses()
+    {
+        return $this->belongsToMany(Course::class, 'user_course_progress')
+                    ->withPivot('progress', 'status', 'completed_lessons', 'completed_at')
+                    ->withTimestamps();
+    }
 }

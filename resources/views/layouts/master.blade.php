@@ -308,10 +308,10 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Trang chủ</a>
+                            <a class="nav-link active" href="/">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Lộ trình</a>
+                            <a class="nav-link" href="/lo-trinh">Lộ trình</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/post">Bài viết</a>
