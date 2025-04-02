@@ -23,47 +23,47 @@ class HomeController extends Controller
      * @return \Illuminate\View\View
      */
 
-     public function index()
-     {
-         $title = 'Trang chủ';
-         $courses = Course::all();
-         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
-         $userId = Auth::check() ? Auth::id() : null;
-         $courseProgress = [];
- 
-         $enrollmentStatus = [];
-         $links = [];
-         $posts = Post::with('course')->latest()->get();
- 
-         if ($userId) {
-             foreach ($courses as $course) {
-                 $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
-                 $enrollmentStatus[$course->id] = $isEnrolled;
- 
-                 if ($isEnrolled) {
-                     $firstSection = Section::where('course_id', $course->id)->first();
-                     if ($firstSection) {
-                         $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
-                         $lessonId = $firstLesson ? $firstLesson->id : null;
-                         $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
-                     } else {
-                         $links[$course->id] = route('detail', $course->id);
-                     }
-                 } else {
-                     $links[$course->id] = route('detail', $course->id);
-                 }
-             }
-         }
- 
-         if ($userId) {
-             foreach ($courses as $course) {
-                 $progress = UserCourseProgress::where('course_id', $course->id)->where('user_id', $userId)->first();
-                 $courseProgress[$course->id] = $progress ? $progress->progress : 0;
-             }
-         }
- 
-         return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'posts'));
-     }
+    public function index()
+    {
+        $title = 'Trang chủ';
+        $courses = Course::all();
+        $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
+        $userId = Auth::check() ? Auth::id() : null;
+        $courseProgress = [];
+
+        $enrollmentStatus = [];
+        $links = [];
+        $posts = Post::with('course')->latest()->get();
+
+        if ($userId) {
+            foreach ($courses as $course) {
+                $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
+                $enrollmentStatus[$course->id] = $isEnrolled;
+
+                if ($isEnrolled) {
+                    $firstSection = Section::where('course_id', $course->id)->first();
+                    if ($firstSection) {
+                        $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
+                        $lessonId = $firstLesson ? $firstLesson->id : null;
+                        $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
+                    } else {
+                        $links[$course->id] = route('detail', $course->id);
+                    }
+                } else {
+                    $links[$course->id] = route('detail', $course->id);
+                }
+            }
+        }
+
+        if ($userId) {
+            foreach ($courses as $course) {
+                $progress = UserCourseProgress::where('course_id', $course->id)->where('user_id', $userId)->first();
+                $courseProgress[$course->id] = $progress ? $progress->progress : 0;
+            }
+        }
+
+        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'posts'));
+    }
 
 
     public function detail($course_id)
@@ -78,24 +78,19 @@ class HomeController extends Controller
     }
 
     public function search(Request $request)
-{
-    $query = $request->input('query');
+    {
+        $query = $request->input('query');
 
-    // Search for courses
-    $courses = Course::where('title', 'like', "%$query%")->take(3)->get();
+        $courses = Course::where('title', 'like', "%$query%")->take(3)->get();
+        $posts = Post::where('title', 'like', "%$query%")->take(3)->get();
+        $lesson = Lesson::where('title', 'like', "%$query%")->take(3)->get();
 
-    // Search for posts (assuming you have a Post model)
-    $posts = Post::where('title', 'like', "%$query%")->take(3)->get();
-
-    // You can add videos or other data types here if needed
-    // $videos = Video::where('title', 'like', "%$query%")->take(3)->get();
-
-    return response()->json([
-        'courses' => $courses,
-        'posts' => $posts,
-        // 'videos' => $videos,
-    ]);
-}
+        return response()->json([
+            'courses' => $courses,
+            'posts' => $posts,
+            'lesson' => $lesson
+        ]);
+    }
 
     public function loading($course_id)
     {

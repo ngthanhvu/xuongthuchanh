@@ -43,22 +43,21 @@
                     class="img-fluid" style="max-height: 50px; {{ $course->thumbnail ? '' : 'display: none;' }}">
             </div>
 
-            <div class="form-group mt-3">
+            {{-- <div class="form-group mt-3">
                 <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control"
                     value="{{ old('price', $course->price) }}">
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
-            </div>
+            </div> --}}
 
             <div class="form-group mt-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="is_free" name="is_free" value="1" {{ $course->is_free || old('is_free') ? 'checked' : '' }} onchange="togglePriceField()">
-                    <label class="form-check-label" for="is_free">
-                        Khóa học miễn phí
-                    </label>
-                </div>
+                <label for="price">Giá</label>
+                <input type="number" id="price" name="price" class="form-control" value="{{ old('price', $course->price) }}" placeholder="Nhập giá">
+                @error('price')
+                    <p class="text-danger">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="form-group mt-3">

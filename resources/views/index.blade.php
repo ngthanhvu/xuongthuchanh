@@ -54,6 +54,7 @@
                             $isEnrolled = isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
                             $link = $links[$course->id] ?? route('detail', $course->id);
                             $buttonText = $isEnrolled ? 'Học ngay' : 'Đăng ký';
+                            $discountedPrice = $course->price * (1 - ($course->discount ?? 0) / 100);
                         @endphp
 
                         <div class="card course-card">
@@ -69,20 +70,26 @@
                                     <h3 class="fs-5 ellipsis">{{ $course->title }}</h3>
                                 </div>
                                 <div class="meta d-flex justify-content-between">
-                                    <span class="text-decoration-line-through">
-                                        {{ number_format($course->price, 0, ',', '.') }}đ
-                                    </span>
-                                    <span class="new-pricex fw-bold">
-                                        {{ number_format($course->price * (1 - ($course->discount ?? 0) / 100), 0, ',', '.') }}đ
-                                    </span>
+                                    @if($course->price > 0)
+                                        <span class="text-decoration-line-through">
+                                            {{ number_format($course->price, 0, ',', '.') }}đ
+                                        </span>
+                                        <span class="new-pricex fw-bold">
+                                            @if($discountedPrice > 0)
+                                                {{ number_format($discountedPrice, 0, ',', '.') }}đ
+                                            @else
+                                                Miễn phí
+                                            @endif
+                                        </span>
+                                    @else
+                                        <span class="new-pricex fw-bold">Miễn phí</span>
+                                    @endif
                                 </div>
                                 <div class="meta d-flex justify-content-between">
                                     <span><i class="fas fa-user"></i> {{ $course->user->username }}</span>
                                     <span><i class="fas fa-book"></i> Null </span>
                                     <span><i class="fas fa-clock"></i> {{ $course->created_at->format('d/m/Y') }}</span>
                                 </div>
-                                <!-- Nút Đăng ký/Học ngay -->
-                                {{-- <a href="{{ $link }}" class="btn btn-primary mt-2 w-100">{{ $buttonText }}</a> --}}
                             </div>
                         </div>
                     </div>
@@ -97,7 +104,7 @@
     </div>
     <div class="container mt-5">
         <div class="course-section">
-            <h2>Khóa học Mới <span class="badge bg-primary">Mới</span></h2>
+            <h2>Bài viết Mới <span class="badge bg-primary">Mới</span></h2>
             <div class="col-12 text-center">
                 <p class="lead text-muted">Khám phá các bài viết mới nhất của chúng tôi</p>
             </div>

@@ -8,7 +8,16 @@
             <div class="card-body">
                 <h5 class="card-title tw-text-lg tw-font-semibold">Tổng người dùng</h5>
                 <p class="card-text tw-text-3xl tw-font-bold tw-text-blue-600">{{ $totalUsers }}</p>
-                <p class="tw-text-sm tw-text-gray-500">{{ $userGrowth }}% so với tháng trước</p>
+                <p class="tw-text-sm tw-text-gray-500">
+                    @if ($userGrowth > 0)
+                        <i class="fas fa-arrow-up tw-text-green-500"></i>
+                    @elseif($userGrowth < 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @elseif($userGrowth == 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @endif
+                    {{ abs($userGrowth) }}% so với tháng trước
+                </p>
             </div>
         </div>
 
@@ -17,7 +26,16 @@
                 <h5 class="card-title tw-text-lg tw-font-semibold">Doanh thu</h5>
                 <p class="card-text tw-text-3xl tw-font-bold tw-text-green-600">
                     {{ number_format($totalRevenue, 0, ',', '.') }} VNĐ</p>
-                <p class="tw-text-sm tw-text-gray-500">{{ $revenueGrowth }}% so với tháng trước</p>
+                <p class="tw-text-sm tw-text-gray-500">
+                    @if ($revenueGrowth > 0)
+                        <i class="fas fa-arrow-up tw-text-green-500"></i>
+                    @elseif($revenueGrowth < 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @elseif($revenueGrowth == 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @endif
+                    {{ abs($revenueGrowth) }}% so với tháng trước
+                </p>
             </div>
         </div>
 
@@ -25,7 +43,16 @@
             <div class="card-body">
                 <h5 class="card-title tw-text-lg tw-font-semibold">Khóa học đang hoạt động</h5>
                 <p class="card-text tw-text-3xl tw-font-bold tw-text-purple-600">{{ $totalCourses }}</p>
-                <p class="tw-text-sm tw-text-gray-500">{{ $newCoursesThisWeek }} khóa học mới trong tuần này</p>
+                <p class="tw-text-sm tw-text-gray-500">
+                    @if ($newCoursesThisWeek > 0)
+                        <i class="fas fa-arrow-up tw-text-green-500"></i>
+                    @elseif($newCoursesThisWeek < 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @elseif($newCoursesThisWeek == 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @endif
+                    {{ $newCoursesThisWeek }} khóa học mới trong tuần này
+                </p>
             </div>
         </div>
     </div>
@@ -104,6 +131,7 @@
                         <th>Sinh viên</th>
                         <th>Số tiền</th>
                         <th>Hình thức</th>
+                        <th>Trạng thái</th>
                         <th>Chi tiết</th>
                     </tr>
                 </thead>
@@ -116,6 +144,16 @@
                             <td>{{ $payment->user->username }}</td>
                             <td>{{ number_format($payment->amount, 0, ',', '.') }} VND</td>
                             <td>{{ $payment->payment_method }}</td>
+                            <td>
+                                @if ($payment->status === 'success')
+                                    <span class="badge bg-success px-3 py-2 rounded-pill">✅ Thành công</span>
+                                @elseif ($payment->status === 'canceled')
+                                    <span class="badge bg-danger px-3 py-2 rounded-pill"> Thất bại</span>
+                                @else
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"> Đang xử lý</span>
+                                @endif
+                            </td>
+                            
                             <td>
                                 <a href="#" class="btn btn-sm btn-outline-primary">
                                     <i class="fa-solid fa-eye"></i>

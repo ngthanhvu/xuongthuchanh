@@ -58,41 +58,28 @@
                         @endif
                     </ul>
 
-                    <div class="d-flex me-3">
-                        <button class="btn btn-outline-custom tw-me-1" type="button" data-bs-toggle="modal"
-                            data-bs-target="#searchModal">
+                    <div class="d-flex me-3 position-relative">
+                        <div class="search-container">
+                            <input type="text" class="form-control search-input" placeholder="Tìm kiếm..."
+                                id="searchInput" autocomplete="off">
+                            <div class="search-results-dropdown" id="searchResults" style="display: none;">
+                                <div class="search-results">
+                                    <h6 class="section-title">KHÓA HỌC</h6>
+                                    <ul class="list-unstyled" id="courses-list"></ul>
+                                    <a href="#" class="view-more" id="courses-view-more"
+                                        style="display: none;">Xem thêm</a>
+
+                                    <h6 class="section-title mt-4">BÀI VIẾT</h6>
+                                    <ul class="list-unstyled" id="posts-list"></ul>
+                                    <a href="#" class="view-more" id="posts-view-more" style="display: none;">Xem
+                                        thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-custom ms-2" type="button">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                   <!-- Search Modal -->
-<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-0">
-                <input type="text" class="form-control" placeholder="Tìm kiếm..." id="searchInput">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Search Results -->
-                <div class="search-results">
-                    <!-- Courses Section -->
-                    <h6 class="section-title">KHÓA HỌC</h6>
-                    <ul class="list-unstyled" id="courses-list">
-                        <!-- Courses will be populated dynamically -->
-                    </ul>
-                    <a href="#" class="view-more" id="courses-view-more">Xem thêm</a>
-
-                    <!-- Posts Section -->
-                    <h6 class="section-title mt-4">BÀI VIẾT</h6>
-                    <ul class="list-unstyled" id="posts-list">
-                        <!-- Posts will be populated dynamically -->
-                    </ul>
-                    <a href="#" class="view-more" id="posts-view-more">Xem thêm</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
                     <div class="d-flex align-items-center">
                         @if (Auth::check())
@@ -260,18 +247,97 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.getElementById('searchInput').addEventListener('input', function (e) {
-            const query = e.target.value.toLowerCase();
-            const searchItems = document.querySelectorAll('.search-item');
-    
-            searchItems.forEach(item => {
-                const title = item.querySelector('.search-title').textContent.toLowerCase();
-                if (title.includes(query)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const coursesList = document.getElementById('courses-list');
+        const postsList = document.getElementById('posts-list');
+        const coursesViewMore = document.getElementById('courses-view-more');
+        const postsViewMore = document.getElementById('posts-view-more');
+
+        const lessonRouteTemplate = "{{ route('lesson', ['id' => ':id']) }}";
+
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.trim();
+
+            if (query.length === 0) {
+                coursesList.innerHTML = '';
+                postsList.innerHTML = '';
+                coursesViewMore.style.display = 'none';
+                postsViewMore.style.display = 'none';
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            fetch(`/search?query=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    searchResults.style.display = 'block';
+
+                    coursesList.innerHTML = '';
+                    if (data.courses && data.courses.length > 0) {
+                        data.courses.forEach(course => {
+                            const li = document.createElement('li');
+                            li.className = 'search-item';
+                            const courseUrl = lessonRouteTemplate.replace(':id', course.id);
+                            li.innerHTML = `
+                            <img src="${course.thumbnail ? `/storage/${course.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Course Icon" class="me-2">
+                            <div>
+                                <a href="${courseUrl}" class="search-title">${course.title}</a>
+                            </div>
+                        `;
+                            coursesList.appendChild(li);
+                        });
+                        coursesViewMore.style.display = 'block';
+                        coursesViewMore.href = `/courses?search=${query}`;
+                    } else {
+                        coursesList.innerHTML = '<li class="text-muted">Không tìm thấy khóa học nào.</li>';
+                        coursesViewMore.style.display = 'none';
+                    }
+
+                    postsList.innerHTML = '';
+                    if (data.posts && data.posts.length > 0) {
+                        data.posts.forEach(post => {
+                            const li = document.createElement('li');
+                            li.className = 'search-item';
+                            li.innerHTML = `
+                            <img src="${post.thumbnail ? `/storage/${post.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Post Icon" class="me-2">
+                            <div>
+                                <a href="/posts/${post.id}" class="search-title">${post.title}</a>
+                            </div>
+                        `;
+                            postsList.appendChild(li);
+                        });
+                        postsViewMore.style.display = 'block';
+                        postsViewMore.href = `/posts?search=${query}`;
+                    } else {
+                        postsList.innerHTML = '<li class="text-muted">Không tìm thấy bài viết nào.</li>';
+                        postsViewMore.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching search results:', error);
+                    coursesList.innerHTML = '<li class="text-danger">Đã có lỗi xảy ra.</li>';
+                    postsList.innerHTML = '<li class="text-danger">Đã có lỗi xảy ra.</li>';
+                    searchResults.style.display = 'block';
+                });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        searchInput.addEventListener('focus', function() {
+            if (searchInput.value.trim().length > 0) {
+                searchResults.style.display = 'block';
+            }
         });
     </script>
 </body>

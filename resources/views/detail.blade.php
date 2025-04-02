@@ -95,7 +95,7 @@
 
                 <div class="card card-custom">
                     <div class="card-body text-center">
-                        <h5 class="card-title">{{ $course->price == 0 ? 'Miễn phí' : number_format($course->price, 2) }}đ
+                        <h5 class="card-title">{{ $course->price == 0 ? 'Miễn phí' : number_format($course->price, 2) }} đ
                         </h5>
                         <p class="text-muted">Đăng ký học</p>
                         <form id="paymentForm" method="GET" action="{{ route('loading', ['course_id' => $course->id]) }}">

@@ -42,16 +42,16 @@
                     style="max-height: 100px; display: none;">
             </div>
 
-            <div class="form-group mt-3">
+            {{-- <div class="form-group mt-3">
                 <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
-            </div>
+            </div> --}}
 
             <div class="form-group mt-3">
-                <label for="price">Giá (0 = miễn phí)</label>
+                <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
