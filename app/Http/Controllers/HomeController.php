@@ -7,6 +7,7 @@ use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\Section;
 use App\Models\Quiz;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Models\UserQuizResult;
 use App\Models\UserCourseProgress;
@@ -70,10 +71,30 @@ class HomeController extends Controller
 
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
-        $quizzes = $lessons->flatMap->quizzes; 
+        $quizzes = $lessons->flatMap->quizzes;
 
         return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
+
+    public function search(Request $request)
+{
+    $query = $request->input('query');
+
+    // Search for courses
+    $courses = Course::where('title', 'like', "%$query%")->take(3)->get();
+
+    // Search for posts (assuming you have a Post model)
+    $posts = Post::where('title', 'like', "%$query%")->take(3)->get();
+
+    // You can add videos or other data types here if needed
+    // $videos = Video::where('title', 'like', "%$query%")->take(3)->get();
+
+    return response()->json([
+        'courses' => $courses,
+        'posts' => $posts,
+        // 'videos' => $videos,
+    ]);
+}
 
     public function loading($course_id)
     {
@@ -93,7 +114,7 @@ class HomeController extends Controller
 
         $quizzes = Quiz::where('lesson_id', $lesson_id)->get();
         $sections = Section::where('course_id', $course->id)->with('lessons')->get();
-        
+
         $allLessons = Lesson::whereIn('section_id', $sections->pluck('id'))->orderBy('id')->get();
         $currentIndex = $allLessons->search(fn($item) => $item->id == $lesson->id);
         $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
@@ -108,7 +129,7 @@ class HomeController extends Controller
         $progress = $courseProgress->progress;
         $completedLessons = json_decode($courseProgress->completed_lessons, true) ?? [];
 
-        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson', 'quizzes', 'progress', 'completedLessons' ));
+        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson', 'quizzes', 'progress', 'completedLessons'));
     }
 
     public function completeLesson(Request $request, Lesson $lesson)
@@ -222,7 +243,7 @@ class HomeController extends Controller
                 }
             }
         }
-//update user quizz result nộp bài update lại dữ liệu
+        //update user quizz result nộp bài update lại dữ liệu
         return view('showquizz', compact(
             'lesson',
             'quizzes',

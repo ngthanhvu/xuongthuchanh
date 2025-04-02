@@ -23,272 +23,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
     <!-- sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-
-
-        .footer {
-            background-color: #1a1a1a;
-            padding: 40px 20px;
-            border-top: 1px solid #333;
-        }
-
-        .footer-container {
-            display: flex;
-            justify-content: space-between;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex-wrap: wrap;
-        }
-
-        .footer-column {
-            flex: 1;
-            min-width: 200px;
-            margin-bottom: 20px;
-        }
-
-        .footer-column h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-
-        .footer-column p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #ccc;
-            margin-bottom: 8px;
-        }
-
-        .footer-column .logo {
-            color: #ff6200;
-            font-weight: bold;
-            font-size: 24px;
-        }
-
-        .dmca img {
-            margin-top: 10px;
-            width: 100px;
-        }
-
-        .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 20px auto 0;
-            border-top: 1px solid #333;
-            padding-top: 20px;
-        }
-
-        .copyright {
-            font-size: 14px;
-            color: #ccc;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .social-icons img {
-            width: 24px;
-            height: 24px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .footer-container {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            .footer-column {
-                margin-bottom: 30px;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-
-        .header {
-            background-color: #fff;
-            padding: 5px 0;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .logo img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .logo span {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-left: 10px;
-            color: #333;
-        }
-
-        .navbar-nav .nav-link {
-            color: #333;
-            font-weight: 500;
-            padding: 10px 15px;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #ff6200;
-        }
-
-        .navbar-nav .nav-link.active {
-            color: #ff6200;
-            font-weight: bold;
-        }
-
-        .btn-login {
-            background-color: #ff6200;
-            border-color: #ff6200;
-        }
-
-        .btn-login:hover {
-            background-color: #e55a00;
-            border-color: #e55a00;
-        }
-
-        @media (max-width: 991px) {
-            .btn-login {
-                margin-left: 0;
-                width: 100%;
-            }
-        }
-
-        /* CSS cho avatar và dropdown */
-        .avatar-container {
-            position: relative;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .dropdown-menu {
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 250px;
-            padding: 10px;
-        }
-
-        .dropdown-menu .dropdown-item {
-            padding: 10px 15px;
-            border-radius: 5px;
-        }
-
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #f0f2f5;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .user-info img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .user-info .user-name {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .user-info .user-handle {
-            color: #606770;
-            font-size: 14px;
-        }
-
-        /* CSS cho dropdown của "Khoá học của tôi" */
-        .courses-dropdown {
-            width: 300px;
-            padding: 15px;
-        }
-
-        .courses-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .courses-header h6 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .courses-header a {
-            color: #ff6200;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .course-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .course-item:last-child {
-            border-bottom: none;
-        }
-
-        .course-item img {
-            width: 60px;
-            height: 40px;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        .course-info h6 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .course-info p {
-            margin: 0;
-            font-size: 12px;
-            color: #606770;
-        }
-
-        .new-pricex {
-            color: #ff6200;
-            font-size: 18px;
-        }
-
-        .ellipsis {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/master.css') }}" class="">
 </head>
 
 <body>
@@ -323,6 +58,42 @@
                         @endif
                     </ul>
 
+                    <div class="d-flex me-3">
+                        <button class="btn btn-outline-custom tw-me-1" type="button" data-bs-toggle="modal"
+                            data-bs-target="#searchModal">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                   <!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <input type="text" class="form-control" placeholder="Tìm kiếm..." id="searchInput">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Search Results -->
+                <div class="search-results">
+                    <!-- Courses Section -->
+                    <h6 class="section-title">KHÓA HỌC</h6>
+                    <ul class="list-unstyled" id="courses-list">
+                        <!-- Courses will be populated dynamically -->
+                    </ul>
+                    <a href="#" class="view-more" id="courses-view-more">Xem thêm</a>
+
+                    <!-- Posts Section -->
+                    <h6 class="section-title mt-4">BÀI VIẾT</h6>
+                    <ul class="list-unstyled" id="posts-list">
+                        <!-- Posts will be populated dynamically -->
+                    </ul>
+                    <a href="#" class="view-more" id="posts-view-more">Xem thêm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
                     <div class="d-flex align-items-center">
                         @if (Auth::check())
                             <div class="me-3 d-flex">
@@ -342,29 +113,28 @@
                                                 @php
                                                     $course = $courses->firstWhere('id', $enrollment->course_id);
                                                 @endphp
-                                                
+
                                                 @foreach ($courses as $course)
-                                                <li class="course-item">
-                                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course thumbnail">
-                                                    <div class="course-info">
-                                                        <h6>{{ $course->title }}</h6>
-                                                        <p>Tiến độ
+                                                    <li class="course-item">
+                                                        <img src="{{ asset('storage/' . $course->thumbnail) }}"
+                                                            alt="Course thumbnail">
+                                                        <div class="course-info">
+                                                            <h6>{{ $course->title }}</h6>
+                                                            <p>Tiến độ
                                                             <div class="progress" style="width: 100%;">
                                                                 <div class="progress-bar" role="progressbar"
-                                                                     style="width: {{ $courseProgress[$course->id] }}%;"
-                                                                     aria-valuenow="{{ $courseProgress[$course->id] }}"
-                                                                     aria-valuemin="0" aria-valuemax="100">
+                                                                    style="width: {{ $courseProgress[$course->id] }}%;"
+                                                                    aria-valuenow="{{ $courseProgress[$course->id] }}"
+                                                                    aria-valuemin="0" aria-valuemax="100">
                                                                     {{ $courseProgress[$course->id] }}%
                                                                 </div>
                                                             </div>
                                                             <br>
                                                             <a href="{{ $links[$course->id] }}">Bắt đầu học</a>
-                                                        </p>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                            
-                                            
+                                                            </p>
+                                                        </div>
+                                                    </li>
+                                                @endforeach
                                             @endforeach
                                         </ul>
                                     @endif
@@ -383,8 +153,8 @@
                                     <li class="user-info">
                                         <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
                                             alt="User Avatar">
-                                        <div >
-                                            
+                                        <div>
+
                                             <div class="user-name ellipsis">{{ Auth::user()->username }}</div>
                                             <div class="user-handle ellipsis">{{ Auth::user()->username }}</div>
                                         </div>
@@ -488,6 +258,22 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function (e) {
+            const query = e.target.value.toLowerCase();
+            const searchItems = document.querySelectorAll('.search-item');
+    
+            searchItems.forEach(item => {
+                const title = item.querySelector('.search-title').textContent.toLowerCase();
+                if (title.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

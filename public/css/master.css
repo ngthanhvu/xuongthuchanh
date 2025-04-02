@@ -1,0 +1,342 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+.footer {
+    background-color: #1a1a1a;
+    padding: 40px 20px;
+    border-top: 1px solid #333;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+}
+
+.footer-column h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.footer-column p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ccc;
+    margin-bottom: 8px;
+}
+
+.footer-column .logo {
+    color: #ff6200;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.dmca img {
+    margin-top: 10px;
+    width: 100px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 20px auto 0;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+}
+
+.copyright {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-icons img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-column {
+        margin-bottom: 30px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.header {
+    background-color: #fff;
+    padding: 5px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.logo span {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-left: 10px;
+    color: #333;
+}
+
+.navbar-nav .nav-link {
+    color: #333;
+    font-weight: 500;
+    padding: 10px 15px;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ff6200;
+}
+
+.navbar-nav .nav-link.active {
+    color: #ff6200;
+    font-weight: bold;
+}
+
+.btn-login {
+    background-color: #ff6200;
+    border-color: #ff6200;
+}
+
+.btn-login:hover {
+    background-color: #e55a00;
+    border-color: #e55a00;
+}
+
+@media (max-width: 991px) {
+    .btn-login {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* CSS cho avatar và dropdown */
+.avatar-container {
+    position: relative;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    padding: 10px;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f0f2f5;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-info .user-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.user-info .user-handle {
+    color: #606770;
+    font-size: 14px;
+}
+
+/* CSS cho dropdown của "Khoá học của tôi" */
+.courses-dropdown {
+    width: 300px;
+    padding: 15px;
+}
+
+.courses-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.courses-header h6 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.courses-header a {
+    color: #ff6200;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.course-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.course-item:last-child {
+    border-bottom: none;
+}
+
+.course-item img {
+    width: 60px;
+    height: 40px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.course-info h6 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.course-info p {
+    margin: 0;
+    font-size: 12px;
+    color: #606770;
+}
+
+.new-pricex {
+    color: #ff6200;
+    font-size: 18px;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.btn-outline-custom {
+    border-color: #ff6200; /* Viền màu cam */
+    color: #ff6200; /* Màu chữ/biểu tượng */
+}
+
+.btn-outline-custom:hover {
+    background-color: #ff6200; /* Nền màu cam khi hover */
+    color: white; /* Chữ/biểu tượng trắng khi hover */
+}
+
+/* Search Modal Styles */
+.modal-lg {
+    max-width: 700px; /* Adjust the width to match the image */
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    border-bottom: none;
+    padding: 10px 15px;
+}
+
+.search-input {
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 16px;
+    width: 100%;
+}
+
+.modal-body {
+    padding: 15px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.list-group-item {
+    border: none;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.list-group-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.result-title {
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+}
+
+.result-title:hover {
+    color: #007bff;
+}
+
+.list-group-item a.ms-auto {
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.list-group-item a.ms-auto:hover {
+    text-decoration: underline;
+}

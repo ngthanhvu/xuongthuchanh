@@ -196,7 +196,8 @@ Route::post('/lesson/next/{next_lesson_id?}', [HomeController::class, 'nextLesso
 Route::middleware('auth')->group(function () {
     Route::middleware('auth')->get('/lo-trinh', [HomeController::class, 'reveal'])->name('reveal');
         Route::post('/lo-trinh-lesson/{id}', [LessonController::class, 'completeLesson'])->name('completeLesson');
-});//teacher
+});
+//teacher
 Route::get('/teacher-request', [UserController::class, 'showTeacherRequestForm'])
     ->name('teacher.request.form');
 
@@ -221,3 +222,6 @@ Route::prefix('admin/coupons')->name('admin.coupon.')->group(function () {
     Route::put('/{id}/update', [CouponController::class, 'update'])->name('update');
     Route::delete('/{id}/delete', [CouponController::class, 'delete'])->name('delete');
 });
+
+//search
+Route::get('/search', [HomeController::class, 'search'])->name('search');
