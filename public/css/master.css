@@ -273,70 +273,77 @@
     color: white; /* Chữ/biểu tượng trắng khi hover */
 }
 
-/* Search Modal Styles */
-.modal-lg {
-    max-width: 700px; /* Adjust the width to match the image */
-}
-
-.modal-content {
-    border-radius: 10px;
-}
-
-.modal-header {
-    border-bottom: none;
-    padding: 10px 15px;
+.search-container {
+    position: relative;
+    width: 300px; /* Adjust width as needed */
 }
 
 .search-input {
-    border: 1px solid #ddd;
     border-radius: 20px;
     padding: 8px 15px;
-    font-size: 16px;
-    width: 100%;
+    border: 1px solid #ddd;
 }
 
-.modal-body {
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 5px;
+}
+
+.search-results {
     padding: 15px;
 }
 
 .section-title {
     font-size: 14px;
     font-weight: bold;
-    color: #333;
-    text-transform: uppercase;
+    color: #666;
     margin-bottom: 10px;
 }
 
-.list-group-item {
-    border: none;
-    padding: 10px 0;
+.search-item {
     display: flex;
     align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.list-group-item img {
+.search-item img {
     width: 40px;
     height: 40px;
-    border-radius: 5px;
     object-fit: cover;
+    border-radius: 4px;
+    margin-right: 10px;
 }
 
-.result-title {
+.search-title {
     font-size: 16px;
     color: #333;
     text-decoration: none;
 }
 
-.result-title:hover {
+.search-title:hover {
     color: #007bff;
 }
 
-.list-group-item a.ms-auto {
-    font-size: 14px;
+.view-more {
+    display: block;
+    text-align: center;
     color: #007bff;
+    font-size: 14px;
+    margin-top: 10px;
     text-decoration: none;
 }
 
-.list-group-item a.ms-auto:hover {
+.view-more:hover {
     text-decoration: underline;
 }
