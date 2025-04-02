@@ -33,11 +33,6 @@
                     {!! $post->content !!}
                 </div>
 
-                <div class="mt-4">
-                    <a href="{{ route('posts.list') }}" class="btn btn-outline-danger">
-                        <i class="bi bi-arrow-left"></i> Quay lại danh sách
-                    </a>
-                </div>
             </div>
 
             <div class="col-lg-4 sticky-sidebar">
@@ -53,7 +48,7 @@
                             @endif
                             <h5>{{ $post->course->title }}</h5>
                             <p class="text-muted">Khoá học chuyên sâu về {{ $post->course->title }}</p>
-                            <a href="/" class="btn btn-sm btn-outline-warning hover-warning">
+                            <a href="#" class="btn btn-sm btn-outline-warning hover-warning">
                                 Xem khóa học
                             </a>
                         </div>
