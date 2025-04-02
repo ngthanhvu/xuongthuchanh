@@ -211,8 +211,6 @@ Route::prefix('admin/users')->name('admin.users.')->group(function () {
 });
 
 // Coupon
-
-
 Route::prefix('admin/coupons')->name('admin.coupon.')->group(function () {
     Route::get('/', [CouponController::class, 'index'])->name('index');
     Route::get('/create', [CouponController::class, 'create'])->name('create');
