@@ -32,6 +32,10 @@ return new class extends Migration
         Schema::table('payments', function (Blueprint $table) {
             $table->foreignId('coupon_id')->nullable()->constrained('coupons')->onDelete('set null')->comment('Coupon sử dụng');
         });
+        // Cập nhật bảng khóa học miễn phí
+        Schema::table('courses', function (Blueprint $table) {
+            $table->boolean('is_free')->default(false)->after('price');
+        });
     }
 
     public function down(): void

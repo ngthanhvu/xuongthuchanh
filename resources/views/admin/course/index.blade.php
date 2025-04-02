@@ -49,17 +49,29 @@
                 @foreach ($courses as $course)
                     <tr>
                         <td class="text-center">{{ $index++ }}</td>
-                        <td class="text-center">{{ $course->title }}</td>
+                        <td>{{ $course->title }}</td>
                         <td class="text-center">{{ $course->category->name ?? 'No Category' }}</td>
-                        <td class="text-center"><img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Thumbnail" width="80"></td>
-                        <td class="text-center">{{ number_format($course->price, 0) }}đ</td>
+                        <td class="text-center">
+                            @if($course->thumbnail)
+                                <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Thumbnail" width="80" class="tw-rounded">
+                            @else
+                                <span class="tw-text-gray-400">No image</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            @if($course->price == 0 || (isset($course->is_free) && $course->is_free))
+                                <span class="badge bg-success">Miễn phí</span>
+                            @else
+                                <span>{{ number_format($course->price, 0) }}đ</span>
+                            @endif
+                        </td>
                         <td class="text-center">
                             <a href="{{ route('admin.course.edit', $course->id) }}"
                                 class="btn btn-sm btn-outline-primary tw-me-1">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                             <form action="{{ route('admin.course.delete', $course->id) }}" method="POST"
-                                onsubmit="return confirm('Bạn có chắc muốn xóa danh mục?');" class="d-inline">
+                                onsubmit="return confirm('Bạn có chắc muốn xóa khóa học này?');" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -71,7 +83,7 @@
                 @endforeach
                 @if ($courses->isEmpty())
                     <tr>
-                        <td colspan="6" class="text-center">Không có dữ liệu</td>
+                        <td colspan="6" class="text-center py-3">Không có dữ liệu</td>
                     </tr>
                 @endif
             </tbody>
@@ -79,20 +91,12 @@
     </div>
 
     <!-- Pagination -->
+    @if(method_exists($courses, 'hasPages') && $courses->hasPages())
     <div class="tw-flex tw-justify-between tw-items-center tw-mt-4 tw-px-1">
-        <span class="tw-text-sm tw-text-gray-600">Hiển thị 12 / 100 mục</span>
-        <nav>
-            <ul class="pagination mb-0">
-                <li class="page-item active">
-                    <a class="page-link text-white bg-primary border-primary" href="#">1</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#">2</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-secondary" href="#">3</a>
-                </li>
-            </ul>
-        </nav>
+        <span class="tw-text-sm tw-text-gray-600">
+            Hiển thị {{ $courses->firstItem() }} - {{ $courses->lastItem() }} / {{ $courses->total() }} mục
+        </span>
+        {{ $courses->links() }}
     </div>
+    @endif
 @endsection

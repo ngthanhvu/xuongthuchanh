@@ -53,6 +53,15 @@
             </div>
 
             <div class="form-group mt-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="is_free" name="is_free" value="1" {{ $course->is_free || old('is_free') ? 'checked' : '' }} onchange="togglePriceField()">
+                    <label class="form-check-label" for="is_free">
+                        Khóa học miễn phí
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group mt-3">
                 <label for="categories_id">Danh mục</label>
                 <select name="categories_id" id="categories_id" class="form-control">
                     <option value="">Chọn danh mục</option>
@@ -90,5 +99,22 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        function togglePriceField() {
+            var isFree = document.getElementById('is_free').checked;
+            var priceField = document.getElementById('price');
+            
+            if (isFree) {
+                priceField.value = 0;
+                priceField.readOnly = true;
+            } else {
+                priceField.readOnly = false;
+            }
+        }
+
+        // Remove this event listener too
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePriceField();
+        });
     </script>
 @endsection

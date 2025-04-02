@@ -45,6 +45,7 @@ class CourseController extends Controller
             'thumbnail' => $thumbnailPath,
             'price' => $request->price,
             'categories_id' => $request->categories_id,
+            'is_free' => $request->price == 0 ? true : false,
         ]);
 
         return redirect()->route('admin.course.index')->with('success', 'Course created successfully.');
@@ -88,6 +89,7 @@ class CourseController extends Controller
         $course->description = $request->description;
         $course->price = $request->price;
         $course->categories_id = $request->categories_id;
+        $course->is_free = $request->price == 0 ? true : false;
         $course->save();
 
         return redirect()->route('admin.course.index')->with('success', 'Khóa học đã được cập nhật thành công.');
