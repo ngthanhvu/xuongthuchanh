@@ -281,6 +281,13 @@
             color: #ff6200;
             font-size: 18px;
         }
+
+        .ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
     </style>
 </head>
 
@@ -372,13 +379,14 @@
                             <div class="avatar-container">
                                 <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
                                     class="avatar" alt="Avatar" data-bs-toggle="dropdown" aria-expanded="false">
-                                <ul class="dropdown-menu dropdown-menu-end">
+                                <ul class="dropdown-menu dropdown-menu-end ">
                                     <li class="user-info">
                                         <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
                                             alt="User Avatar">
-                                        <div>
-                                            <div class="user-name">{{ Auth::user()->username }}</div>
-                                            <div class="user-handle">{{ Auth::user()->username }}</div>
+                                        <div >
+                                            
+                                            <div class="user-name ellipsis">{{ Auth::user()->username }}</div>
+                                            <div class="user-handle ellipsis">{{ Auth::user()->username }}</div>
                                         </div>
                                     </li>
                                     <li><a class="dropdown-item" href="{{ url('/profile') }}">Trang cá nhân</a></li>

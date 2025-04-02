@@ -13,15 +13,13 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Models\Lesson;
 
 //Admin
 Route::middleware('check.role:admin')->group(function () {
-    Route::get('/admin', function () {
-        $title = 'Trang quản trị';
-        return view('admin.index', compact('title'));
-    });
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 
     Route::get('/admin/users', function () {
         $title = 'Khoá học';
