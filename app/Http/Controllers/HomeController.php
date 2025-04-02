@@ -93,7 +93,7 @@ class HomeController extends Controller
 
         $quizzes = Quiz::where('lesson_id', $lesson_id)->get();
         $sections = Section::where('course_id', $course->id)->with('lessons')->get();
-
+        
         $allLessons = Lesson::whereIn('section_id', $sections->pluck('id'))->orderBy('id')->get();
         $currentIndex = $allLessons->search(fn($item) => $item->id == $lesson->id);
         $prevLesson = $currentIndex > 0 ? $allLessons[$currentIndex - 1] : null;
@@ -105,10 +105,10 @@ class HomeController extends Controller
             ['user_id' => Auth::id(), 'course_id' => $course->id],
             ['progress' => 0, 'status' => 'in_progress', 'completed_lessons' => json_encode([])]
         );
-
         $progress = $courseProgress->progress;
+        $completedLessons = json_decode($courseProgress->completed_lessons, true) ?? [];
 
-        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson', 'quizzes', 'progress'));
+        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson', 'quizzes', 'progress', 'completedLessons' ));
     }
 
     public function completeLesson(Request $request, Lesson $lesson)
@@ -309,12 +309,12 @@ class HomeController extends Controller
         $user = Auth::user();
         $courses = $user->enrolledCourses()->with('sections.lessons.quizzes')->get();
         $course = Course::with('sections.lessons.quizzes')->first();
+
         foreach ($courses as $course) {
             if ($course->pivot->status === 'completed' && $course->pivot->completed_at) {
                 $course->pivot->completed_at = Carbon::parse($course->pivot->completed_at);
             }
             $course->firstLesson = $course->sections->flatMap->lessons->first();
-
         }
 
         return view('reveal', compact('courses', 'course', 'title')); // Hoặc 'reveal'

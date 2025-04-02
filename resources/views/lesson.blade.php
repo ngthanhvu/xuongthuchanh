@@ -174,7 +174,13 @@
                                                 <a href="{{ route('lesson', $lessonItem->id) }}"
                                                     class="lesson-item {{ $lessonItem->id == $lesson->id ? 'active' : '' }}">
                                                     {{ $lessonItem->title }}
+                                                    @if (in_array($lessonItem->id, $completedLessons))
+                                                        <span class="float-end text-success">
+                                                            <i class="fa-solid fa-check"></i>
+                                                        </span>
+                                                    @endif
                                                 </a>
+
                                                 @if ($lessonItem->quizzes->isNotEmpty())
                                                     @foreach ($lessonItem->quizzes as $quiz)
                                                         <div class="ms-3">
