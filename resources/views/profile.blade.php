@@ -69,10 +69,10 @@
             <div class="col-md-3 col-lg-2 sidebar">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Thông tin</a>
+                        <a class="nav-link active" href="{{ route('profile') }}">Thông tin</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Các khóa học</a>
+                        <a class="nav-link" href="{{ route('profile.youcourse') }}">Các khóa học</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('profile.changePassword') }}">Đổi mật khẩu</a>

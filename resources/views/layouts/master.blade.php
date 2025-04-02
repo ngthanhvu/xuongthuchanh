@@ -86,31 +86,37 @@
                             <div class="me-3 d-flex">
                                 <div class="dropdown">
                                     @if (isset($enrollments) && $enrollments->where('user_id', Auth::id())->isNotEmpty())
-                                        <button class="border-0 dropdown-toggle" style="padding: 5px 10px; background-color: #FFFFFF;" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="border-0 dropdown-toggle"
+                                            style="padding: 5px 10px; background-color: #FFFFFF;"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
                                             Khoá học của tôi
                                         </button>
                                         <ul class="dropdown-menu courses-dropdown dropdown-menu-end">
                                             <li class="courses-header">
                                                 <h6>Khoá học của tui</h6>
-                                                <a href="#">Xem tất cả</a>
+                                                <a href="{{ route('profile.youcourse') }}">Xem tất cả</a>
                                             </li>
                                             @foreach ($enrollments->where('user_id', Auth::id()) as $enrollment)
                                                 @php
                                                     $course = $courses->firstWhere('id', $enrollment->course_id);
                                                 @endphp
-                                                @if ($course)  <!-- Ensure that the course exists -->
+                                                @if ($course)
                                                     <li class="course-item">
-                                                        <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course thumbnail">
+                                                        <img src="{{ asset('storage/' . $course->thumbnail) }}"
+                                                            alt="Course thumbnail">
                                                         <div class="course-info">
                                                             <h6>{{ $course->title }}</h6>
                                                             <p>Tiến độ
-                                                                <div class="progress" style="width: 100%;">
-                                                                    <div class="progress-bar" role="progressbar" style="width: {{ $courseProgress[$course->id] }}%;" aria-valuenow="{{ $courseProgress[$course->id] }}" aria-valuemin="0" aria-valuemax="100">
-                                                                        {{ $courseProgress[$course->id] }}%
-                                                                    </div>
+                                                            <div class="progress" style="width: 100%;">
+                                                                <div class="progress-bar" role="progressbar"
+                                                                    style="width: {{ $courseProgress[$course->id] }}%;"
+                                                                    aria-valuenow="{{ $courseProgress[$course->id] }}"
+                                                                    aria-valuemin="0" aria-valuemax="100">
+                                                                    {{ $courseProgress[$course->id] }}%
                                                                 </div>
-                                                                <br>
-                                                                <a href="{{ $links[$course->id] }}">Bắt đầu học</a>
+                                                            </div>
+                                                            <br>
+                                                            <a href="{{ $links[$course->id] }}">Bắt đầu học</a>
                                                             </p>
                                                         </div>
                                                     </li>
@@ -119,7 +125,7 @@
                                         </ul>
                                     @endif
                                 </div>
-                                
+
                                 <div>
                                     <button class="border-0" style="padding: 5px 10px; background-color: #FFFFFF;">
                                         <i class="fa-solid fa-bell"></i>
@@ -239,7 +245,8 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
@@ -247,8 +254,6 @@
         const postsList = document.getElementById('posts-list');
         const coursesViewMore = document.getElementById('courses-view-more');
         const postsViewMore = document.getElementById('posts-view-more');
-
-        const lessonRouteTemplate = "{{ route('lesson', ['id' => ':id']) }}";
 
         searchInput.addEventListener('input', function(e) {
             const query = e.target.value.trim();
@@ -278,13 +283,12 @@
                         data.courses.forEach(course => {
                             const li = document.createElement('li');
                             li.className = 'search-item';
-                            const courseUrl = lessonRouteTemplate.replace(':id', course.id);
                             li.innerHTML = `
-                            <img src="${course.thumbnail ? `/storage/${course.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Course Icon" class="me-2">
-                            <div>
-                                <a href="${courseUrl}" class="search-title">${course.title}</a>
-                            </div>
-                        `;
+                                <img src="${course.thumbnail ? `/storage/${course.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Course Icon" class="me-2">
+                                <div>
+                                    <a href="${course.url}" class="search-title">${course.title}</a>
+                                </div>
+                            `;
                             coursesList.appendChild(li);
                         });
                         coursesViewMore.style.display = 'block';
@@ -300,11 +304,11 @@
                             const li = document.createElement('li');
                             li.className = 'search-item';
                             li.innerHTML = `
-                            <img src="${post.thumbnail ? `/storage/${post.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Post Icon" class="me-2">
-                            <div>
-                                <a href="/posts/${post.id}" class="search-title">${post.title}</a>
-                            </div>
-                        `;
+                                <img src="${post.thumbnail ? `/storage/${post.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Post Icon" class="me-2">
+                                <div>
+                                    <a href="/posts/${post.id}" class="search-title">${post.title}</a>
+                                </div>
+                            `;
                             postsList.appendChild(li);
                         });
                         postsViewMore.style.display = 'block';

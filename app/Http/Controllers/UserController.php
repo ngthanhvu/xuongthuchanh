@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Course;
+use App\Models\UserCourseProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 
 class UserController extends Controller
@@ -86,6 +89,7 @@ class UserController extends Controller
         return redirect('/dang-nhap');
     }
 
+
     public function profile()
     {
         $user = Auth::user();
@@ -158,6 +162,24 @@ class UserController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Xóa ảnh thành công']);
+    }
+
+    
+    public function youcourse()
+    {
+        $title = 'Lộ trình học tập';
+        $user = Auth::user();
+        $courses = $user->enrolledCourses()->with('sections.lessons.quizzes')->get();
+        $course = Course::with('sections.lessons.quizzes')->first();
+
+        foreach ($courses as $course) {
+            if ($course->pivot->status === 'completed' && $course->pivot->completed_at) {
+                $course->pivot->completed_at = Carbon::parse($course->pivot->completed_at);
+            }
+            $course->firstLesson = $course->sections->flatMap->lessons->first();
+        }
+
+        return view('you-course', compact('courses', 'course', 'title')); 
     }
 
     public function changePassword()

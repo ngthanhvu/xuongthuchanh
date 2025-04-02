@@ -155,14 +155,16 @@ Route::get('/register', function () {
     return view('auth.register', compact('title'));
 });
 
-
+//profile
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 
 Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
 Route::post('/profile/delete-avatar', [UserController::class, 'deleteAvatar'])->name('profile.delete.avatar');
 Route::get('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
 Route::put('/profile/update-password', [UserController::class, 'updatePassword'])->name('profile.updatePassword');
-
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/you-course', [UserController::class, 'youcourse'])->name('profile.youcourse');
+});
 //enrollment
 Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
 
@@ -225,3 +227,8 @@ Route::prefix('admin/coupons')->name('admin.coupon.')->group(function () {
 
 //search
 Route::get('/search', [HomeController::class, 'search'])->name('search');
+
+//chua them ok
+Route::get('/frontend-path', [HomeController::class, 'frontendPath'])->name('frontend-path');
+Route::get('/backend-path', [HomeController::class, 'backendPath'])->name('backend-path');
+Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learning-paths.index');

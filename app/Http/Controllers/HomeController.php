@@ -28,6 +28,7 @@ class HomeController extends Controller
         $title = 'Trang chủ';
         $courses = Course::all();
         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
+        
         $userId = Auth::check() ? Auth::id() : null;
         $courseProgress = [];
 
@@ -64,7 +65,53 @@ class HomeController extends Controller
 
         return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'posts'));
     }
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $userId = Auth::check() ? Auth::id() : null;
 
+        $courses = Course::where('title', 'like', "%$query%")->take(3)->get();
+        $posts = Post::where('title', 'like', "%$query%")->take(3)->get();
+        $lessons = Lesson::where('title', 'like', "%$query%")->take(3)->get();
+
+        $courseData = [];
+        if ($userId) {
+            foreach ($courses as $course) {
+                $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
+                $courseUrl = $isEnrolled ? $this->getFirstLessonUrl($course) : route('detail', $course->id);
+                $courseData[] = [
+                    'id' => $course->id,
+                    'title' => $course->title,
+                    'thumbnail' => $course->thumbnail,
+                    'url' => $courseUrl,
+                ];
+            }
+        } else {
+            foreach ($courses as $course) {
+                $courseData[] = [
+                    'id' => $course->id,
+                    'title' => $course->title,
+                    'thumbnail' => $course->thumbnail,
+                    'url' => route('detail', $course->id),
+                ];
+            }
+        }
+
+        return response()->json([
+            'courses' => $courseData,
+            'posts' => $posts,
+            'lesson' => $lessons,
+        ]);
+    }
+    private function getFirstLessonUrl($course)
+    {
+        $firstSection = Section::where('course_id', $course->id)->first();
+        if ($firstSection) {
+            $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
+            return $firstLesson ? route('lesson', $firstLesson->id) : route('detail', $course->id);
+        }
+        return route('detail', $course->id);
+    }
 
     public function detail($course_id)
     {
@@ -77,20 +124,7 @@ class HomeController extends Controller
         return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
 
-    public function search(Request $request)
-    {
-        $query = $request->input('query');
 
-        $courses = Course::where('title', 'like', "%$query%")->take(3)->get();
-        $posts = Post::where('title', 'like', "%$query%")->take(3)->get();
-        $lesson = Lesson::where('title', 'like', "%$query%")->take(3)->get();
-
-        return response()->json([
-            'courses' => $courses,
-            'posts' => $posts,
-            'lesson' => $lesson
-        ]);
-    }
 
     public function loading($course_id)
     {
@@ -187,7 +221,6 @@ class HomeController extends Controller
             ]);
         }
 
-        // Kiểm tra bài cuối cùng
         if (!$nextLesson) {
             return redirect()->route('lesson', $currentLesson->id)
                 ->with('success', 'Bạn đã hoàn thành toàn bộ khóa học!');
@@ -334,6 +367,7 @@ class HomeController extends Controller
             $course->firstLesson = $course->sections->flatMap->lessons->first();
         }
 
-        return view('reveal', compact('courses', 'course', 'title')); // Hoặc 'reveal'
+        return view('reveal', compact('courses', 'course', 'title')); 
     }
+
 }
