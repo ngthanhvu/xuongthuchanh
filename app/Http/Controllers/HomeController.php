@@ -60,7 +60,7 @@ class HomeController extends Controller
 
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
-        $quizzes = $lessons->flatMap->quizzes; // Lấy tất cả quizzes
+        $quizzes = $lessons->flatMap->quizzes; 
 
         return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
     }
@@ -132,7 +132,7 @@ class HomeController extends Controller
                 }
             }
         }
-
+//update user quizz result nộp bài update lại dữ liệu
         return view('showquizz', compact(
             'lesson',
             'quizzes',
