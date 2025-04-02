@@ -13,6 +13,7 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CouponController;
 use App\Models\Lesson;
 
 //Admin
@@ -207,4 +208,17 @@ Route::prefix('admin/users')->name('admin.users.')->group(function () {
     Route::post('/{id}/approve-teacher', [UserController::class, 'approveTeacherRequest'])->name('approve-teacher');
     Route::post('/{id}/reject-teacher', [UserController::class, 'rejectTeacherRequest'])->name('reject-teacher');
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+});
+
+// Coupon
+
+
+Route::prefix('admin/coupons')->name('admin.coupon.')->group(function () {
+    Route::get('/', [CouponController::class, 'index'])->name('index');
+    Route::get('/create', [CouponController::class, 'create'])->name('create');
+    Route::post('/store', [CouponController::class, 'store'])->name('store');
+    Route::get('/{id}', [CouponController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [CouponController::class, 'edit'])->name('edit');
+    Route::put('/{id}/update', [CouponController::class, 'update'])->name('update');
+    Route::delete('/{id}/delete', [CouponController::class, 'delete'])->name('delete');
 });

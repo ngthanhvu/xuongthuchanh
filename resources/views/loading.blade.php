@@ -227,79 +227,80 @@
             color: #007bff;
             margin-right: 5px;
         }
+
         price-section {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-    .price-section h5 {
-        font-weight: bold;
-        margin-bottom: 15px;
-        text-transform: uppercase;
-        color: #333;
-    }
+        .price-section h5 {
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            color: #333;
+        }
 
-    .price-section .course-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-    }
+        .price-section .course-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
 
-    .price-section img {
-        border-radius: 8px;
-        object-fit: cover;
-    }
+        .price-section img {
+            border-radius: 8px;
+            object-fit: cover;
+        }
 
-    .price-section p {
-        margin: 0;
-        font-size: 16px;
-        color: #555;
-    }
+        .price-section p {
+            margin: 0;
+            font-size: 16px;
+            color: #555;
+        }
 
-    .price-section p span {
-        font-weight: bold;
-        color: #d9534f;
-    }
+        .price-section p span {
+            font-weight: bold;
+            color: #d9534f;
+        }
 
-    .discount-code {
-        display: flex;
-        gap: 10px;
-        margin: 15px 0;
-    }
+        .discount-code {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
 
-    .discount-code input {
-        flex: 1;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
+        .discount-code input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-    .discount-code button {
-        background: #ff6f61;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
+        .discount-code button {
+            background: #ff6f61;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-    .discount-code button:hover {
-        background: #ff6f62;
-    }
+        .discount-code button:hover {
+            background: #ff6f62;
+        }
 
-    .total {
-        font-weight: bold;
-        font-size: 18px;
-        display: flex;
-        justify-content: space-between;
-        border-top: 2px solid #ddd;
-        padding-top: 10px;
-        margin-top: 15px;
-    }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 
@@ -362,7 +363,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="buyNowModalLabel">Thanh toán cho khóa học:
-                            {{ $course->title ?? 'Khóa học' }}</h5>
+                            {{ $course->title ?? 'Khóa học' }}
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
