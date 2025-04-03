@@ -31,7 +31,7 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required',
             'description' => 'nullable',
-            'thumbnail' => 'nullable',
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif',
             'price' => 'required|numeric',
             'categories_id' => 'required|exists:categories,id',
         ]);
