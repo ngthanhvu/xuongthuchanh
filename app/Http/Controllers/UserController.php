@@ -164,7 +164,7 @@ class UserController extends Controller
         return response()->json(['success' => true, 'message' => 'Xóa ảnh thành công']);
     }
 
-    
+
     public function youcourse()
     {
         $title = 'Lộ trình học tập';
@@ -179,7 +179,7 @@ class UserController extends Controller
             $course->firstLesson = $course->sections->flatMap->lessons->first();
         }
 
-        return view('you-course', compact('courses', 'course', 'title')); 
+        return view('you-course', compact('courses', 'course', 'title'));
     }
 
     public function changePassword()
@@ -421,25 +421,25 @@ class UserController extends Controller
     }
 
     public function approveTeacherRequest($id)
-{
-    $user = User::findOrFail($id);
-    
-    // Kiểm tra điều kiện trước khi duyệt
-    if (!$user->is_teacher_requested || $user->teacher_request_status !== 'pending') {
-        return back()->with('error', 'Yêu cầu không hợp lệ hoặc đã được xử lý');
+    {
+        $user = User::findOrFail($id);
+
+        // Kiểm tra điều kiện trước khi duyệt
+        if (!$user->is_teacher_requested || $user->teacher_request_status !== 'pending') {
+            return back()->with('error', 'Yêu cầu không hợp lệ hoặc đã được xử lý');
+        }
+
+        $user->update([
+            'role' => 'teacher',
+            'teacher_request_status' => 'approved',
+            'is_teacher_requested' => false // Đánh dấu đã xử lý
+        ]);
+
+        // Gửi thông báo (nếu cần)
+        // $user->notify(new TeacherRequestApproved());
+
+        return back()->with('success', 'Đã phê duyệt yêu cầu thành công');
     }
-
-    $user->update([
-        'role' => 'teacher',
-        'teacher_request_status' => 'approved',
-        'is_teacher_requested' => false // Đánh dấu đã xử lý
-    ]);
-
-    // Gửi thông báo (nếu cần)
-    // $user->notify(new TeacherRequestApproved());
-
-    return back()->with('success', 'Đã phê duyệt yêu cầu thành công');
-}
 
     public function rejectTeacherRequest(Request $request, $id)
     {
@@ -454,43 +454,43 @@ class UserController extends Controller
         return back()->with('success', 'Đã từ chối yêu cầu');
     }
     public function showTeacherRequestForm()
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    if ($user->role !== 'user') {
-        return redirect()->route('profile')->with('error', 'Không đủ quyền');
+        if ($user->role !== 'user') {
+            return redirect()->route('profile')->with('error', 'Không đủ quyền');
+        }
+
+        // Cho phép gửi lại nếu trước đó bị từ chối
+        if ($user->is_teacher_requested && $user->teacher_request_status !== 'rejected') {
+            return redirect()->route('profile')->with('info', 'Bạn đã có yêu cầu đang chờ duyệt');
+        }
+
+        return view('teacher.request', [
+            'canRequest' => !$user->is_teacher_requested || $user->teacher_request_status === 'rejected'
+        ]);
     }
+    public function requestTeacher(Request $request)
+    {
+        $user = auth()->user();
 
-    // Cho phép gửi lại nếu trước đó bị từ chối
-    if ($user->is_teacher_requested && $user->teacher_request_status !== 'rejected') {
-        return redirect()->route('profile')->with('info', 'Bạn đã có yêu cầu đang chờ duyệt');
+        if ($user->role !== 'user') {
+            return back()->with('error', 'Không đủ quyền truy cập');
+        }
+
+        $request->validate([
+            'message' => 'required|string|max:500',
+            'qualifications' => 'required|string|max:1000'
+        ]);
+
+        $user->update([
+            'is_teacher_requested' => true,
+            'teacher_request_status' => 'pending',
+            'teacher_request_message' => $request->message,
+            'qualifications' => $request->qualifications,
+            'teacher_request_at' => now()
+        ]);
+
+        return redirect()->route('profile')->with('success', 'Đã gửi yêu cầu thành công!');
     }
-
-    return view('teacher.request', [
-        'canRequest' => !$user->is_teacher_requested || $user->teacher_request_status === 'rejected'
-    ]);
-}
-public function requestTeacher(Request $request)
-{
-    $user = auth()->user();
-
-    if ($user->role !== 'user') {
-        return back()->with('error', 'Không đủ quyền truy cập');
-    }
-
-    $request->validate([
-        'message' => 'required|string|max:500',
-        'qualifications' => 'required|string|max:1000'
-    ]);
-
-    $user->update([
-        'is_teacher_requested' => true,
-        'teacher_request_status' => 'pending',
-        'teacher_request_message' => $request->message,
-        'qualifications' => $request->qualifications,
-        'teacher_request_at' => now()
-    ]);
-
-    return redirect()->route('profile')->with('success', 'Đã gửi yêu cầu thành công!');
-}
 }

@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
 @section('content')
+<!-- Thông báo session -->
 @if (session('success'))
 <script>
     iziToast.success({
         title: 'Thành công',
-        message: '{{ session('
-        success ') }}',
+        message: '{{ session('success') }}',
         position: 'topRight'
     });
 </script>
@@ -15,8 +15,7 @@
 <script>
     iziToast.error({
         title: 'Lỗi',
-        message: '{{ session('
-        error ') }}',
+        message: '{{ session('error') }}',
         position: 'topRight'
     });
 </script>
@@ -96,11 +95,10 @@
                             @endswitch
                         </td>
                         <td class="tw-px-4 tw-text-center">
-                            <div class="d-flex justify-content-center align-items-center gap-2">
-                                @if(Auth::user()->id !== $user->id)
+                            <div class="d-flex justify-content-center align-items-center gap-2">                                @if(Auth::user()->id !== $user->id)
                                 @if((Auth::user()->role == 'owner' && $user->role != 'owner') ||
                                 (Auth::user()->role == 'admin' && $user->role != 'owner'))
-                                <div class="dropdown">
+                                <div class="dropdown tw-mr-2">
                                     <button class="btn btn-sm btn-outline-primary dropdown-toggle"
                                         type="button"
                                         id="roleDropdown{{ $user->id }}"
@@ -130,8 +128,6 @@
                                     </ul>
                                 </div>
                                 @endif
-
-
                                 @if(($user->role == 'user' && Auth::user()->role == 'admin') ||
                                 (Auth::user()->role == 'owner' && $user->role != 'owner'))
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
@@ -208,14 +204,17 @@
                         </td>
                         <td class="tw-px-4 tw-text-center">
                             @if($request->teacher_request_status === 'pending')
-                            <button class="btn btn-sm btn-success me-1"
-                                onclick="approveRequest({{ $request->id }})">
-                                <i class="fas fa-check"></i> Duyệt
-                            </button>
+                            <!-- Form cho nút Duyệt -->
+                            <form action="{{ route('admin.users.approve-teacher', $request->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-sm btn-success me-1" onclick="return confirm('Bạn có chắc muốn duyệt yêu cầu này?')">
+                                    <i class="fas fa-check"></i> Duyệt
+                                </button>
+                            </form>
 
-                            <button class="btn btn-sm btn-danger"
-                                data-bs-toggle="modal"
-                                data-bs-target="#rejectModal{{ $request->id }}">
+                            <!-- Nút Từ chối với Modal -->
+                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $request->id }}">
                                 <i class="fas fa-times"></i> Từ chối
                             </button>
 
@@ -225,6 +224,7 @@
                                     <div class="modal-content">
                                         <form id="rejectForm{{ $request->id }}" action="{{ route('admin.users.reject-teacher', $request->id) }}" method="POST">
                                             @csrf
+                                            @method('PUT')
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Lý do từ chối</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -272,43 +272,6 @@
 
 @push('scripts')
 <script>
-    function approveRequest(userId) {
-        if (confirm('Bạn có chắc muốn duyệt yêu cầu này?')) {
-            fetch(`/admin/users/${userId}/approve-teacher`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        iziToast.success({
-                            title: 'Thành công',
-                            message: data.message,
-                            position: 'topRight'
-                        });
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        iziToast.error({
-                            title: 'Lỗi',
-                            message: data.message,
-                            position: 'topRight'
-                        });
-                    }
-                })
-                .catch(error => {
-                    iziToast.error({
-                        title: 'Lỗi',
-                        message: 'Đã xảy ra lỗi khi xử lý yêu cầu',
-                        position: 'topRight'
-                    });
-                });
-        }
-    }
-
     // Khởi tạo lại dropdown khi chuyển tab
     document.addEventListener('DOMContentLoaded', function() {
         var tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
@@ -316,8 +279,7 @@
             tabEl.addEventListener('shown.bs.tab', function(event) {
                 var dropdowns = document.querySelectorAll('.dropdown-toggle');
                 dropdowns.forEach(function(dropdown) {
-                    var dropdownInstance = new bootstrap.Dropdown(dropdown);
-                    dropdownInstance.show();
+                    var dropdownInstance = bootstrap.Dropdown.getInstance(dropdown) || new bootstrap.Dropdown(dropdown);
                 });
             });
         });

@@ -209,7 +209,7 @@ Route::middleware(['auth'])->group(function () {});
 Route::prefix('admin/users')->name('admin.users.')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('index');
     Route::post('/{id}/update-role', [UserController::class, 'updateRole'])->name('update-role');
-    Route::post('/{id}/approve-teacher', [UserController::class, 'approveTeacherRequest'])->name('approve-teacher');
+    Route::put('/{id}/approve-teacher', [UserController::class, 'approveTeacherRequest'])->name('approve-teacher');
     Route::post('/{id}/reject-teacher', [UserController::class, 'rejectTeacherRequest'])->name('reject-teacher');
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
 });

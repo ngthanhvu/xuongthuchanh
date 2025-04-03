@@ -113,20 +113,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserQuizResult::class);
     }
-    public function sendTeacherRequestNotification()
-    {
-        Mail::to($this->email)->send(new TeacherRequestSubmitted($this));
-    }
+    // public function sendTeacherRequestNotification()
+    // {
+    //     Mail::to($this->email)->send(new TeacherRequestSubmitted($this));
+    // }
 
-    public function sendTeacherApprovalNotification()
-    {
-        Mail::to($this->email)->send(new TeacherRequestApproved($this));
-    }
+    // public function sendTeacherApprovalNotification()
+    // {
+    //     Mail::to($this->email)->send(new TeacherRequestApproved($this));
+    // }
 
-    public function sendTeacherRejectionNotification()
-    {
-        Mail::to($this->email)->send(new TeacherRequestRejected($this));
-    }
+    // public function sendTeacherRejectionNotification()
+    // {
+    //     Mail::to($this->email)->send(new TeacherRequestRejected($this));
+    // }
 
     public function enrolledCourses()
     {
