@@ -137,6 +137,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
 Route::get('/lessons/{id}', [HomeController::class, 'lesson'])->name('lesson');
 Route::get('/thanh-toan/{course_id}', [HomeController::class, 'loading'])->name('loading');
+Route::get('/khoa-hoc', [HomeController::class, 'course'])->name('course');
 
 
 // Route::get('/lessons/{id}', function () {

@@ -8,11 +8,13 @@ use App\Models\Lesson;
 use App\Models\Section;
 use App\Models\Quiz;
 use App\Models\Post;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\UserQuizResult;
 use App\Models\UserCourseProgress;
 
 use \Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -28,7 +30,7 @@ class HomeController extends Controller
         $title = 'Trang chủ';
         $courses = Course::all();
         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
-        
+
         $userId = Auth::check() ? Auth::id() : null;
         $courseProgress = [];
 
@@ -65,6 +67,81 @@ class HomeController extends Controller
 
         return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'posts'));
     }
+
+    public function course(Request $request)
+    {
+        $categories = Category::all();
+
+        $maxPrice = Course::max('price') ?? 0;
+
+        $query = Course::query();
+
+        Log::info('Categories filter: ' . $request->categories);
+
+        if ($request->has('categories') && $request->categories != '') {
+            $query->where('categories_id', $request->categories);
+        }
+
+        if ($request->has('price_range') && $request->price_range != $maxPrice) {
+            $query->where('price', '<=', $request->price_range);
+        }
+
+        if ($request->has('sort')) {
+            if ($request->sort == 'price_asc') {
+                $query->orderBy('price', 'asc');
+            } elseif ($request->sort == 'price_desc') {
+                $query->orderBy('price', 'desc');
+            }
+        }
+
+        if ($request->has('order')) {
+            if ($request->order == 'latest') {
+                $query->orderBy('created_at', 'desc');
+            } elseif ($request->order == 'oldest') {
+                $query->orderBy('created_at', 'asc');
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $courses = $query->paginate(12);
+
+        $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
+        $userId = Auth::check() ? Auth::id() : null;
+        $courseProgress = [];
+        $enrollmentStatus = [];
+        $links = [];
+
+        if ($userId) {
+            foreach ($courses as $course) {
+                $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
+                $enrollmentStatus[$course->id] = $isEnrolled;
+
+                if ($isEnrolled) {
+                    $firstSection = Section::where('course_id', $course->id)->first();
+                    if ($firstSection) {
+                        $firstLesson = Lesson::where('section_id', $firstSection->id)->first();
+                        $lessonId = $firstLesson ? $firstLesson->id : null;
+                        $links[$course->id] = $lessonId ? route('lesson', $lessonId) : route('detail', $course->id);
+                    } else {
+                        $links[$course->id] = route('detail', $course->id);
+                    }
+                } else {
+                    $links[$course->id] = route('detail', $course->id);
+                }
+            }
+        }
+
+        if ($userId) {
+            foreach ($courses as $course) {
+                $progress = UserCourseProgress::where('course_id', $course->id)->where('user_id', $userId)->first();
+                $courseProgress[$course->id] = $progress ? $progress->progress : 0;
+            }
+        }
+
+        return view('course', compact('courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'categories', 'maxPrice'));
+    }
+
     public function search(Request $request)
     {
         $query = $request->input('query');
@@ -367,7 +444,6 @@ class HomeController extends Controller
             $course->firstLesson = $course->sections->flatMap->lessons->first();
         }
 
-        return view('reveal', compact('courses', 'course', 'title')); 
+        return view('reveal', compact('courses', 'course', 'title'));
     }
-
 }
