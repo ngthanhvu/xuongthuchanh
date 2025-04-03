@@ -56,6 +56,12 @@
                                 <a class="nav-link" href="{{ url('/admin') }}">Admin</a>
                             </li>
                         @endif
+
+                        @if (Auth::check() && (Auth::user()->role === 'teacher'))
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/teacher') }}">Teacher</a>
+                            </li>
+                        @endif
                     </ul>
 
                     <div class="d-flex me-3 position-relative">

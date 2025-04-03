@@ -16,10 +16,13 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 
+use App\Http\Middleware\CheckAdmin;
+use App\Http\Middleware\CheckTeacher;
+
 use App\Models\Lesson;
 
 //Admin
-Route::middleware('check.role:admin')->group(function () {
+Route::middleware(['check.admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 
     Route::get('/admin/users', function () {
@@ -232,3 +235,19 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/frontend-path', [HomeController::class, 'frontendPath'])->name('frontend-path');
 Route::get('/backend-path', [HomeController::class, 'backendPath'])->name('backend-path');
 Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learning-paths.index');
+
+
+
+Route::middleware(['check.teacher'])->group(function () {
+    Route::get('/teacher', [AdminController::class, 'index'])->name('teacher.dashboard');
+
+    Route::prefix('teacher/category')->name('teacher.category.')->group(function () {
+        Route::get('/', [CategoryController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [CategoryController::class, 'createTeacher'])->name('create');
+        Route::post('/store', [CategoryController::class, 'storeTeacher'])->name('store');
+        Route::get('/edit/{id}', [CategoryController::class, 'editTeacher'])->name('edit');
+        Route::put('/update/{id}', [CategoryController::class, 'updateTeacher'])->name('update');
+        Route::post('/delete/{id}', [CategoryController::class, 'destroyTeacher'])->name('delete');
+    });
+
+});

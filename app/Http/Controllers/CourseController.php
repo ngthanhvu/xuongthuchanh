@@ -18,6 +18,13 @@ class CourseController extends Controller
         return view('admin.course.index', compact('courses', 'title'));
     }
 
+    public function teacher()
+    {
+        $title = 'Quản lí khóa học';
+        $courses = Course::with('user', 'category')->get();
+        return view('teacher.course.index', compact('courses', 'title'));
+    }
+
     public function create()
     {
         $title = 'Tạo khóa học';
