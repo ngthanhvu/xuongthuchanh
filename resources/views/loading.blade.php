@@ -354,52 +354,94 @@
 
     <!-- Buy Now Modal -->
     <div class="modal fade" id="buyNowModal" tabindex="-1" aria-labelledby="buyNowModalLabel" aria-hidden="true">
-        <form method="POST" action="{{ route('payment.create') }}">
-            @csrf
-            <input type="hidden" name="course_id" value="{{ $course->id }}">
-            <input type="hidden" name="price" value="{{ $course->price }}">
+    <form id="paymentForm" method="POST" action="{{ route('payment.create') }}">
+        @csrf
+        <input type="hidden" name="course_id" value="{{ $course->id }}">
+        <input type="hidden" id="priceInput" name="price" value="{{ $course->price }}">
 
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="buyNowModalLabel">Thanh toán cho khóa học:
-                            {{ $course->title ?? 'Khóa học' }}
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h5 class="mt-4">Bạn nhận được gì từ khóa học này?</h5>
-                        <ul>
-                            <p class="mt-3">{{ is_countable($sections) ? count($sections) : 0 }} Chương học</p>
-                            <p class="mt-3">{{ is_countable($lessons) ? count($lessons) : 0 }} Bài học</p>
-                            <p class="mt-3">{{ is_countable($quizzes) ? count($quizzes) : 0 }} Bài kiểm tra</p>
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="buyNowModalLabel">Thanh toán cho khóa học: {{ $course->title ?? 'Khóa học' }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 class="mt-4">Bạn nhận được gì từ khóa học này?</h5>
+                    <ul>
+                        <p class="mt-3">{{ is_countable($sections) ? count($sections) : 0 }} Chương học</p>
+                        <p class="mt-3">{{ is_countable($lessons) ? count($lessons) : 0 }} Bài học</p>
+                        <p class="mt-3">{{ is_countable($quizzes) ? count($quizzes) : 0 }} Bài kiểm tra</p>
+                    </ul>
 
-                        </ul>
+                    <div class="price-section">
+                        <h5>Chi tiết thanh toán</h5>
+                        <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid" alt="{{ $course->title }}" style="width: 100px; height: 50px;">
+                        <p>Khóa học {{ $course->title ?? 'Khóa học' }}
+                            <span>{{ number_format($course->price, 0, ',', '.') }}đ</span>
+                        </p>
 
-                        <div class="price-section">
-                            <h5>Chi tiết thanh toán</h5>
-                            <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid"
-                                alt="{{ $course->title }}" style="width: 100px; height: 50px;">
-                            <p>Khóa học {{ $course->title ?? 'Khóa học' }}
-                                <span>{{ number_format($course->price, 0, ',', '.') }}đ</span>
-                            </p>
-
-                            <div class="discount-code">
-                                <input type="text" placeholder="Nhập mã giảm giá nếu có">
-                                <button type="button">Áp dụng</button>
-                            </div>
-
-                            <p class="total">TỔNG
-                                <span>{{ number_format($course->price, 0, ',', '.') }}đ</span>
-                            </p>
+                        <div class="discount-code">
+                            <input type="text" id="couponCode" name="coupon_code" placeholder="Nhập mã giảm giá nếu có">
+                            <button type="button" id="applyCouponBtn">Áp dụng</button>
+                            <span id="couponMessage"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
-        </form>
-    </div>
-    </div>
-    </div>
-    </div>
+                        <p class="total">TỔNG
+                            <span id="totalPrice">{{ number_format($course->price, 0, ',', '.') }}đ</span>
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('applyCouponBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    const couponCode = document.getElementById('couponCode').value;
+    const originalPrice = {{ $course->price }};
+    
+    fetch('/coupon/apply', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            coupon_code: couponCode,
+            order_amount: originalPrice
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const messageElement = document.getElementById('couponMessage');
+        const priceInput = document.getElementById('priceInput');
+        const totalPrice = document.getElementById('totalPrice');
+        
+        if (data.success) {
+            messageElement.style.color = 'green';
+            messageElement.textContent = `Giảm: ${data.discount_amount.toLocaleString('vi-VN')}đ, Tổng cuối: ${data.final_amount.toLocaleString('vi-VN')}đ`;
+            // Cập nhật giá trị price trong form
+            priceInput.value = data.final_amount;
+            // Cập nhật hiển thị tổng tiền
+            totalPrice.textContent = `${data.final_amount.toLocaleString('vi-VN')}đ`;
+        } else {
+            messageElement.style.color = 'red';
+            messageElement.textContent = data.message;
+            // Reset về giá gốc nếu áp dụng thất bại
+            priceInput.value = originalPrice;
+            totalPrice.textContent = `${originalPrice.toLocaleString('vi-VN')}đ`;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('couponMessage').textContent = 'Đã xảy ra lỗi khi áp dụng mã giảm giá.';
+    });
+});
+</script>
 
 
 
@@ -407,3 +449,39 @@
 </body>
 
 </html>
+
+<!-- <script>
+    document.getElementById('applyCouponBtn').addEventListener('click', function() {
+        const couponCode = document.getElementById('couponCode').value;
+        const orderAmount = 1000000; // Thay bằng giá trị thực tế của đơn hàng từ hệ thống của bạn
+
+        fetch('/coupon/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    coupon_code: couponCode,
+                    order_amount: orderAmount
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageElement = document.getElementById('couponMessage');
+                if (data.success) {
+                    messageElement.style.color = 'green';
+                    messageElement.textContent = `${data.message} Giảm: ${data.discount_amount}đ, Tổng cuối: ${data.final_amount}đ`;
+                    // Lưu coupon_id nếu cần cho quá trình thanh toán
+                    localStorage.setItem('appliedCouponId', data.coupon_id);
+                } else {
+                    messageElement.style.color = 'red';
+                    messageElement.textContent = data.message;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('couponMessage').textContent = 'Đã xảy ra lỗi khi áp dụng mã giảm giá.';
+            });
+    });
+</script> -->

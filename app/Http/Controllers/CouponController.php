@@ -15,7 +15,7 @@ class CouponController extends Controller
     public function index()
     {
         $title = 'Quản lý mã giảm giá';
-        $coupons = Coupon::with('creator')->paginate(10); 
+        $coupons = Coupon::with('creator')->paginate(10);
         return view('admin.coupon.index', compact('coupons', 'title'));
     }
 
@@ -53,7 +53,7 @@ class CouponController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'is_active' => $request->boolean('is_active', true, false),
-            'created_by' => Auth::id(), 
+            'created_by' => Auth::id(),
         ]);
 
         return redirect()->route('admin.coupon.index')->with('success', 'Mã giảm giá đã được tạo thành công.');
@@ -101,7 +101,7 @@ class CouponController extends Controller
             'usage_limit' => $request->usage_limit,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-           'is_active' => $request->has('is_active'),
+            'is_active' => $request->has('is_active'),
 
 
         ]);
@@ -116,5 +116,57 @@ class CouponController extends Controller
         return redirect()->route('admin.coupon.index')->with('success', 'Mã giảm giá đã được xóa thành công.');
     }
 
-    
+    public function applyCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string|max:50',
+            'order_amount' => 'required|numeric|min:0' // Tổng giá trị đơn hàng
+        ]);
+
+        $coupon = Coupon::where('code', $request->coupon_code)->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá không tồn tại.'
+            ], 404);
+        }
+
+        // Kiểm tra tính hợp lệ của coupon
+        if (!$coupon->isValid()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn.'
+            ], 400);
+        }
+
+        // Kiểm tra giá trị đơn hàng tối thiểu
+        if ($request->order_amount < $coupon->min_order_value) {
+            return response()->json([
+                'success' => false,
+                'message' => "Đơn hàng phải có giá trị tối thiểu {$coupon->min_order_value} để sử dụng mã này."
+            ], 400);
+        }
+
+        // Tính toán số tiền giảm giá
+        $discount = 0;
+        if ($coupon->discount_type === 'percentage') {
+            $discount = ($coupon->discount_value / 100) * $request->order_amount;
+            if ($coupon->max_discount_amount && $discount > $coupon->max_discount_amount) {
+                $discount = $coupon->max_discount_amount;
+            }
+        } else { // fixed
+            $discount = $coupon->discount_value;
+        }
+
+        $final_amount = max(0, $request->order_amount - $discount);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Áp dụng mã giảm giá thành công!',
+            'discount_amount' => $discount,
+            'final_amount' => $final_amount,
+            'coupon_id' => $coupon->id
+        ]);
+    }
 }

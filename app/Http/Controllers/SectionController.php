@@ -29,6 +29,9 @@ class SectionController extends Controller
         $request->validate([
             'course_id' => 'required|exists:courses,id',
             'title' => 'required',
+        ],[
+            'course_id.required' => 'Vui lòng chọn khóa học',
+            'title.required' => 'Vui lòng nhập tiêu đề'
         ]);
 
         Section::create([

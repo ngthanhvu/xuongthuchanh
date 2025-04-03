@@ -16,10 +16,13 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 
+use App\Http\Middleware\CheckAdmin;
+use App\Http\Middleware\CheckTeacher;
+
 use App\Models\Lesson;
 
 //Admin
-Route::middleware('check.role:admin')->group(function () {
+Route::middleware(['check.admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
 
     Route::get('/admin/users', function () {
@@ -134,6 +137,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/chi-tiet/{id}', [HomeController::class, 'detail'])->name('detail');
 Route::get('/lessons/{id}', [HomeController::class, 'lesson'])->name('lesson');
 Route::get('/thanh-toan/{course_id}', [HomeController::class, 'loading'])->name('loading');
+Route::get('/khoa-hoc', [HomeController::class, 'course'])->name('course');
 
 
 // Route::get('/lessons/{id}', function () {
@@ -224,6 +228,7 @@ Route::prefix('admin/coupons')->name('admin.coupon.')->group(function () {
     Route::put('/{id}/update', [CouponController::class, 'update'])->name('update');
     Route::delete('/{id}/delete', [CouponController::class, 'delete'])->name('delete');
 });
+Route::post('/coupon/apply', [CouponController::class, 'applyCoupon'])->name('coupon.apply');
 
 //search
 Route::get('/search', [HomeController::class, 'search'])->name('search');
@@ -232,3 +237,19 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/frontend-path', [HomeController::class, 'frontendPath'])->name('frontend-path');
 Route::get('/backend-path', [HomeController::class, 'backendPath'])->name('backend-path');
 Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learning-paths.index');
+
+
+
+Route::middleware(['check.teacher'])->group(function () {
+    Route::get('/teacher', [AdminController::class, 'index'])->name('teacher.dashboard');
+
+    Route::prefix('teacher/category')->name('teacher.category.')->group(function () {
+        Route::get('/', [CategoryController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [CategoryController::class, 'createTeacher'])->name('create');
+        Route::post('/store', [CategoryController::class, 'storeTeacher'])->name('store');
+        Route::get('/edit/{id}', [CategoryController::class, 'editTeacher'])->name('edit');
+        Route::put('/update/{id}', [CategoryController::class, 'updateTeacher'])->name('update');
+        Route::post('/delete/{id}', [CategoryController::class, 'destroyTeacher'])->name('delete');
+    });
+
+});

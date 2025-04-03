@@ -46,6 +46,9 @@
                             <a class="nav-link active" href="/">Trang chủ</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="/khoa-hoc">Khóa Học</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="/lo-trinh">Lộ trình</a>
                         </li>
                         <li class="nav-item">
@@ -54,6 +57,12 @@
                         @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'owner'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('/admin') }}">Admin</a>
+                            </li>
+                        @endif
+
+                        @if (Auth::check() && (Auth::user()->role === 'teacher'))
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/teacher') }}">Teacher</a>
                             </li>
                         @endif
                     </ul>
@@ -76,9 +85,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-outline-custom ms-2" type="button">
-                            <i class="fas fa-search"></i>
-                        </button>
+                        
                     </div>
 
                     <div class="d-flex align-items-center">
