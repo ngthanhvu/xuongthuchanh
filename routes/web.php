@@ -227,6 +227,7 @@ Route::prefix('admin/coupons')->name('admin.coupon.')->group(function () {
     Route::put('/{id}/update', [CouponController::class, 'update'])->name('update');
     Route::delete('/{id}/delete', [CouponController::class, 'delete'])->name('delete');
 });
+Route::post('/coupon/apply', [CouponController::class, 'applyCoupon'])->name('coupon.apply');
 
 //search
 Route::get('/search', [HomeController::class, 'search'])->name('search');
