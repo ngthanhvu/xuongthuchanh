@@ -6,7 +6,8 @@
 <script>
     iziToast.success({
         title: 'Thành công',
-        message: '{{ session('success') }}',
+        message: '{{ session('
+        success ') }}',
         position: 'topRight'
     });
 </script>
@@ -15,7 +16,8 @@
 <script>
     iziToast.error({
         title: 'Lỗi',
-        message: '{{ session('error') }}',
+        message: '{{ session('
+        error ') }}',
         position: 'topRight'
     });
 </script>
@@ -95,7 +97,7 @@
                             @endswitch
                         </td>
                         <td class="tw-px-4 tw-text-center">
-                            <div class="d-flex justify-content-center align-items-center gap-2">                                @if(Auth::user()->id !== $user->id)
+                            <div class="d-flex justify-content-center align-items-center gap-2"> @if(Auth::user()->id !== $user->id)
                                 @if((Auth::user()->role == 'owner' && $user->role != 'owner') ||
                                 (Auth::user()->role == 'admin' && $user->role != 'owner'))
                                 <div class="dropdown tw-mr-2">
@@ -118,10 +120,6 @@
                                                 <button type="submit" name="role" value="user"
                                                     class="dropdown-item {{ $user->role == 'user' ? 'active' : '' }}">
                                                     <i class="fas fa-user me-2"></i> Chuyển User
-                                                </button>
-                                                <button type="submit" name="role" value="teacher"
-                                                    class="dropdown-item {{ $user->role == 'teacher' ? 'active' : '' }}">
-                                                    <i class="fas fa-chalkboard-teacher me-2"></i> Chuyển Giảng viên
                                                 </button>
                                             </form>
                                         </li>
