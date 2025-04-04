@@ -112,14 +112,38 @@ class CourseController extends Controller
         $title = 'Quản lí khóa học';
         $query = Course::where('user_id', Auth::id())->with('user', 'category');
         
-        // Xử lý tìm kiếm
         if (request()->has('search')) {
             $searchTerm = request('search');
             $query->where('title', 'like', '%' . $searchTerm . '%');
         }
+
+        $sort = request('sort', 'newest');
+        switch ($sort) {
+            case 'a-z';
+                $query->orderBy('title', 'asc');
+                break;
+            case 'z-a';
+                $query->orderBy('title', 'desc');
+                break;
+            case 'price-asc';
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price-desc';
+                $query->orderBy('price', 'desc');
+                break;
+            case 'newest';
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'oldest';
+                $query->orderBy('created_at', 'asc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
         
         $courses = $query->get();
-        return view('teacher.course.index', compact('courses', 'title'));
+        return view('teacher.course.index', compact('courses', 'title', 'sort'));
     }
 
     public function createTeacher()
