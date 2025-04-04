@@ -25,11 +25,14 @@ class PaymentController extends Controller
     public function delete($id)
     {
         $payment = Payment::find($id);
-        $payment->delete();
-        return redirect()->route('admin.order.index')->with('success', 'Xóa Hóa Đơn Thành Công');
+        if ($payment) {
+            $payment->delete();
+            return redirect()->route('admin.order.index')->with('success', 'Xóa Hóa Đơn Thành Công');
+        }
+        return redirect()->route('admin.order.index')->with('error', 'Không tìm thấy hóa đơn');
     }
 
-public function create(Request $request)
+    public function create(Request $request)
     {
         $vnp_TmnCode = config('services.vnpay.tmn_code');
         $vnp_HashSecret = config('services.vnpay.hash_secret');
@@ -44,21 +47,46 @@ public function create(Request $request)
 
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login');
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để đăng ký khóa học');
         }
 
         $course = Course::findOrFail($request->course_id);
-        $originalPrice = $course->price; // Lấy giá gốc từ database
+        $originalPrice = $course->price; 
 
         $enrollment = Enrollment::where('user_id', $user->id)
             ->where('course_id', $request->course_id)
             ->first();
-
         if ($enrollment) {
             return redirect()->route('payment.result', [
                 'status' => 'already_enrolled',
                 'course_id' => $request->course_id,
             ]);
+        }
+
+        if ($course->price == 0) {
+            Enrollment::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'course_id' => $course->id,
+                ],
+                [
+                    'enrollment_at' => now(),
+                ]
+            );
+
+            if ($user->email && $course) {
+                try {
+                    Mail::to($user->email)->send(new CourseConfirmationMail($course));
+                    Log::info('Email sent to user:', ['email' => $user->email]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email:', ['error' => $e->getMessage()]);
+                }
+            }
+
+            return redirect()->route('payment.result', [
+                'status' => '00',
+                'course_id' => $course->id,
+            ])->with('success', 'Đăng ký khóa học miễn phí thành công!');
         }
 
         $existingPayment = Payment::where('user_id', $user->id)
@@ -78,13 +106,12 @@ public function create(Request $request)
         }
 
         // Xử lý coupon
-        $finalAmount = $originalPrice; // Bắt đầu với giá gốc từ database
+        $finalAmount = $originalPrice;
         $coupon = null;
         $discountAmount = 0;
 
         if ($request->coupon_code) {
             $coupon = Coupon::where('code', $request->coupon_code)->first();
-
             if ($coupon && $coupon->isValid()) {
                 if ($finalAmount >= $coupon->min_order_value) {
                     if ($coupon->discount_type === 'percentage') {
@@ -100,17 +127,17 @@ public function create(Request $request)
             }
         }
 
-        // Kiểm tra xem $request->price có khớp với $finalAmount không
+        // Kiểm tra giá trị request có khớp không
         if (abs($request->price - $finalAmount) > 0.01) {
             Log::warning('Price mismatch detected', [
                 'request_price' => $request->price,
                 'calculated_final_amount' => $finalAmount,
                 'course_id' => $request->course_id,
             ]);
-            // Có thể trả về lỗi nếu cần
-            // return redirect()->back()->with('error', 'Giá thanh toán không hợp lệ.');
+            return redirect()->back()->with('error', 'Giá thanh toán không hợp lệ.');
         }
 
+        // Tạo bản ghi thanh toán
         $payment = Payment::create([
             'user_id' => $user->id,
             'course_id' => $request->course_id,
@@ -125,7 +152,7 @@ public function create(Request $request)
         $vnp_TxnRef = $payment->id . '_' . $randomString;
         $vnp_OrderInfo = 'Thanh toán khóa học ' . $request->course_id;
         $vnp_OrderType = 'course_payment';
-        $vnp_Amount = $finalAmount * 100; // Sử dụng số tiền đã giảm
+        $vnp_Amount = $finalAmount * 100; // VNPay yêu cầu nhân 100
         $vnp_Locale = 'vn';
         $vnp_IpAddr = $request->ip();
         $vnp_CreateDate = date('YmdHis');
@@ -171,6 +198,7 @@ public function create(Request $request)
         Log::info('Payment created:', $payment->toArray());
         return redirect()->to($vnp_Url);
     }
+
     public function callback(Request $request)
     {
         Log::info('VNPay Callback Received:', $request->all());
@@ -205,7 +233,6 @@ public function create(Request $request)
                         'payment_date' => now(),
                     ]);
 
-                    // Tăng used_count của coupon nếu có
                     if ($payment->coupon_id) {
                         $coupon = Coupon::find($payment->coupon_id);
                         if ($coupon) {
@@ -231,7 +258,12 @@ public function create(Request $request)
 
                     $course = Course::find($payment->course_id);
                     if ($user->email && $course) {
-                        Mail::to($user->email)->send(new CourseConfirmationMail($course));
+                        try {
+                            Mail::to($user->email)->send(new CourseConfirmationMail($course));
+                            Log::info('Email sent to user:', ['email' => $user->email]);
+                        } catch (\Exception $e) {
+                            Log::error('Failed to send email:', ['error' => $e->getMessage()]);
+                        }
                     }
 
                     Log::info('Payment updated:', $payment->toArray());
@@ -279,6 +311,7 @@ public function create(Request $request)
                 '97' => 'Vui lòng đăng nhập để hoàn tất đăng ký.',
                 '01' => 'Thanh toán thất bại. Vui lòng thử lại.',
                 'already_enrolled' => 'Bạn đã đăng ký khóa học này rồi.',
+                'already_paid' => 'Bạn đã thanh toán cho khóa học này.',
                 default => 'Có lỗi xảy ra trong quá trình thanh toán.',
             };
 

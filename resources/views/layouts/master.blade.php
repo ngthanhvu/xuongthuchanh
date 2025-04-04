@@ -313,7 +313,7 @@
                             li.innerHTML = `
                                 <img src="${post.thumbnail ? `/storage/${post.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Post Icon" class="me-2">
                                 <div>
-                                    <a href="/posts/${post.id}" class="search-title">${post.title}</a>
+                                    <a href="/post/${post.id}" class="search-title">${post.title}</a>
                                 </div>
                             `;
                             postsList.appendChild(li);
