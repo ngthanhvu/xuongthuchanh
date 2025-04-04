@@ -11,13 +11,12 @@ class AdminController extends Controller
 {
     public function index()
     {
+        $title = 'Thống kê';
         $totalUsers = User::count();
         $totalCourses = Course::count();
 
-        // Chỉ lấy doanh thu từ các thanh toán có trạng thái "success"
         $totalRevenue = Payment::where('status', 'success')->sum('amount');
         
-        // Doanh thu tháng trước chỉ tính với các thanh toán thành công
         $lastMonthRevenue = Payment::where('status', 'success')
             ->whereMonth('payment_date', now()->subMonth()->month)
             ->sum('amount');
@@ -42,7 +41,6 @@ class AdminController extends Controller
 
         $newCoursesThisWeek = Course::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
 
-        // Chỉ lấy tổng doanh thu theo tháng từ các thanh toán có trạng thái "success"
         $monthlyPayments = Payment::selectRaw('MONTH(payment_date) as month, SUM(amount) as total')
             ->where('status', 'success')
             ->whereYear('payment_date', now()->year)
@@ -87,7 +85,7 @@ class AdminController extends Controller
 
         return view('admin.index', compact(
             'totalUsers', 'totalCourses', 'totalRevenue', 'monthlyPayments', 'monthlyUsers',
-            'revenueGrowth', 'userGrowth', 'newCoursesThisWeek', 'recentCourses', 'recentPayments'
+            'revenueGrowth', 'userGrowth', 'newCoursesThisWeek', 'recentCourses', 'recentPayments', 'title'
         ));
     }
 }
