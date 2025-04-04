@@ -103,31 +103,37 @@
         transform: rotate(180deg);
     }
 </style>
+
 <div id="loading-spinner" class="loading-overlay">
     <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>
 </div>
+
 <!-- Sidebar -->
 <div class="sidebar d-flex flex-column justify-content-between">
     <div>
+        @php
+            $prefix = Auth::user()->role === 'admin' || Auth::user()->role === 'owner' ? '/admin' : '/teacher';
+        @endphp
         <div class="tw-p-4">
             <h1 class="tw-text-xl tw-font-bold tw-text-white">
-                <i class="fas fa-wave-square tw-text-blue-500"></i> Admin Dashboard
+                <i class="fas fa-wave-square tw-text-blue-500"></i> 
+                {{ Auth::user()->role === 'admin' || Auth::user()->role === 'owner' ? 'Admin Dashboard' : 'Teacher Dashboard' }}
             </h1>
         </div>
         <nav class="tw-mt-4">
-            <a href="/admin"><i class="fas fa-home tw-mr-2"></i> Bảng điều khiển</a>
-            <a href="/admin/category"><i class="fas fa-folder tw-mr-2"></i> Danh mục</a>
+            <a href="{{ $prefix }}"><i class="fas fa-home tw-mr-2"></i> Bảng điều khiển</a>
+            <a href="{{ $prefix }}/category"><i class="fas fa-folder tw-mr-2"></i> Danh mục</a>
             <div class="menu-item">
                 <a href="#" class="menu-toggle">
                     <i class="fas fa-layer-group tw-mr-2"></i> Khoá học
                     <i class="fas fa-chevron-down toggle-icon tw-ml-[75px]"></i>
                 </a>
                 <div class="submenu">
-                    <a href="/admin/course"><i class="fas fa-list tw-mr-2"></i> Quản lý khoá học</a>
-                    <a href="/admin/sections"><i class="fas fa-plus tw-mr-2"></i> Quản lý chương học</a>
-                    <a href="/admin/lessons"><i class="fas fa-folder tw-mr-2"></i> Quản lý bài học</a>
+                    <a href="{{ $prefix }}/course"><i class="fas fa-list tw-mr-2"></i> Quản lý khoá học</a>
+                    <a href="{{ $prefix }}/sections"><i class="fas fa-plus tw-mr-2"></i> Quản lý chương học</a>
+                    <a href="{{ $prefix }}/lessons"><i class="fas fa-folder tw-mr-2"></i> Quản lý bài học</a>
                 </div>
             </div>
             <div class="menu-item">
@@ -136,19 +142,18 @@
                     <i class="fas fa-chevron-down toggle-icon tw-ml-[75px]"></i>
                 </a>
                 <div class="submenu">
-                    <a href="/admin/quizzes"><i class="fas fa-list tw-mr-2"></i> Quản lý bài thi</a>
-                    <a href="/admin/questions"><i class="fas fa-plus tw-mr-2"></i> Quản lý câu hỏi</a>
-                    <a href="/admin/answers"><i class="fas fa-folder tw-mr-2"></i> Quản lý đáp án</a>
+                    <a href="{{ $prefix }}/quizzes"><i class="fas fa-list tw-mr-2"></i> Quản lý bài thi</a>
+                    <a href="{{ $prefix }}/questions"><i class="fas fa-plus tw-mr-2"></i> Quản lý câu hỏi</a>
+                    <a href="{{ $prefix }}/answers"><i class="fas fa-folder tw-mr-2"></i> Quản lý đáp án</a>
                 </div>
             </div>
-            <a href="/admin/posts"><i class="fas fa-newspaper tw-mr-2"></i> Bài viết</a>
-            <a href="/admin/coupons"><i class="fas fa-tags tw-mr-2"></i> Mã giảm giá</a>
-            <a href="/admin/order"><i class="fa-solid fa-money-bill tw-mr-2"></i> Hóa Đơn</a>
-            <a href="/admin/users"><i class="fas fa-users tw-mr-2"></i> Người dùng</a>
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'owner')
+                <a href="{{ $prefix }}/posts"><i class="fas fa-newspaper tw-mr-2"></i> Bài viết</a>
+                <a href="{{ $prefix }}/coupons"><i class="fas fa-tags tw-mr-2"></i> Mã giảm giá</a>
+                <a href="{{ $prefix }}/users"><i class="fas fa-users tw-mr-2"></i> Người dùng</a>
+            @endif
+            <a href="{{ $prefix }}/order"><i class="fa-solid fa-money-bill tw-mr-2"></i> Hóa Đơn</a>
         </nav>
-
-
-
     </div>
 
     <div class="tw-p-4">
@@ -157,10 +162,11 @@
         </a>
     </div>
 </div>
+
+<!-- Navbar -->
 <nav class="navbar tw-p-3">
     <div class="container-fluid">
-        <div class="d-flex tw-w-50">
-        </div>
+        <div class="d-flex tw-w-50"></div>
         <div class="d-flex align-items-center">
             <div class="dropdown">
                 <a class="d-flex align-items-center tw-text-dark text-decoration-none tw-text-gray-500" href="#">
@@ -172,3 +178,25 @@
         </div>
     </div>
 </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.menu-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const submenu = this.nextElementSibling;
+            const icon = this.querySelector('.toggle-icon');
+            if (submenu && icon) {
+                if (submenu.classList.contains('active')) {
+                    submenu.classList.remove('active');
+                    submenu.style.maxHeight = null;
+                } else {
+                    submenu.classList.add('active');
+                    submenu.style.maxHeight = submenu.scrollHeight + 'px';
+                }
+                icon.classList.toggle('active');
+            }
+        });
+    });
+});
+</script>

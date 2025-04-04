@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Quiz extends Model
 {
-    protected $fillable = ['lesson_id', 'title', 'description'];
+    protected $fillable = ['lesson_id', 'user_id', 'title', 'description'];
 
     public function lesson()
     {
@@ -22,7 +23,7 @@ class Quiz extends Model
     {
         return $this->hasMany(UserQuizResult::class);
     }
-    
+
     public function isCompletedBy($user)
     {
         return $this->userQuizResults()->where('user_id', $user->id)->exists();
@@ -32,5 +33,18 @@ class Quiz extends Model
     {
         $result = $this->userQuizResults()->where('user_id', $user->id)->first();
         return $result ? $result->score : null;
+    }
+
+    // Scope để lọc quiz của teacher hiện tại
+    public function scopeOfTeacher($query)
+    {
+        return $query->where('user_id', Auth::id())
+            ->whereHas('lesson', function ($q) {
+                $q->whereHas('section', function ($q) {
+                    $q->whereHas('course', function ($q) {
+                        $q->where('user_id', Auth::id());
+                    });
+                });
+            });
     }
 }
