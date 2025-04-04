@@ -147,10 +147,12 @@
                     <a href="{{ $prefix }}/answers"><i class="fas fa-folder tw-mr-2"></i> Quản lý đáp án</a>
                 </div>
             </div>
-            <a href="{{ $prefix }}/posts"><i class="fas fa-newspaper tw-mr-2"></i> Bài viết</a>
-            <a href="{{ $prefix }}/coupons"><i class="fas fa-tags tw-mr-2"></i> Mã giảm giá</a>
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'owner')
+                <a href="{{ $prefix }}/posts"><i class="fas fa-newspaper tw-mr-2"></i> Bài viết</a>
+                <a href="{{ $prefix }}/coupons"><i class="fas fa-tags tw-mr-2"></i> Mã giảm giá</a>
+                <a href="{{ $prefix }}/users"><i class="fas fa-users tw-mr-2"></i> Người dùng</a>
+            @endif
             <a href="{{ $prefix }}/order"><i class="fa-solid fa-money-bill tw-mr-2"></i> Hóa Đơn</a>
-            <a href="{{ $prefix }}/users"><i class="fas fa-users tw-mr-2"></i> Người dùng</a>
         </nav>
     </div>
 
@@ -197,6 +199,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
-
 </script>
