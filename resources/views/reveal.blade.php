@@ -1,13 +1,6 @@
 @extends('layouts.master')
 @section('content')
     <style>
-        /* General Styling */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
         h3.tw-text-2xl {
             color: #1f2937;
             font-weight: 700;
@@ -26,8 +19,10 @@
         /* Stats Cards Styling */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* Chia đều thành 3 cột */
-            gap: 1rem; /* Khoảng cách giữa các cột */
+            grid-template-columns: repeat(3, 1fr);
+            /* Chia đều thành 3 cột */
+            gap: 1rem;
+            /* Khoảng cách giữa các cột */
             margin-bottom: 1.5rem;
         }
 
@@ -70,15 +65,30 @@
             gap: 0.5rem;
         }
 
-        .tw-text-blue-600 { color: #2563eb; }
-        .tw-text-green-600 { color: #16a34a; }
-        .tw-text-purple-600 { color: #7c3aed; }
-        .tw-text-green-500 { color: #22c55e; }
-        .tw-text-red-500 { color: #ef4444; }
+        .tw-text-blue-600 {
+            color: #2563eb;
+        }
+
+        .tw-text-green-600 {
+            color: #16a34a;
+        }
+
+        .tw-text-purple-600 {
+            color: #7c3aed;
+        }
+
+        .tw-text-green-500 {
+            color: #22c55e;
+        }
+
+        .tw-text-red-500 {
+            color: #ef4444;
+        }
 
         @media (max-width: 768px) {
             .stats-grid {
-                grid-template-columns: 1fr; /* Trên màn hình nhỏ, chuyển thành 1 cột */
+                grid-template-columns: 1fr;
+                /* Trên màn hình nhỏ, chuyển thành 1 cột */
             }
         }
 
@@ -188,7 +198,7 @@
             padding: 1rem;
         }
 
-      
+
 
         /* Lesson Item Styling */
         .lesson-item {
@@ -261,8 +271,6 @@
         .btn-orange:hover {
             background: linear-gradient(90deg, #ea580c, #d94600);
         }
-
-        
     </style>
 
     <div class="container mt-4">
@@ -321,8 +329,6 @@
         <!-- Learning Paths Section -->
         <h5 class="mb-3 mt-5">Các Khóa Học</h5>
         @if (Auth::check() && $courses->isNotEmpty())
-            
-
             @foreach ($courses as $course)
                 <div class="card mb-4 shadow-sm">
                     <div class="row g-0">
@@ -469,7 +475,7 @@
                 }
             });
 
-          
+
         });
     </script>
 @endsection

@@ -34,7 +34,7 @@
     @include('includes.admin_sidebar')
     <!-- Main Content -->
     <div class="content">
-        <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-md" style="height: calc(100vh - 100px);">
+        <div style="height: calc(100vh - 100px);">
             @yield('content')
         </div>
     </div>

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Section extends Model
 {
-    protected $fillable = ['course_id', 'title', 'user_id']; // Thêm user_id nếu dùng cách 2
+    protected $fillable = ['course_id', 'title', 'user_id'];
 
     public function lessons()
     {

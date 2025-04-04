@@ -42,17 +42,10 @@
                     style="max-height: 100px; display: none;">
             </div>
 
-            {{-- <div class="form-group mt-3">
-                <label for="price">Giá</label>
-                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
-                @error('price')
-                    <p class="text-danger">{{ $message }}</p>
-                @enderror
-            </div> --}}
-
             <div class="form-group mt-3">
                 <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
+                <small class="text-success">Nhập 0 nếu muốn cho khoá học miễn phí</small>
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -74,7 +67,7 @@
                 <button type="submit" class="btn btn-primary ">Thêm ngay</button>
                 <a href="{{ route('admin.course.index') }}" class="btn btn-secondary ">Hủy</a>
             </div>
-   
+
         </form>
     </div>
 
@@ -97,7 +90,7 @@
         function togglePriceField() {
             var isFree = document.getElementById('is_free').checked;
             var priceField = document.getElementById('price');
-            
+
             if (isFree) {
                 priceField.value = 0;
                 priceField.readOnly = true;
