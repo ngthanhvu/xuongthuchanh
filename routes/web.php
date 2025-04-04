@@ -16,9 +16,6 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 
-use App\Http\Middleware\CheckAdmin;
-use App\Http\Middleware\CheckTeacher;
-
 use App\Models\Lesson;
 
 //Admin
@@ -240,6 +237,7 @@ Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learnin
 
 
 
+//teacher
 Route::middleware(['check.teacher'])->group(function () {
     Route::get('/teacher', [AdminController::class, 'index'])->name('teacher.dashboard');
 
@@ -251,5 +249,66 @@ Route::middleware(['check.teacher'])->group(function () {
         Route::put('/update/{id}', [CategoryController::class, 'updateTeacher'])->name('update');
         Route::post('/delete/{id}', [CategoryController::class, 'destroyTeacher'])->name('delete');
     });
+    
+    //khóa học
+    Route::prefix('teacher/course')->name('teacher.course.')->group(function () {
+        Route::get('/', [CourseController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [CourseController::class, 'createTeacher'])->name('create');
+        Route::post('/store', [CourseController::class, 'storeTeacher'])->name('store');
 
+        Route::get('/edit/{id}', [CourseController::class, 'editTeacher'])->name('edit');
+        Route::put('/update/{id}', [CourseController::class, 'updateTeacher'])->name('update');
+        Route::delete('/delete/{id}', [CourseController::class, 'deleteTeacher'])->name('delete');
+    });
+
+    //section
+    Route::prefix('teacher/sections')->name('teacher.sections.')->group(function () {
+        Route::get('/', [SectionController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [SectionController::class, 'createTeacher'])->name('create');
+        Route::post('/store', [SectionController::class, 'storeTeacher'])->name('store');
+        Route::get('/edit/{id}', [SectionController::class, 'editTeacher'])->name('edit');
+        Route::put('/update/{id}', [SectionController::class, 'updateTeacher'])->name('update');
+        Route::delete('/delete/{id}', [SectionController::class, 'deleteTeacher'])->name('delete');
+    });
+
+    //lesson
+    Route::prefix('teacher/lessons')->name('teacher.lessons.')->group(function () {
+        Route::get('/', [LessonController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [LessonController::class, 'createTeacher'])->name('create');
+        Route::post('/store', [LessonController::class, 'storeTeacher'])->name('store');
+        Route::get('/edit/{id}', [LessonController::class, 'editTeacher'])->name('edit');
+        Route::put('/update/{id}', [LessonController::class, 'updateTeacher'])->name('update');
+        Route::delete('/delete/{id}', [LessonController::class, 'deleteTeacher'])->name('delete');
+    });
+
+    //quizz
+    Route::prefix('teacher/quizzes')->name('teacher.quizzes.')->group(function () {
+        Route::get('/', [QuizController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [QuizController::class, 'createTeacher'])->name('create');
+        Route::post('/', [QuizController::class, 'storeTeacher'])->name('store');
+        Route::get('/{quiz}', [QuizController::class, 'showTeacher'])->name('show');
+        Route::get('/{quiz}/edit', [QuizController::class, 'editTeacher'])->name('edit');
+        Route::put('/{quiz}', [QuizController::class, 'updateTeacher'])->name('update');
+        Route::delete('/{quiz}', [QuizController::class, 'destroyTeacher'])->name('destroy');
+    });
+    //questions
+    Route::prefix('teacher/questions')->name('teacher.questions.')->group(function () {
+        Route::get('/', [QuestionController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [QuestionController::class, 'createTeacher'])->name('create');
+        Route::post('/', [QuestionController::class, 'storeTeacher'])->name('store');
+        Route::get('/{question}', [QuestionController::class, 'showTeacher'])->name('show');
+        Route::get('/{question}/edit', [QuestionController::class, 'editTeacher'])->name('edit');
+        Route::put('/{question}', [QuestionController::class, 'updateTeacher'])->name('update');
+        Route::delete('/{question}', [QuestionController::class, 'destroyTeacher'])->name('destroy');
+    });
+    //answers
+    Route::prefix('teacher/answers')->name('teacher.answers.')->group(function () {
+        Route::get('/', [AnswerController::class, 'indexTeacher'])->name('index');
+        Route::get('/create', [AnswerController::class, 'createTeacher'])->name('create');
+        Route::post('/', [AnswerController::class, 'storeTeacher'])->name('store');
+        Route::get('/{answer}', [AnswerController::class, 'showTeacher'])->name('show');
+        Route::get('/{answer}/edit', [AnswerController::class, 'editTeacher'])->name('edit');
+        Route::put('/{answer}', [AnswerController::class, 'updateTeacher'])->name('update');
+        Route::delete('/{answer}', [AnswerController::class, 'destroyTeacher'])->name('destroy');
+    });
 });
