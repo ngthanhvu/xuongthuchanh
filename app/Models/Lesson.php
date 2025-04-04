@@ -42,7 +42,6 @@ class Lesson extends Model
         return false;
     }
 
-    // Scope để lọc bài học của teacher hiện tại
     public function scopeOfTeacher($query)
     {
         return $query->where('user_id', Auth::id())->whereHas('section', function ($q) {
