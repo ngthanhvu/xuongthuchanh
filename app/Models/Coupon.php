@@ -49,8 +49,8 @@ class Coupon extends Model
     {
         $now = now();
         return $this->is_active &&
-               ($this->start_date === null || $this->start_date <= $now) &&
-               ($this->end_date === null || $this->end_date >= $now) &&
-               ($this->usage_limit === null || $this->used_count < $this->usage_limit);
+            ($this->start_date === null || $this->start_date <= $now) &&
+            ($this->end_date === null || $this->end_date >= $now) &&
+            ($this->usage_limit === null || $this->used_count < $this->usage_limit);
     }
 }

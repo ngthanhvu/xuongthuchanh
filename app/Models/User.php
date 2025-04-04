@@ -22,10 +22,10 @@ class User extends Authenticatable
         'token',
         'reset_token',
         'reset_token_expires_at',
-        'qualifications', // Trình độ chuyên môn
-        'is_teacher_requested', // true/false
-        'teacher_request_status', // 'pending', 'approved', 'rejected'
-        'teacher_request_message' // Lý do từ chối (nếu có)
+        'qualifications',
+        'is_teacher_requested',
+        'teacher_request_status',
+        'teacher_request_message'
     ];
     public function generateResetToken()
     {
@@ -38,24 +38,18 @@ class User extends Authenticatable
 
     public function verifyResetToken($token)
     {
-        // Kiểm tra xem token có tồn tại không
         if (!$this->reset_token) {
             return false;
         }
 
-        // Kiểm tra token có khớp không
         if ($this->reset_token !== $token) {
             return false;
         }
 
-        // Kiểm tra token có còn hiệu lực không
         $isValid = $this->reset_token_expires_at &&
             $this->reset_token_expires_at > now();
 
-        // Nếu token hợp lệ, có thể muốn xóa token để tránh sử dụng lại
         if ($isValid) {
-            // Không xóa token ngay lập tức để người dùng có thể thử lại
-            // Sẽ xóa sau khi đặt lại mật khẩu thành công
             return true;
         }
 
@@ -71,13 +65,10 @@ class User extends Authenticatable
 
     public function sendPasswordResetEmail()
     {
-        // Xóa token cũ trước khi tạo mới
         $this->clearResetToken();
 
-        // Tạo OTP mới
         $otp = $this->generateResetToken();
 
-        // Gửi email
         Mail::send('emails.password-reset', ['otp' => $otp], function ($message) {
             $message->to($this->email)
                 ->subject('Mã OTP Đặt Lại Mật Khẩu');
@@ -114,25 +105,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserQuizResult::class);
     }
-    // public function sendTeacherRequestNotification()
-    // {
-    //     Mail::to($this->email)->send(new TeacherRequestSubmitted($this));
-    // }
-
-    // public function sendTeacherApprovalNotification()
-    // {
-    //     Mail::to($this->email)->send(new TeacherRequestApproved($this));
-    // }
-
-    // public function sendTeacherRejectionNotification()
-    // {
-    //     Mail::to($this->email)->send(new TeacherRequestRejected($this));
-    // }
 
     public function enrolledCourses()
     {
         return $this->belongsToMany(Course::class, 'user_course_progress')
-                    ->withPivot('progress', 'status', 'completed_lessons', 'completed_at')
-                    ->withTimestamps();
+            ->withPivot('progress', 'status', 'completed_lessons', 'completed_at')
+            ->withTimestamps();
     }
 }

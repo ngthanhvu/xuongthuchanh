@@ -35,7 +35,6 @@ class Quiz extends Model
         return $result ? $result->score : null;
     }
 
-    // Scope để lọc quiz của teacher hiện tại
     public function scopeOfTeacher($query)
     {
         return $query->where('user_id', Auth::id())

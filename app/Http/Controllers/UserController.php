@@ -435,9 +435,6 @@ class UserController extends Controller
             'is_teacher_requested' => false // Đánh dấu đã xử lý
         ]);
 
-        // Gửi thông báo (nếu cần)
-        // $user->notify(new TeacherRequestApproved());
-
         return back()->with('success', 'Đã phê duyệt yêu cầu thành công');
     }
 
@@ -455,7 +452,7 @@ class UserController extends Controller
     }
     public function showTeacherRequestForm()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($user->role !== 'user') {
             return redirect()->route('profile')->with('error', 'Không đủ quyền');
@@ -472,7 +469,7 @@ class UserController extends Controller
     }
     public function requestTeacher(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if ($user->role !== 'user') {
             return back()->with('error', 'Không đủ quyền truy cập');
