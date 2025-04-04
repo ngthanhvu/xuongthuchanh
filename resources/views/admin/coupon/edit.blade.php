@@ -56,13 +56,13 @@
             <input type="date" class="form-control" id="end_date" name="end_date" value="{{ $coupon->end_date ? $coupon->end_date->format('Y-m-d') : '' }}">
         </div>
 
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="is_active" name="is_active" {{ $coupon->is_active ? 'checked' : '' }}>
-            <label class="form-check-label" for="is_active">Hoạt động</label>
+        <div class="form-group">
+            <label for="is_active">Trạng thái</label>
+            <input type="checkbox" name="is_active" id="is_active" value="1" {{ $coupon->is_active ? 'checked' : '' }}>
         </div>
 
         <button type="submit" class="btn btn-primary">Cập nhật</button>
-       <a href="{{ route('admin.coupon.index') }}" class="btn btn-secondary">Hủy</a>
+        <a href="{{ route('admin.coupon.index') }}" class="btn btn-secondary">Hủy</a>
     </form>
 </div>
 @endsection
