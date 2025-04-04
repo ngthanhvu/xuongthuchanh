@@ -171,7 +171,7 @@
     <!-- Tab 2: Teacher Requests -->
     <div class="tab-pane fade" id="teacher-requests" role="tabpanel">
         <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-overflow-hidden">
-            <table class="table table-bordered align-middle mb-0">
+            <table class="table table-bordered align-middle mb-0 text-center">
                 <thead class="tw-bg-gray-100">
                     <tr>
                         <th class="tw-py-3 tw-px-4">#</th>

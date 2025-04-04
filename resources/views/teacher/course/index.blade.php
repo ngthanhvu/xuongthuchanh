@@ -31,20 +31,39 @@
         </a>
     </div>
 
-    <!-- Search Form -->
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-p-4 tw-mb-4 w-50">
-        <form action="{{ route('teacher.course.index') }}" method="GET" class="tw-flex tw-gap-2">
-            <div class="tw-flex-grow">
-                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên khóa học..." value="{{ request('search') }}">
+    <!-- Search and Sort Form -->
+    <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-p-4 tw-mb-4">
+        <form action="{{ route('teacher.course.index') }}" method="GET" class="tw-flex tw-gap-4 tw-items-center">
+            <!-- Search Section (60%) -->
+            <div class="tw-w-3/5">
+                <input type="text" 
+                       name="search" 
+                       class="form-control tw-w-full" 
+                       placeholder="Tìm kiếm theo tên khóa học..." 
+                       value="{{ request('search') }}">
             </div>
-            <button type="submit" class="btn btn-danger">
-                <i class="fa-solid fa-search tw-mr-1"></i> Tìm kiếm
-            </button>
-            @if(request()->has('search'))
-                <a href="{{ route('teacher.course.index') }}" class="btn btn-outline-secondary">
-                    <i class="fa-solid fa-times tw-mr-1"></i> Xóa bộ lọc
-                </a>
-            @endif
+            
+            <!-- Sort Section (40%) -->
+            <div class="tw-w-2/5 tw-flex tw-gap-2 tw-items-center">
+                <select name="sort" 
+                        class="form-control tw-flex-grow" 
+                        onchange="this.form.submit()">
+                    <option value="newest" {{ $sort == 'newest' ? 'selected' : '' }}>Mới nhất</option>
+                    <option value="a-z" {{ $sort == 'a-z' ? 'selected' : '' }}>Tiêu đề A-Z</option>
+                    <option value="z-a" {{ $sort == 'z-a' ? 'selected' : '' }}>Tiêu đề Z-A</option>
+                    <option value="price-high" {{ $sort == 'price-high' ? 'selected' : '' }}>Giá cao nhất</option>
+                    <option value="price-low" {{ $sort == 'price-low' ? 'selected' : '' }}>Giá thấp nhất</option>
+                </select>
+                <button type="submit" class="tw-w-1/5 btn btn-danger tw-px-2 tw-py-1">
+                    <i class="fa-solid fa-search tw-mr-1 tw-text-sm"></i>
+                </button>
+                @if(request()->has('search') || request()->has('sort'))
+                    <a href="{{ route('teacher.course.index') }}" 
+                       class="tw-w-1/5 btn btn-outline-secondary">
+                        <i class="fa-solid fa-times tw-mr-1"></i> Xóa
+                    </a>
+                @endif
+            </div>
         </form>
     </div>
 

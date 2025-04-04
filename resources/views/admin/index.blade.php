@@ -78,7 +78,7 @@
             <i class="fas fa-cogs tw-mr-2"></i> Xem tất cả
         </a>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-bordered align-middle mb-3 text-center">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -110,6 +110,11 @@
                             </td>
                         </tr>
                     @endforeach
+                @if($recentCourses->isEmpty())
+                    <tr>
+                        <td colspan="7" class="text-center">Không có dữ liệu</td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -122,7 +127,7 @@
             <i class="fas fa-cogs tw-mr-2"></i> Xem tất cả
         </a>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-bordered align-middle tw-mb-4 text-center">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -153,7 +158,7 @@
                                     <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"> Đang xử lý</span>
                                 @endif
                             </td>
-                            
+
                             <td>
                                 <a href="#" class="btn btn-sm btn-outline-primary">
                                     <i class="fa-solid fa-eye"></i>
@@ -170,6 +175,11 @@
                             </td>
                         </tr>
                     @endforeach
+                @if($recentPayments->isEmpty())
+                    <tr>
+                        <td colspan="8" class="text-center">Không có dữ liệu</td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
         </div>

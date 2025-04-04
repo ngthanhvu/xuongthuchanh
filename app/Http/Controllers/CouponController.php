@@ -88,9 +88,10 @@ class CouponController extends Controller
             'usage_limit' => 'nullable|integer|min:1',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable|boolean', // Đảm bảo validation chấp nhận 0 hoặc 1
         ]);
 
+        // Cập nhật coupon với dữ liệu từ request
         $coupon->update([
             'code' => $request->code,
             'description' => $request->description,
@@ -101,9 +102,7 @@ class CouponController extends Controller
             'usage_limit' => $request->usage_limit,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'is_active' => $request->has('is_active'),
-
-
+            'is_active' => $request->input('is_active', 0) == 1, // Xử lý trạng thái chính xác
         ]);
 
         return redirect()->route('admin.coupon.index')->with('success', 'Mã giảm giá đã được cập nhật thành công.');
