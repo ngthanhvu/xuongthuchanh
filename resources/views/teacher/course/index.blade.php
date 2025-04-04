@@ -32,12 +32,12 @@
     </div>
 
     <!-- Search Form -->
-    <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-p-4 tw-mb-4">
+    <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-p-4 tw-mb-4 w-50">
         <form action="{{ route('teacher.course.index') }}" method="GET" class="tw-flex tw-gap-2">
             <div class="tw-flex-grow">
                 <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên khóa học..." value="{{ request('search') }}">
             </div>
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-danger">
                 <i class="fa-solid fa-search tw-mr-1"></i> Tìm kiếm
             </button>
             @if(request()->has('search'))
