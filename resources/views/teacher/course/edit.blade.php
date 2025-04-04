@@ -43,18 +43,10 @@
                     class="img-fluid" style="max-height: 50px; {{ $course->thumbnail ? '' : 'display: none;' }}">
             </div>
 
-            {{-- <div class="form-group mt-3">
-                <label for="price">Giá</label>
-                <input type="number" id="price" name="price" class="form-control"
-                    value="{{ old('price', $course->price) }}">
-                @error('price')
-                    <p class="text-danger">{{ $message }}</p>
-                @enderror
-            </div> --}}
-
             <div class="form-group mt-3">
                 <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control" value="{{ old('price', $course->price) }}" placeholder="Nhập giá">
+                <small class="form-text text-muted">Nhập giá 0 nếu muốn giá học miễn phí</small>
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
