@@ -22,6 +22,7 @@ class User extends Authenticatable
         'token',
         'reset_token',
         'reset_token_expires_at',
+        'qualifications', // Trình độ chuyên môn
         'is_teacher_requested', // true/false
         'teacher_request_status', // 'pending', 'approved', 'rejected'
         'teacher_request_message' // Lý do từ chối (nếu có)

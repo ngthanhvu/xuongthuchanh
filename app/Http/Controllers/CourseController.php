@@ -32,7 +32,7 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required',
             'description' => 'nullable',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif',
             'price' => 'required|numeric',
             'categories_id' => 'required|exists:categories,id',
         ]);
@@ -110,8 +110,15 @@ class CourseController extends Controller
     public function indexTeacher()
     {
         $title = 'Quản lí khóa học';
-        // Chỉ lấy khóa học của teacher hiện tại
-        $courses = Course::where('user_id', Auth::id())->with('user', 'category')->get();
+        $query = Course::where('user_id', Auth::id())->with('user', 'category');
+        
+        // Xử lý tìm kiếm
+        if (request()->has('search')) {
+            $searchTerm = request('search');
+            $query->where('title', 'like', '%' . $searchTerm . '%');
+        }
+        
+        $courses = $query->get();
         return view('teacher.course.index', compact('courses', 'title'));
     }
 
