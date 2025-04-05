@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-<!-- Thông báo session -->
 @if (session('success'))
 <script>
     iziToast.success({
@@ -23,7 +22,7 @@
 </script>
 @endif
 
-<!-- Header -->
+
 <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
     <div>
         <h3 class="tw-text-2xl tw-font-bold">Quản lý người dùng</h3>
@@ -31,7 +30,7 @@
     </div>
 </div>
 
-<!-- Tab Navigation -->
+
 <ul class="nav nav-tabs mb-4" id="userTabs" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="all-users-tab" data-bs-toggle="tab" data-bs-target="#all-users" type="button" role="tab">
@@ -48,9 +47,8 @@
     </li>
 </ul>
 
-<!-- Tab Content -->
 <div class="tab-content" id="userTabsContent">
-    <!-- Tab 1: All Users -->
+    
     <div class="tab-pane fade show active" id="all-users" role="tabpanel">
         <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-overflow-hidden">
             <table class="table table-bordered align-middle mb-0">
@@ -168,7 +166,6 @@
         @endif
     </div>
 
-    <!-- Tab 2: Teacher Requests -->
     <div class="tab-pane fade" id="teacher-requests" role="tabpanel">
         <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-overflow-hidden">
             <table class="table table-bordered align-middle mb-0 text-center">
@@ -179,6 +176,7 @@
                         <th class="tw-py-3 tw-px-4">Email</th>
                         <th class="tw-py-3 tw-px-4">Trình độ</th>
                         <th class="tw-py-3 tw-px-4">Lý do</th>
+                        <th class="tw-py-3 tw-px-4">Bằng cấp</th> 
                         <th class="tw-py-3 tw-px-4">Trạng thái</th>
                         <th class="tw-py-3 tw-px-4 tw-text-center">Thao tác</th>
                     </tr>
@@ -192,6 +190,46 @@
                         <td class="tw-px-4">{{ Str::limit($request->qualifications, 50) }}</td>
                         <td class="tw-px-4">{{ Str::limit($request->teacher_request_message, 50) }}</td>
                         <td class="tw-px-4">
+                            @if(!empty($request->certificate_images) && is_array($request->certificate_images))
+                            <div class="d-flex flex-wrap gap-1 justify-content-center">
+                                @foreach($request->certificate_images as $index => $image)
+                                @php
+                                $filePath = public_path($image);
+                                @endphp
+                                @if(file_exists($filePath))
+                                <!-- Nút kích hoạt modal -->
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ $request->id }}_{{ $index }}">
+                                    <img src="{{ asset($image) }}" alt="Bằng cấp"
+                                        class="img-thumbnail"
+                                        style="max-width: 50px; max-height: 50px;">
+                                </a>
+
+                                <div class="modal fade" id="imageModal{{ $request->id }}_{{ $index }}" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="imageModalLabel">Ảnh bằng cấp</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <img src="{{ asset($image) }}" alt="Bằng cấp" class="img-fluid" style="max-width: 100%;">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @else
+                                <span class="text-danger small">File không tồn tại: {{ $image }}</span>
+                                @endif
+                                @endforeach
+                            </div>
+                            @else
+                            <span class="text-muted">Không có ảnh</span>
+                            @endif
+                        </td>
+                        <td class="tw-px-4">
                             @if($request->teacher_request_status === 'pending')
                             <span class="badge bg-warning text-dark">Chờ duyệt</span>
                             @elseif($request->teacher_request_status === 'approved')
@@ -202,7 +240,7 @@
                         </td>
                         <td class="tw-px-4 tw-text-center">
                             @if($request->teacher_request_status === 'pending')
-                            <!-- Form cho nút Duyệt -->
+                            
                             <form action="{{ route('admin.users.approve-teacher', $request->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('PUT')
@@ -210,13 +248,11 @@
                                     <i class="fas fa-check"></i> Duyệt
                                 </button>
                             </form>
-
-                            <!-- Nút Từ chối với Modal -->
+                            
                             <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $request->id }}">
                                 <i class="fas fa-times"></i> Từ chối
                             </button>
 
-                            <!-- Reject Modal -->
                             <div class="modal fade" id="rejectModal{{ $request->id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -248,7 +284,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-4">Không có yêu cầu nào</td>
+                        <td colspan="8" class="text-center py-4">Không có yêu cầu nào</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -270,7 +306,7 @@
 
 @push('scripts')
 <script>
-    // Khởi tạo lại dropdown khi chuyển tab
+    
     document.addEventListener('DOMContentLoaded', function() {
         var tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
         tabEls.forEach(function(tabEl) {

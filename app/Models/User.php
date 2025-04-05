@@ -25,7 +25,8 @@ class User extends Authenticatable
         'qualifications',
         'is_teacher_requested',
         'teacher_request_status',
-        'teacher_request_message'
+        'teacher_request_message',
+        'certificate_images'
     ];
     public function generateResetToken()
     {
@@ -111,5 +112,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class, 'user_course_progress')
             ->withPivot('progress', 'status', 'completed_lessons', 'completed_at')
             ->withTimestamps();
+    }
+    public function getCertificateImagesAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [];
+    }
+
+    public function setCertificateImagesAttribute($value)
+    {
+        $this->attributes['certificate_images'] = json_encode($value);
     }
 }

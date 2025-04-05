@@ -198,7 +198,7 @@ Route::post('lesson/{lesson}/complete', [HomeController::class, 'completeLesson'
 Route::post('/lesson/next/{next_lesson_id?}', [HomeController::class, 'nextLesson'])->name('nextLesson');
 Route::middleware('auth')->group(function () {
     Route::middleware('auth')->get('/lo-trinh', [HomeController::class, 'reveal'])->name('reveal');
-        Route::post('/lo-trinh-lesson/{id}', [LessonController::class, 'completeLesson'])->name('completeLesson');
+    Route::post('/lo-trinh-lesson/{id}', [LessonController::class, 'completeLesson'])->name('completeLesson');
 });
 //teacher
 Route::get('/teacher-request', [UserController::class, 'showTeacherRequestForm'])
@@ -211,7 +211,7 @@ Route::prefix('admin/users')->name('admin.users.')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('index');
     Route::post('/{id}/update-role', [UserController::class, 'updateRole'])->name('update-role');
     Route::put('/{id}/approve-teacher', [UserController::class, 'approveTeacherRequest'])->name('approve-teacher');
-    Route::post('/{id}/reject-teacher', [UserController::class, 'rejectTeacherRequest'])->name('reject-teacher');
+    Route::put('/{id}/reject-teacher', [UserController::class, 'rejectTeacherRequest'])->name('reject-teacher');
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
 });
 
@@ -249,7 +249,7 @@ Route::middleware(['check.teacher'])->group(function () {
         Route::put('/update/{id}', [CategoryController::class, 'updateTeacher'])->name('update');
         Route::post('/delete/{id}', [CategoryController::class, 'destroyTeacher'])->name('delete');
     });
-    
+
     //khóa học
     Route::prefix('teacher/course')->name('teacher.course.')->group(function () {
         Route::get('/', [CourseController::class, 'indexTeacher'])->name('index');
