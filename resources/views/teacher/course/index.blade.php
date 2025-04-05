@@ -51,8 +51,6 @@
                     <option value="newest" {{ $sort == 'newest' ? 'selected' : '' }}>Mới nhất</option>
                     <option value="a-z" {{ $sort == 'a-z' ? 'selected' : '' }}>Tiêu đề A-Z</option>
                     <option value="z-a" {{ $sort == 'z-a' ? 'selected' : '' }}>Tiêu đề Z-A</option>
-                    <option value="price-high" {{ $sort == 'price-high' ? 'selected' : '' }}>Giá cao nhất</option>
-                    <option value="price-low" {{ $sort == 'price-low' ? 'selected' : '' }}>Giá thấp nhất</option>
                 </select>
                 <button type="submit" class="tw-w-1/5 btn btn-danger tw-px-2 tw-py-1">
                     <i class="fa-solid fa-search tw-mr-1 tw-text-sm"></i>
