@@ -264,18 +264,23 @@
 }
 
 .btn-outline-custom {
-    border-color: #ff6200; /* Viền màu cam */
-    color: #ff6200; /* Màu chữ/biểu tượng */
+    border-color: #ff6200;
+    /* Viền màu cam */
+    color: #ff6200;
+    /* Màu chữ/biểu tượng */
 }
 
 .btn-outline-custom:hover {
-    background-color: #ff6200; /* Nền màu cam khi hover */
-    color: white; /* Chữ/biểu tượng trắng khi hover */
+    background-color: #ff6200;
+    /* Nền màu cam khi hover */
+    color: white;
+    /* Chữ/biểu tượng trắng khi hover */
 }
 
 .search-container {
     position: relative;
-    width: 300px; /* Adjust width as needed */
+    width: 300px;
+    /* Adjust width as needed */
 }
 
 .search-input {
@@ -357,7 +362,8 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    display: none; /* Ẩn mặc định */
+    display: none;
+    /* Ẩn mặc định */
 }
 
 .chatbox-header {
@@ -387,6 +393,7 @@
 
 .chatbox-messages {
     padding: 10px;
+    height: 500px;
     overflow-y: auto;
     flex-grow: 1;
     border-bottom: 1px solid #ddd;
@@ -398,7 +405,7 @@
 
 .chatbox-messages .user-message {
     text-align: right;
-    color: #007bff;
+    /* color: #007bff; */
 }
 
 .chatbox-messages .bot-message {
@@ -448,4 +455,79 @@
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+}
+
+.chatbox-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.bot-message {
+    background-color: #f1f1f1;
+    color: #333;
+    margin-right: auto;
+    white-space: pre-line;
+    /* Giữ định dạng xuống dòng */
+}
+
+.chatbox-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    max-width: 80%;
+}
+
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+}
+
+.bot-message {
+    background-color: #f1f1f1;
+    color: #333;
+    align-self: flex-start;
+}
+
+.option-buttons {
+    margin-top: 10px;
+}
+
+.option-button {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.option-button:hover {
+    background-color: #0056b3;
 }

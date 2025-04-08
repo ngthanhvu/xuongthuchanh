@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\Lesson;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -18,16 +16,17 @@ class ChatController extends Controller
         ]);
 
         $userMessage = $request->input('message');
+        Log::info('User message: ' . $userMessage);
 
         try {
-            // Gửi tin nhắn đến Gemini API để lấy từ khóa
             $keywords = $this->getKeywordsFromGemini($userMessage);
+            Log::info('Keywords received: ', $keywords);
 
-            // Tìm khóa học dựa trên từ khóa
             $courses = $this->findCoursesByKeywords($keywords);
+            Log::info('Courses found: ', $courses->toArray());
 
-            // Tạo phản hồi với danh sách khóa học
             $reply = $this->formatCourseReply($courses, $userMessage);
+            Log::info('Reply sent: ' . $reply);
 
             return response()->json([
                 'success' => true,
@@ -44,8 +43,8 @@ class ChatController extends Controller
 
     private function getKeywordsFromGemini($message)
     {
-        $apiKey = " ";
-        $apiUrl = " ";
+        $apiKey = "AIzaSyB1HRjW6boSQaVwj2U2W6Q2cBVGVNfmvJY";
+        $apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -54,7 +53,7 @@ class ChatController extends Controller
                 [
                     'parts' => [
                         [
-                            'text' => "Phân tích câu sau và trích xuất các từ khóa liên quan đến khóa học hoặc chủ đề học tập: '$message'. Trả về danh sách từ khóa dạng JSON: {\"keywords\": [\"keyword1\", \"keyword2\", ...]}"
+                            'text' => "Dựa trên đầu vào sau, hãy suy ra các từ khóa liên quan đến khóa học lập trình hoặc chủ đề học tập và trả về dưới dạng JSON: '$message'. Nếu đầu vào ngắn hoặc không rõ, hãy cung cấp các từ khóa hợp lý dựa trên ngữ cảnh. Ví dụ: Nếu đầu vào là 'HTML', trả về {\"keywords\": [\"HTML\", \"web\", \"lập trình\"]}. Đảm bảo chỉ trả về JSON, không thêm văn bản thừa."
                         ]
                     ]
                 ]
@@ -62,32 +61,69 @@ class ChatController extends Controller
         ]);
 
         if ($response->failed()) {
+            Log::error('Gemini API failed: ' . $response->body());
             throw new \Exception('Không thể kết nối với Gemini API: ' . $response->body());
         }
 
         $result = $response->json();
-        $jsonText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
+        Log::info('Gemini API raw response: ', $result);
 
-        // Phân tích JSON từ phản hồi
+        $jsonText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
+        Log::info('Gemini parsed JSON: ' . $jsonText);
+
+        // Loại bỏ markdown (```json và ```) nếu có
+        $jsonText = preg_replace('/```json\s*|\s*```/', '', $jsonText);
+        $jsonText = trim($jsonText);
+        Log::info('Cleaned JSON text: ' . $jsonText);
+
+        // Phân tích JSON
         $parsed = json_decode($jsonText, true);
-        return $parsed['keywords'] ?? [];
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::warning('Invalid JSON from Gemini, attempting fallback: ' . $jsonText);
+            $keywords = [$message]; // Fallback về đầu vào gốc nếu JSON không hợp lệ
+        } else {
+            $keywords = $parsed['keywords'] ?? [];
+        }
+
+        // Đảm bảo luôn có từ khóa
+        if (empty($keywords)) {
+            Log::info('No keywords extracted, using fallback: ' . $message);
+            $keywords = [$message];
+        }
+
+        Log::info('Extracted keywords: ', $keywords);
+        return $keywords;
     }
 
     private function findCoursesByKeywords(array $keywords)
     {
+        Log::info('Searching courses with keywords: ', $keywords);
         if (empty($keywords)) {
+            Log::info('No keywords provided, returning empty collection');
             return collect([]);
         }
 
-        return Course::where(function ($query) use ($keywords) {
+        $query = Course::where(function ($query) use ($keywords) {
             foreach ($keywords as $keyword) {
-                $query->orWhere('title', 'like', '%' . $keyword . '%')
-                    ->orWhere('description', 'like', '%' . $keyword . '%')
-                    ->orWhereHas('category', function ($q) use ($keyword) {
-                        $q->where('name', 'like', '%' . $keyword . '%');
+                $searchTerm = str_replace(' ', '%', trim($keyword));
+                Log::info('Building query for keyword: ' . $keyword . ' (search term: ' . $searchTerm . ')');
+                $query->orWhere('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhereHas('category', function ($q) use ($searchTerm) {
+                        $q->where('name', 'like', '%' . $searchTerm . '%');
                     });
             }
-        })->with('category')->take(3)->get();
+        })->with('category');
+
+        // Log truy vấn SQL để kiểm tra
+        $sql = $query->toSql();
+        $bindings = $query->getBindings();
+        Log::info('Generated SQL query: ' . $sql, $bindings);
+
+        $courses = $query->take(3)->get();
+        Log::info('Found courses: ', $courses->toArray());
+
+        return $courses;
     }
 
     private function formatCourseReply($courses, $userMessage)
@@ -100,7 +136,7 @@ class ChatController extends Controller
         foreach ($courses as $index => $course) {
             $price = $course->is_free ? 'Miễn phí' : number_format($course->price) . ' VNĐ';
             $reply .= sprintf(
-                "%d. %s (%s) - %s\n   Xem chi tiết: /courses/%d\n",
+                "%d. %s (%s) - %s\n   Xem chi tiết: /khoa-hoc/%d\n",
                 $index + 1,
                 $course->title,
                 $course->category->name,
