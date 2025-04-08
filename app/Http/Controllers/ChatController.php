@@ -43,8 +43,8 @@ class ChatController extends Controller
 
     private function getKeywordsFromGemini($message)
     {
-        $apiKey = "";
-        $apiUrl = "";
+        $apiKey = env('GEMINI_API_KEY');
+        $apiUrl = env('GEMINI_API_URL');
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
