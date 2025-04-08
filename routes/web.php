@@ -15,6 +15,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\ChatController;
 
 use App\Models\Lesson;
 
@@ -312,3 +313,5 @@ Route::middleware(['check.teacher'])->group(function () {
         Route::delete('/{answer}', [AnswerController::class, 'destroyTeacher'])->name('destroy');
     });
 });
+
+Route::post('/chat-with-gemini', [ChatController::class, 'chat'])->name('chat.gemini');

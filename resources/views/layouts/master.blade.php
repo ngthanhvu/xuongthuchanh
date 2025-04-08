@@ -24,6 +24,7 @@
     <!-- sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/master.css') }}" class="">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -405,30 +406,32 @@
             chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
 
             fetch('/chat-with-gemini', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ message: message })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const botMessage = document.createElement('div');
-                botMessage.className = 'message bot-message';
-                botMessage.textContent = data.reply || 'Có lỗi xảy ra, vui lòng thử lại!';
-                chatboxMessages.appendChild(botMessage);
-                chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const botMessage = document.createElement('div');
-                botMessage.className = 'message bot-message';
-                botMessage.textContent = 'Có lỗi xảy ra, vui lòng thử lại!';
-                chatboxMessages.appendChild(botMessage);
-                chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
-            });
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot-message';
+                    botMessage.innerHTML = data.reply.replace(/\n/g, '<br>'); // Chuyển \n thành <br> để xuống dòng
+                    chatboxMessages.appendChild(botMessage);
+                    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot-message';
+                    botMessage.textContent = 'Có lỗi xảy ra, vui lòng thử lại!';
+                    chatboxMessages.appendChild(botMessage);
+                    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+                });
         }
     </script>
 </body>
