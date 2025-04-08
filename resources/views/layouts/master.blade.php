@@ -405,6 +405,7 @@
 
             chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
 
+            console.log('Sending message:', message);
             fetch('/chat-with-gemini', {
                     method: 'POST',
                     headers: {
@@ -416,16 +417,20 @@
                         message: message
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Response data:', data);
                     const botMessage = document.createElement('div');
                     botMessage.className = 'message bot-message';
-                    botMessage.innerHTML = data.reply.replace(/\n/g, '<br>'); // Chuyển \n thành <br> để xuống dòng
+                    botMessage.innerHTML = data.reply.replace(/\n/g, '<br>');
                     chatboxMessages.appendChild(botMessage);
                     chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Fetch error:', error);
                     const botMessage = document.createElement('div');
                     botMessage.className = 'message bot-message';
                     botMessage.textContent = 'Có lỗi xảy ra, vui lòng thử lại!';
