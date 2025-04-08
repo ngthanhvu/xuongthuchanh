@@ -12,9 +12,41 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\CourseConfirmationMail;
+use GuzzleHttp\Client;
 
 class PaymentController extends Controller
 {
+    private $geminiClient;
+
+    public function __construct()
+    {
+        $this->geminiClient = new Client([
+            'base_uri' => 'https://api.gemini.google.com/v1/', // URL giả định, thay bằng URL thực tế của Gemini API
+            'headers' => [
+                'Authorization' => 'Bearer ' . config('services.gemini.api_key'),
+                'Content-Type' => 'application/json',
+            ],
+        ]);
+    }
+
+    // Hàm gọi API Gemini
+    private function callGeminiApi($prompt)
+    {
+        try {
+            $response = $this->geminiClient->post('generate', [ // Đường dẫn endpoint giả định
+                'json' => [
+                    'prompt' => $prompt,
+                    'max_tokens' => 100,
+                ],
+            ]);
+            $data = json_decode($response->getBody(), true);
+            return $data['text'] ?? 'Không thể tạo nội dung từ Gemini.';
+        } catch (\Exception $e) {
+            Log::error('Gemini API error: ' . $e->getMessage());
+            return 'Có lỗi khi gọi Gemini API.';
+        }
+    }
+
     public function index()
     {
         $title = 'Quản Lí Hóa Đơn';
@@ -51,7 +83,7 @@ class PaymentController extends Controller
         }
 
         $course = Course::findOrFail($request->course_id);
-        $originalPrice = $course->price; 
+        $originalPrice = $course->price;
 
         $enrollment = Enrollment::where('user_id', $user->id)
             ->where('course_id', $request->course_id)
@@ -127,7 +159,6 @@ class PaymentController extends Controller
             }
         }
 
-        // Kiểm tra giá trị request có khớp không
         if (abs($request->price - $finalAmount) > 0.01) {
             Log::warning('Price mismatch detected', [
                 'request_price' => $request->price,
@@ -137,7 +168,6 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Giá thanh toán không hợp lệ.');
         }
 
-        // Tạo bản ghi thanh toán
         $payment = Payment::create([
             'user_id' => $user->id,
             'course_id' => $request->course_id,
@@ -148,11 +178,16 @@ class PaymentController extends Controller
             'coupon_id' => $coupon?->id,
         ]);
 
+        // Sử dụng Gemini để tạo thông điệp thanh toán
+        $prompt = "Tạo một thông điệp ngắn gọn và thân thiện để thông báo người dùng về thanh toán khóa học '{$course->name}' với số tiền " . number_format($finalAmount) . " VND.";
+        $geminiMessage = $this->callGeminiApi($prompt);
+        Log::info('Gemini generated message:', ['message' => $geminiMessage]);
+
         $randomString = strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
         $vnp_TxnRef = $payment->id . '_' . $randomString;
-        $vnp_OrderInfo = 'Thanh toán khóa học ' . $request->course_id;
+        $vnp_OrderInfo = $geminiMessage; // Sử dụng thông điệp từ Gemini
         $vnp_OrderType = 'course_payment';
-        $vnp_Amount = $finalAmount * 100; // VNPay yêu cầu nhân 100
+        $vnp_Amount = $finalAmount * 100;
         $vnp_Locale = 'vn';
         $vnp_IpAddr = $request->ip();
         $vnp_CreateDate = date('YmdHis');
@@ -274,9 +309,15 @@ class PaymentController extends Controller
                     $status = ($responseCode === "24") ? 'canceled' : 'failed';
                     $payment->update(['status' => $status]);
 
+                    // Sử dụng Gemini để tạo thông báo lỗi
+                    $prompt = "Tạo một thông điệp ngắn gọn và thân thiện để thông báo người dùng rằng thanh toán cho khóa học ID {$payment->course_id} đã thất bại với mã lỗi {$responseCode}.";
+                    $geminiMessage = $this->callGeminiApi($prompt);
+                    Log::info('Gemini generated error message:', ['message' => $geminiMessage]);
+
                     Log::info('Payment updated:', $payment->toArray());
 
-                    return redirect()->route('payment.result', ['status' => $responseCode, 'course_id' => $payment->course_id]);
+                    return redirect()->route('payment.result', ['status' => $responseCode, 'course_id' => $payment->course_id])
+                        ->with('error', $geminiMessage);
                 }
             } else {
                 Log::error('Payment not found:', ['payment_id' => $paymentId]);
