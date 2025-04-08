@@ -6,6 +6,7 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class ChatController extends Controller
 {
@@ -19,13 +20,28 @@ class ChatController extends Controller
         Log::info('User message: ' . $userMessage);
 
         try {
-            $keywords = $this->getKeywordsFromGemini($userMessage);
-            Log::info('Keywords received: ', $keywords);
+            // Lấy ngữ cảnh cuộc trò chuyện từ session (nếu có)
+            $conversationContext = Session::get('conversation_context', []);
+            $conversationContext[] = ['role' => 'user', 'content' => $userMessage];
+            Log::info('Current conversation context: ', $conversationContext);
 
-            $courses = $this->findCoursesByKeywords($keywords);
-            Log::info('Courses found: ', $courses->toArray());
+            // Gọi Gemini để tạo phản hồi tư vấn
+            $aiResponse = $this->getAIResponseFromGemini($conversationContext);
+            Log::info('AI response: ' . $aiResponse);
 
-            $reply = $this->formatCourseReply($courses, $userMessage);
+            // Kiểm tra xem AI có yêu cầu đề xuất khóa học không
+            if (stripos($aiResponse, '[PROPOSE_COURSES]') !== false) {
+                $criteria = $this->extractCriteriaFromContext($conversationContext);
+                $courses = $this->findCoursesByCriteria($criteria);
+                $reply = str_replace('[PROPOSE_COURSES]', $this->formatCourseList($courses), $aiResponse);
+            } else {
+                $reply = $aiResponse;
+            }
+
+            // Cập nhật ngữ cảnh với phản hồi của AI
+            $conversationContext[] = ['role' => 'assistant', 'content' => $reply];
+            Session::put('conversation_context', $conversationContext);
+
             Log::info('Reply sent: ' . $reply);
 
             return response()->json([
@@ -41,10 +57,16 @@ class ChatController extends Controller
         }
     }
 
-    private function getKeywordsFromGemini($message)
+    private function getAIResponseFromGemini($conversationContext)
     {
         $apiKey = env('GEMINI_API_KEY');
         $apiUrl = env('GEMINI_API_URL');
+
+        $prompt = "Bạn là một trợ lý AI tư vấn học tập thân thiện, giao tiếp tự nhiên bằng tiếng Việt. Dựa trên cuộc trò chuyện sau:\n";
+        foreach ($conversationContext as $entry) {
+            $prompt .= ($entry['role'] === 'user' ? 'Người dùng: ' : 'Trợ lý: ') . $entry['content'] . "\n";
+        }
+        $prompt .= "Hãy đưa ra phản hồi tư vấn phù hợp. Nếu chưa đủ thông tin để đề xuất khóa học, hãy đặt câu hỏi để làm rõ (ví dụ: trình độ, mục tiêu, ngân sách). Khi đã đủ thông tin, kết thúc phản hồi bằng '[PROPOSE_COURSES]' để yêu cầu đề xuất khóa học. Không trả về JSON, chỉ trả về văn bản.";
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -52,9 +74,7 @@ class ChatController extends Controller
             'contents' => [
                 [
                     'parts' => [
-                        [
-                            'text' => "Dựa trên đầu vào sau, hãy suy ra các từ khóa liên quan đến khóa học lập trình hoặc chủ đề học tập và trả về dưới dạng JSON: '$message'. Nếu đầu vào ngắn hoặc không rõ, hãy cung cấp các từ khóa hợp lý dựa trên ngữ cảnh. Ví dụ: Nếu đầu vào là 'HTML', trả về {\"keywords\": [\"HTML\", \"web\", \"lập trình\"]}. Đảm bảo chỉ trả về JSON, không thêm văn bản thừa."
-                        ]
+                        ['text' => $prompt]
                     ]
                 ]
             ]
@@ -66,76 +86,129 @@ class ChatController extends Controller
         }
 
         $result = $response->json();
-        Log::info('Gemini API raw response: ', $result);
-
-        $jsonText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
-        Log::info('Gemini parsed JSON: ' . $jsonText);
-
-        // Loại bỏ markdown (```json và ```) nếu có
-        $jsonText = preg_replace('/```json\s*|\s*```/', '', $jsonText);
-        $jsonText = trim($jsonText);
-        Log::info('Cleaned JSON text: ' . $jsonText);
-
-        // Phân tích JSON
-        $parsed = json_decode($jsonText, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            Log::warning('Invalid JSON from Gemini, attempting fallback: ' . $jsonText);
-            $keywords = [$message]; // Fallback về đầu vào gốc nếu JSON không hợp lệ
-        } else {
-            $keywords = $parsed['keywords'] ?? [];
-        }
-
-        // Đảm bảo luôn có từ khóa
-        if (empty($keywords)) {
-            Log::info('No keywords extracted, using fallback: ' . $message);
-            $keywords = [$message];
-        }
-
-        Log::info('Extracted keywords: ', $keywords);
-        return $keywords;
+        $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? 'Tôi không hiểu ý bạn, bạn có thể nói rõ hơn không?';
+        return trim($text);
     }
 
-    private function findCoursesByKeywords(array $keywords)
+    private function extractCriteriaFromContext($conversationContext)
     {
-        Log::info('Searching courses with keywords: ', $keywords);
-        if (empty($keywords)) {
-            Log::info('No keywords provided, returning empty collection');
-            return collect([]);
+        $criteria = [
+            'keywords' => [],
+            'level' => null, // beginner, intermediate, advanced
+            'goal' => null,  // web, app, data, etc.
+            'budget' => null // free, paid, specific amount
+        ];
+
+        foreach ($conversationContext as $entry) {
+            if ($entry['role'] === 'user') {
+                $message = strtolower($entry['content']);
+                // Trích xuất từ khóa
+                $words = preg_split('/\s+/', $message);
+                $keywords = array_filter($words, function ($word) {
+                    return strlen($word) > 2 && !in_array($word, ['tôi', 'muốn', 'học', 'về', 'có', 'làm']);
+                });
+                $criteria['keywords'] = array_merge($criteria['keywords'], $keywords);
+
+                // Trình độ
+                if (preg_match('/(mới bắt đầu|cơ bản|beginner)/i', $message)) {
+                    $criteria['level'] = 'beginner';
+                } elseif (preg_match('/(nâng cao|advanced)/i', $message)) {
+                    $criteria['level'] = 'advanced';
+                } elseif (preg_match('/(trung cấp|intermediate)/i', $message)) {
+                    $criteria['level'] = 'intermediate';
+                }
+
+                // Mục tiêu
+                if (preg_match('/(web|trang web)/i', $message)) {
+                    $criteria['goal'] = 'web';
+                } elseif (preg_match('/(app|ứng dụng)/i', $message)) {
+                    $criteria['goal'] = 'app';
+                } elseif (preg_match('/(dữ liệu|data)/i', $message)) {
+                    $criteria['goal'] = 'data';
+                }
+
+                // Ngân sách
+                if (preg_match('/(miễn phí|free)/i', $message)) {
+                    $criteria['budget'] = 'free';
+                } elseif (preg_match('/(trả phí|paid)/i', $message)) {
+                    $criteria['budget'] = 'paid';
+                } elseif (preg_match('/(\d+)(k|vnd|đ)/i', $message, $matches)) {
+                    $criteria['budget'] = (int)$matches[1] * ($matches[2] === 'k' ? 1000 : 1);
+                }
+            }
         }
 
-        $query = Course::where(function ($query) use ($keywords) {
-            foreach ($keywords as $keyword) {
-                $searchTerm = str_replace(' ', '%', trim($keyword));
-                Log::info('Building query for keyword: ' . $keyword . ' (search term: ' . $searchTerm . ')');
-                $query->orWhere('title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhereHas('category', function ($q) use ($searchTerm) {
-                        $q->where('name', 'like', '%' . $searchTerm . '%');
-                    });
-            }
-        })->with('category');
+        $criteria['keywords'] = array_unique($criteria['keywords']);
+        Log::info('Extracted criteria from context: ', $criteria);
+        return $criteria;
+    }
 
-        // Log truy vấn SQL để kiểm tra
+    private function findCoursesByCriteria($criteria)
+    {
+        Log::info('Searching courses with criteria: ', $criteria);
+        $query = Course::query();
+
+        // Từ khóa
+        if (!empty($criteria['keywords'])) {
+            $query->where(function ($q) use ($criteria) {
+                foreach ($criteria['keywords'] as $keyword) {
+                    $searchTerm = str_replace(' ', '%', trim($keyword));
+                    $q->orWhereRaw('LOWER(title) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                        ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                        ->orWhereHas('category', function ($q2) use ($searchTerm) {
+                            $q2->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                        });
+                }
+            });
+        }
+
+        // Trình độ (giả sử có cột 'level' trong bảng courses, nếu không thì bỏ qua hoặc điều chỉnh)
+        if ($criteria['level']) {
+            // Nếu bảng courses có cột 'level', thêm điều kiện
+            // $query->where('level', $criteria['level']);
+            // Hiện tại, giả sử tìm trong description
+            $query->where('description', 'like', '%' . $criteria['level'] . '%');
+        }
+
+        // Mục tiêu (giả sử tìm trong description hoặc category)
+        if ($criteria['goal']) {
+            $query->where(function ($q) use ($criteria) {
+                $q->where('description', 'like', '%' . $criteria['goal'] . '%')
+                    ->orWhereHas('category', function ($q2) use ($criteria) {
+                        $q2->where('name', 'like', '%' . $criteria['goal'] . '%');
+                    });
+            });
+        }
+
+        // Ngân sách
+        if ($criteria['budget'] === 'free') {
+            $query->where('is_free', 1);
+        } elseif ($criteria['budget'] === 'paid') {
+            $query->where('is_free', 0);
+        } elseif (is_numeric($criteria['budget'])) {
+            $query->where('price', '<=', $criteria['budget']);
+        }
+
+        $query->with('category');
         $sql = $query->toSql();
         $bindings = $query->getBindings();
         Log::info('Generated SQL query: ' . $sql, $bindings);
 
         $courses = $query->take(3)->get();
         Log::info('Found courses: ', $courses->toArray());
-
         return $courses;
     }
 
-    private function formatCourseReply($courses, $userMessage)
+    private function formatCourseList($courses)
     {
         if ($courses->isEmpty()) {
-            return "Không tìm thấy khóa học phù hợp với yêu cầu \"$userMessage\". Bạn có muốn thử với từ khóa khác không?";
+            return "\nHiện tại tôi chưa tìm thấy khóa học nào phù hợp. Bạn có thể cung cấp thêm thông tin không?";
         }
 
-        $reply = "Dựa trên yêu cầu của bạn \"$userMessage\", tôi đề xuất các khóa học sau:\n";
+        $list = "\nDưới đây là các khóa học phù hợp:\n";
         foreach ($courses as $index => $course) {
             $price = $course->is_free ? 'Miễn phí' : number_format($course->price) . ' VNĐ';
-            $reply .= sprintf(
+            $list .= sprintf(
                 "%d. %s (%s) - %s\n   Xem chi tiết: /khoa-hoc/%d\n",
                 $index + 1,
                 $course->title,
@@ -144,8 +217,14 @@ class ChatController extends Controller
                 $course->id
             );
         }
-        $reply .= "Bạn có muốn biết thêm chi tiết về khóa học nào không?";
+        $list .= "Bạn muốn biết thêm về khóa học nào không?";
+        return $list;
+    }
 
-        return $reply;
+    // Xóa ngữ cảnh khi cần (tùy chọn)
+    public function resetChat()
+    {
+        Session::forget('conversation_context');
+        return response()->json(['success' => true, 'reply' => 'Cuộc trò chuyện đã được làm mới!']);
     }
 }

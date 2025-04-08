@@ -393,7 +393,7 @@
 
 .chatbox-messages {
     padding: 10px;
-    height: 500px;
+    height: 900px;
     overflow-y: auto;
     flex-grow: 1;
     border-bottom: 1px solid #ddd;
