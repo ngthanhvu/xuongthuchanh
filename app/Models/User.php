@@ -122,7 +122,20 @@ class User extends Authenticatable
     {
         $this->attributes['certificate_images'] = json_encode($value);
     }
+    public function savedCourses()
+    {
+        return $this->hasMany(SavedCourse::class);
+    }
 
+    // Get all courses that the user has saved
+    public function savedCoursesCollection()
+    {
+        return $this->belongsToMany(Course::class, 'saved_courses');
+    }
+    public function favoriteCourses()
+    {
+        return $this->belongsToMany(Course::class, 'saved_courses')->withTimestamps();
+    }
     public function comments()
     {
         return $this->hasMany(Comment::class);
