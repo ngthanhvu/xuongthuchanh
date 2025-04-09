@@ -274,7 +274,6 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Script tìm kiếm giữ nguyên
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
         const coursesList = document.getElementById('courses-list');

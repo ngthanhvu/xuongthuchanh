@@ -59,7 +59,6 @@ class ChatController extends Controller
 
     private function getAIResponseFromGemini($conversationContext)
     {
-
         $apiKey = env('GEMINI_API_KEY');
         $apiUrl = env('GEMINI_API_URL');
 

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Models\UserQuizResult;
 use App\Models\UserCourseProgress;
 
+use Illuminate\Support\Facades\Mail;
 use \Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -191,6 +192,7 @@ class HomeController extends Controller
         return route('detail', $course->id);
     }
 
+    //detail course
     public function detail($course_id)
     {
         $title = "Chi tiết khóa học";
@@ -203,8 +205,7 @@ class HomeController extends Controller
         return view('detail', compact('course', 'sections', 'lessons', 'quizzes', 'title'));
     }
 
-
-
+    //checkout
     public function loading($course_id)
     {
         $title = "Thanh toán";
@@ -216,6 +217,7 @@ class HomeController extends Controller
         return view('loading', compact('course', 'sections', 'lessons', 'quizzes', 'title'));
     }
 
+    //lesson
     public function lesson($lesson_id)
     {
         $title = "Bài học";
@@ -267,29 +269,53 @@ class HomeController extends Controller
                 'completed_at' => $newProgress >= 100 ? now() : $courseProgress->completed_at,
                 'completed_lessons' => json_encode($completedLessons),
             ]);
+
+            if ($newProgress >= 100) {
+                Mail::to($user->email)->send(new \App\Mail\CertificateMail($user, $course, now()));
+            }
         }
 
         return redirect()->route('lesson', $lesson->id)->with('success', 'Bài học đã hoàn thành!');
     }
 
-    public function nextLesson(Request $request, $next_lesson_id = null)
+    public function nextLesson(Request $request, $lesson_id = null)
     {
+        $user = Auth::user();
         $currentLessonId = $request->input('current_lesson_id');
         $currentLesson = Lesson::findOrFail($currentLessonId);
         $course = $currentLesson->section->course;
 
         $sections = Section::where('course_id', $course->id)->with('lessons')->get();
-        $allLessons = Lesson::whereIn('section_id', $sections->pluck('id'))->orderBy('id')->get();
         $totalLessons = $sections->sum(fn($section) => $section->lessons->count());
-        $currentIndex = $allLessons->search(fn($item) => $item->id == $currentLesson->id);
-        $nextLesson = $currentIndex < $allLessons->count() - 1 ? $allLessons[$currentIndex + 1] : null;
 
         $courseProgress = UserCourseProgress::firstOrCreate(
-            ['user_id' => Auth::id(), 'course_id' => $course->id],
+            ['user_id' => $user->id, 'course_id' => $course->id],
             ['progress' => 0, 'status' => 'in_progress', 'completed_lessons' => json_encode([])]
         );
 
         $completedLessons = json_decode($courseProgress->completed_lessons, true) ?? [];
+
+        if (!$lesson_id) {
+            if (!in_array($currentLesson->id, $completedLessons)) {
+                $completedLessons[] = $currentLesson->id;
+                $newProgress = $totalLessons > 0 ? round((count($completedLessons) / $totalLessons) * 100) : 0;
+
+                $courseProgress->update([
+                    'progress' => min($newProgress, 100),
+                    'status' => $newProgress >= 100 ? 'completed' : 'in_progress',
+                    'completed_at' => $newProgress >= 100 ? now() : $courseProgress->completed_at,
+                    'completed_lessons' => json_encode($completedLessons),
+                ]);
+
+                if ($newProgress >= 100) {
+                    Mail::to($user->email)->send(new \App\Mail\CertificateMail($user, $course, now()));
+                }
+            }
+
+            return redirect()->route('lesson', $currentLesson->id)->with('success', 'Khóa học đã hoàn thành!');
+        }
+
+        $nextLesson = Lesson::findOrFail($lesson_id);
         if (!in_array($currentLesson->id, $completedLessons)) {
             $completedLessons[] = $currentLesson->id;
             $newProgress = $totalLessons > 0 ? round((count($completedLessons) / $totalLessons) * 100) : 0;
@@ -302,15 +328,10 @@ class HomeController extends Controller
             ]);
         }
 
-        if (!$nextLesson) {
-            return redirect()->route('lesson', $currentLesson->id)
-                ->with('success', 'Bạn đã hoàn thành toàn bộ khóa học!');
-        }
-
-        return redirect()->route('lesson', $next_lesson_id)
-            ->with('success', 'Đã chuyển sang bài học tiếp theo!');
+        return redirect()->route('lesson', $nextLesson->id);
     }
 
+    //quiz
     public function showQuiz($lessonId)
     {
         $title = "Bài kiểm tra";
@@ -353,7 +374,6 @@ class HomeController extends Controller
                 }
             }
         }
-        //update user quizz result nộp bài update lại dữ liệu
         return view('showquizz', compact(
             'lesson',
             'quizzes',
