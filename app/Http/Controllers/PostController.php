@@ -37,6 +37,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
+        $title = 'Chi tiết bài viết';
         $post->load('course');
         return view('admin.posts.show', compact('post'));
     }
@@ -67,8 +68,9 @@ class PostController extends Controller
     }
     public function list()
     {
+        $title = 'Danh sách bài viết';
         $posts = Post::with('course')->paginate(10); 
-        return view('post.index', compact('posts'));
+        return view('post.index', compact('posts', 'title'));
     }
     
     public function showForUser($id)

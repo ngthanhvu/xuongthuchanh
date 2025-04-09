@@ -70,6 +70,7 @@ class HomeController extends Controller
 
     public function course(Request $request)
     {
+        $title = 'Khóa học';
         $categories = Category::all();
 
         $maxPrice = Course::max('price') ?? 0;
@@ -139,7 +140,7 @@ class HomeController extends Controller
             }
         }
 
-        return view('course', compact('courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'categories', 'maxPrice'));
+        return view('course', compact('courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'categories', 'maxPrice', 'title'));
     }
 
     public function search(Request $request)
@@ -192,29 +193,32 @@ class HomeController extends Controller
 
     public function detail($course_id)
     {
+        $title = "Chi tiết khóa học";
         $course = Course::with('sections.lessons.quizzes')->findOrFail($course_id);
 
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
         $quizzes = $lessons->flatMap->quizzes;
 
-        return view('detail', compact('course', 'sections', 'lessons', 'quizzes'));
+        return view('detail', compact('course', 'sections', 'lessons', 'quizzes', 'title'));
     }
 
 
 
     public function loading($course_id)
     {
+        $title = "Thanh toán";
         $course = Course::with('sections.lessons.quizzes')->findOrFail($course_id);
 
         $sections = $course->sections;
         $lessons = $sections->flatMap->lessons;
         $quizzes = $lessons->flatMap->quizzes;
-        return view('loading', compact('course', 'sections', 'lessons', 'quizzes'));
+        return view('loading', compact('course', 'sections', 'lessons', 'quizzes', 'title'));
     }
 
     public function lesson($lesson_id)
     {
+        $title = "Bài học";
         $lesson = Lesson::findOrFail($lesson_id);
         $section = $lesson->section;
         $course = $section->course;
@@ -236,7 +240,7 @@ class HomeController extends Controller
         $progress = $courseProgress->progress;
         $completedLessons = json_decode($courseProgress->completed_lessons, true) ?? [];
 
-        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson', 'quizzes', 'progress', 'completedLessons'));
+        return view('lesson', compact('lesson', 'sections', 'prevLesson', 'nextLesson', 'quizzes', 'progress', 'completedLessons', 'title'));
     }
 
     public function completeLesson(Request $request, Lesson $lesson)

@@ -24,6 +24,7 @@
     <!-- sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{{ asset('css/master.css') }}" class="">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -60,7 +61,7 @@
                             </li>
                         @endif
 
-                        @if (Auth::check() && (Auth::user()->role === 'teacher'))
+                        @if (Auth::check() && Auth::user()->role === 'teacher')
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('/teacher') }}">Teacher</a>
                             </li>
@@ -85,7 +86,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="d-flex align-items-center">
@@ -182,6 +183,24 @@
         @yield('content')
     </div>
 
+    <!-- Nút mở chatbox -->
+    <button class="chatbox-toggle-btn" id="chatboxToggleBtn"><i class="fas fa-comment"></i></button>
+
+    <!-- Chatbox -->
+    <div class="chatbox" id="chatbox">
+        <div class="chatbox-header" id="chatboxToggle">
+            <span>Chat với F8 Bot</span>
+            <button class="chatbox-close" id="chatboxClose">×</button>
+        </div>
+        <div class="chatbox-body" id="chatboxBody">
+            <div class="chatbox-messages" id="chatboxMessages"></div>
+            <div class="chatbox-input">
+                <input type="text" id="chatboxInput" placeholder="Nhập câu hỏi của bạn...">
+                <button id="chatboxSend"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="footer-container">
             <!-- Cột 1 -->
@@ -255,6 +274,7 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Script tìm kiếm giữ nguyên
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
         const coursesList = document.getElementById('courses-list');
@@ -264,7 +284,6 @@
 
         searchInput.addEventListener('input', function(e) {
             const query = e.target.value.trim();
-
             if (query.length === 0) {
                 coursesList.innerHTML = '';
                 postsList.innerHTML = '';
@@ -273,7 +292,6 @@
                 searchResults.style.display = 'none';
                 return;
             }
-
             fetch(`/search?query=${encodeURIComponent(query)}`, {
                     method: 'GET',
                     headers: {
@@ -284,7 +302,6 @@
                 .then(response => response.json())
                 .then(data => {
                     searchResults.style.display = 'block';
-
                     coursesList.innerHTML = '';
                     if (data.courses && data.courses.length > 0) {
                         data.courses.forEach(course => {
@@ -304,7 +321,6 @@
                         coursesList.innerHTML = '<li class="text-muted">Không tìm thấy khóa học nào.</li>';
                         coursesViewMore.style.display = 'none';
                     }
-
                     postsList.innerHTML = '';
                     if (data.posts && data.posts.length > 0) {
                         data.posts.forEach(post => {
@@ -344,6 +360,84 @@
                 searchResults.style.display = 'block';
             }
         });
+
+        // Script chatbox
+        const chatbox = document.getElementById('chatbox');
+        const chatboxToggle = document.getElementById('chatboxToggle');
+        const chatboxToggleBtn = document.getElementById('chatboxToggleBtn');
+        const chatboxClose = document.getElementById('chatboxClose');
+        const chatboxBody = document.getElementById('chatboxBody');
+        const chatboxMessages = document.getElementById('chatboxMessages');
+        const chatboxInput = document.getElementById('chatboxInput');
+        const chatboxSend = document.getElementById('chatboxSend');
+
+        // Mở/đóng chatbox
+        chatboxToggleBtn.addEventListener('click', () => {
+            chatbox.style.display = 'block';
+            chatboxToggleBtn.style.display = 'none';
+            chatboxBody.style.display = 'flex';
+        });
+
+        chatboxToggle.addEventListener('click', () => {
+            chatboxBody.style.display = chatboxBody.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        chatboxClose.addEventListener('click', () => {
+            chatbox.style.display = 'none';
+            chatboxToggleBtn.style.display = 'block';
+        });
+
+        // Gửi tin nhắn và gọi Gemini API
+        chatboxSend.addEventListener('click', sendMessage);
+        chatboxInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const message = chatboxInput.value.trim();
+            if (!message) return;
+
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user-message';
+            userMessage.textContent = message;
+            chatboxMessages.appendChild(userMessage);
+            chatboxInput.value = '';
+
+            chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+
+            console.log('Sending message:', message);
+            fetch('/chat-with-gemini', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot-message';
+                    botMessage.innerHTML = data.reply.replace(/\n/g, '<br>');
+                    chatboxMessages.appendChild(botMessage);
+                    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot-message';
+                    botMessage.textContent = 'Có lỗi xảy ra, vui lòng thử lại!';
+                    chatboxMessages.appendChild(botMessage);
+                    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+                });
+        }
     </script>
 </body>
 

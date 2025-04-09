@@ -92,8 +92,9 @@ class UserController extends Controller
 
     public function profile()
     {
+        $title = 'Hồ sơ người dùng';
         $user = Auth::user();
-        return view('profile', compact('user'));
+        return view('profile', compact('user', 'title'));
     }
 
     public function updateProfile(Request $request)
@@ -477,14 +478,38 @@ class UserController extends Controller
 
         $request->validate([
             'message' => 'required|string|max:500',
-            'qualifications' => 'required|string|max:1000'
+            'qualifications' => 'required|string|max:1000',
+            'certificates' => 'nullable|array|max:5',
+            'certificates.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
+
+        $certificatePaths = []; // Khởi tạo mặc định
+        if ($request->hasFile('certificates')) {
+            // Đảm bảo thư mục tồn tại
+            $destinationPath = public_path('storage/certificates');
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true);
+            }
+
+            foreach ($request->file('certificates') as $file) {
+                // Tạo tên file duy nhất
+                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filePath = 'storage/certificates/' . $fileName;
+
+                // Di chuyển file vào thư mục public/storage/certificates
+                $file->move($destinationPath, $fileName);
+
+                // Lưu đường dẫn tương đối vào mảng
+                $certificatePaths[] = $filePath;
+            }
+        }
 
         $user->update([
             'is_teacher_requested' => true,
             'teacher_request_status' => 'pending',
             'teacher_request_message' => $request->message,
             'qualifications' => $request->qualifications,
+            'certificate_images' => $certificatePaths,
             'teacher_request_at' => now()
         ]);
 
