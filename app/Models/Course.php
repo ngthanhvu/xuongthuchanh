@@ -54,8 +54,8 @@ class Course extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_course_progress')
-                    ->withPivot('progress', 'status', 'completed_lessons', 'completed_at')
-                    ->withTimestamps();
+            ->withPivot('progress', 'status', 'completed_lessons', 'completed_at')
+            ->withTimestamps();
     }
 
     public function getUserProgress($user)
@@ -63,4 +63,15 @@ class Course extends Model
         $progress = $this->users()->where('user_id', $user->id)->first();
         return $progress ? $progress->pivot->progress : 0;
     }
+    public function isSavedByUser($userId)
+    {
+        return $this->savedByUsers()->where('user_id', $userId)->exists();
+    }
+    
+    // Add relationship to users who saved this course
+    public function savedByUsers()
+    {
+        return $this->hasMany(SavedCourse::class);
+    }
+    
 }

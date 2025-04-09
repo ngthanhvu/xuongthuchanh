@@ -224,4 +224,17 @@ class CourseController extends Controller
         $course->delete();
         return redirect()->route('teacher.course.index')->with('success', 'Khóa học đã được xóa thành công.');
     }
+    public function favoriteCourses()
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để xem danh sách yêu thích');
+    }
+
+    $courses = $user->favoriteCourses()->paginate(9);
+
+    return view('favorites', compact('courses'));
+}
+
 }

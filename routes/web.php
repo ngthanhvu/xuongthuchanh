@@ -17,6 +17,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SavedCourseController;
 
 use App\Models\Lesson;
 
@@ -316,3 +317,10 @@ Route::middleware(['check.teacher'])->group(function () {
 });
 
 Route::post('/chat-with-gemini', [ChatController::class, 'chat'])->name('chat.gemini');
+
+//luu khoa học và yêu thích
+Route::middleware(['auth'])->group(function () {
+    Route::post('/save-course/{courseId}', [SavedCourseController::class, 'toggleSave'])->name('courses.toggleSave');
+
+});
+Route::get('/khoa-hoc/yeu-thich', [CourseController::class, 'favoriteCourses'])->name('courses.favorites');
