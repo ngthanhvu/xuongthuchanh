@@ -15,7 +15,7 @@
             <div class="form-group mt-3">
                 <label for="title">Tiêu đề</label>
                 <input type="text" id="title" name="title" class="form-control"
-                    value="{{ old('title', $course->title) }}" placeholder="Nhập tiêu đề">
+                    value="{{ old('title', $course->title) }}" placeholder="Nhập tiêu đề" required>
                 @error('title')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -23,7 +23,7 @@
 
             <div class="form-group mt-3">
                 <label for="description">Mô tả</label>
-                <textarea id="description" name="description" class="form-control">{{ old('description', $course->description) }}</textarea>
+                <textarea id="description" name="description" class="form-control" rows="4" required>{{ old('description', $course->description) }}</textarea>
                 @error('description')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -39,22 +39,21 @@
             </div>
 
             <div class="form-group mt-3">
+                <label>Ảnh hiện tại:</label><br>
                 <img id="thumbnail-preview" src="{{ asset('storage/' . $course->thumbnail) }}" alt="Image Preview"
-                    class="img-fluid" style="max-height: 50px; {{ $course->thumbnail ? '' : 'display: none;' }}">
+                    class="img-thumbnail" style="max-height: 100px; {{ $course->thumbnail ? '' : 'display: none;' }}">
             </div>
 
-            {{-- <div class="form-group mt-3">
-                <label for="price">Giá</label>
-                <input type="number" id="price" name="price" class="form-control"
-                    value="{{ old('price', $course->price) }}">
-                @error('price')
-                    <p class="text-danger">{{ $message }}</p>
-                @enderror
-            </div> --}}
+            <div class="form-check mt-2">
+                <input type="checkbox" id="is_free" class="form-check-input" onchange="togglePriceField()"
+                    {{ old('price', $course->price) == 0 ? 'checked' : '' }}>
+                <label for="is_free" class="form-check-label">Miễn phí</label>
+            </div>
 
             <div class="form-group mt-3">
                 <label for="price">Giá</label>
-                <input type="number" id="price" name="price" class="form-control" value="{{ old('price', $course->price) }}" placeholder="Nhập giá">
+                <input type="number" id="price" name="price" class="form-control"
+                    value="{{ old('price', $course->price) }}" placeholder="Nhập giá">
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -62,7 +61,7 @@
 
             <div class="form-group mt-3">
                 <label for="categories_id">Danh mục</label>
-                <select name="categories_id" id="categories_id" class="form-control">
+                <select name="categories_id" id="categories_id" class="form-control" required>
                     <option value="">Chọn danh mục</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}"
@@ -76,7 +75,7 @@
                 @enderror
             </div>
 
-            <div class="form-group mt-3">
+            <div class="form-group mt-4">
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
                 <a href="{{ route('admin.course.index') }}" class="btn btn-secondary">Hủy</a>
             </div>
@@ -85,34 +84,33 @@
 
     <script>
         function previewImage(event, inputId) {
-            var input = document.getElementById(inputId);
-            var preview = document.getElementById(inputId + '-preview');
-
-            preview.style.display = 'block';
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(inputId + '-preview');
 
             if (input.files && input.files[0]) {
-                var reader = new FileReader();
+                const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
+                    preview.style.display = 'block';
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
         function togglePriceField() {
-            var isFree = document.getElementById('is_free').checked;
-            var priceField = document.getElementById('price');
-            
+            const isFree = document.getElementById('is_free').checked;
+            const priceInput = document.getElementById('price');
+
             if (isFree) {
-                priceField.value = 0;
-                priceField.readOnly = true;
+                priceInput.value = 0;
+                priceInput.readOnly = true;
             } else {
-                priceField.readOnly = false;
+                if (priceInput.value == 0) priceInput.value = '';
+                priceInput.readOnly = false;
             }
         }
 
-        // Remove this event listener too
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             togglePriceField();
         });
     </script>

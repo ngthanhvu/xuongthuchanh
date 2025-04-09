@@ -44,10 +44,11 @@ class CourseController extends Controller
             'description' => $request->description,
             'user_id' => Auth::id(),
             'thumbnail' => $thumbnailPath,
-            'price' => $request->price,
+            'price' => $request->has('is_free') ? 0 : $request->price,
             'categories_id' => $request->categories_id,
-            'is_free' => $request->price == 0 ? true : false,
+            'is_free' => $request->has('is_free'),
         ]);
+        
 
         return redirect()->route('admin.course.index')->with('success', 'Course created successfully.');
     }

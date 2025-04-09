@@ -74,4 +74,9 @@ class Course extends Model
         return $this->hasMany(SavedCourse::class);
     }
     
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
