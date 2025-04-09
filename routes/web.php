@@ -16,6 +16,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ReviewController;
 
 use App\Models\Lesson;
 
@@ -236,7 +237,7 @@ Route::get('/frontend-path', [HomeController::class, 'frontendPath'])->name('fro
 Route::get('/backend-path', [HomeController::class, 'backendPath'])->name('backend-path');
 Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learning-paths.index');
 
-
+Route::resource('reviews', ReviewController::class)->middleware('auth');
 
 //teacher
 Route::middleware(['check.teacher'])->group(function () {
