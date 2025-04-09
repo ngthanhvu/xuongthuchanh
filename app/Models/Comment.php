@@ -2,19 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'user_id',
-        'course_id',
-        'content',
-        'parent_id',
-    ];
+    protected $fillable = ['content', 'user_id', 'course_id', 'lesson_id', 'parent_id'];
 
     public function user()
     {
@@ -24,6 +16,16 @@ class Comment extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function lesson()
+    {
+        return $this->belongsTo(Lesson::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
     }
 
     public function replies()

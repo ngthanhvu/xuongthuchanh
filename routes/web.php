@@ -317,10 +317,17 @@ Route::middleware(['check.teacher'])->group(function () {
 
 //bình luận khóa học
 Route::middleware('auth')->group(function () {
-    Route::post('/courses/{courseId}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/reply', [CommentController::class, 'update'])->name('comments.reply');
+    Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
+    Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
 });
+Route::post('/comments/{commentId}/like', [CommentController::class, 'like'])->middleware('auth');
+
+
+
 Route::get('/courses/{course}', [CourseController::class, 'detail'])->name('courses.detail');
 
 Route::post('/chat-with-gemini', [ChatController::class, 'chat'])->name('chat.gemini');

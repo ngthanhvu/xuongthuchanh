@@ -53,10 +53,74 @@ class LessonController extends Controller
         return redirect()->route('admin.lessons.index')->with('success', 'Lesson created successfully.');
     }
 
-    public function show(Lesson $lesson)
+    public function show($id)
     {
-        $lesson->load('section', 'quizzes');
-        return view('admin.lessons.show', compact('lesson')); // Sửa 'lessons' thành 'lesson'
+        $lesson = Lesson::findOrFail($id);
+        $lesson = Lesson::with(['section.course.comments.user', 'section.course.comments.replies.user'])->findOrFail($id);
+        $sections = $lesson->section->course->sections()->with('lessons.quizzes')->get();
+        
+        // Calculate progress
+        $totalLessons = 0;
+        $completedLessons = [];
+        
+        if (Auth::check()) {
+            $progress = $lesson->section->course->getUserProgress(Auth::user());
+            
+            $course = $lesson->section->course;
+            $userProgress = $course->users()->where('user_id', Auth::id())->first();
+            
+            if ($userProgress && $userProgress->pivot->completed_lessons) {
+                $completedLessons = json_decode($userProgress->pivot->completed_lessons, true) ?? [];
+            }
+        } else {
+            $progress = 0;
+        }
+        
+        $nextLesson = Lesson::where('section_id', $lesson->section_id)
+                            ->where('id', '>', $lesson->id)
+                            ->orderBy('id')
+                            ->first();
+                            
+        if (!$nextLesson) {
+            $nextSection = Section::where('course_id', $lesson->section->course_id)
+                                ->where('id', '>', $lesson->section_id)
+                                ->orderBy('id')
+                                ->first();
+                                
+            if ($nextSection) {
+                $nextLesson = Lesson::where('section_id', $nextSection->id)
+                                    ->orderBy('id')
+                                    ->first();
+            }
+        }
+        
+        $prevLesson = Lesson::where('section_id', $lesson->section_id)
+                            ->where('id', '<', $lesson->id)
+                            ->orderBy('id', 'desc')
+                            ->first();
+                            
+        if (!$prevLesson) {
+            $prevSection = Section::where('course_id', $lesson->section->course_id)
+                                ->where('id', '<', $lesson->section_id)
+                                ->orderBy('id', 'desc')
+                                ->first();
+                                
+            if ($prevSection) {
+                $prevLesson = Lesson::where('section_id', $prevSection->id)
+                                    ->orderBy('id', 'desc')
+                                    ->first();
+            }
+
+            $likedComments = [];
+            if (Auth::check()) {
+                $likedComments = DB::table('comment_likes')
+                                    ->where('user_id', Auth::id())
+                                    ->pluck('comment_id')
+                                    ->toArray();
+            }
+        }
+        
+        return view('lessons.show', compact('lesson', 'sections', 'nextLesson', 'prevLesson', 'completedLessons', 'likedComments', 'progress'));
     }
 
     public function edit($id)
@@ -197,4 +261,5 @@ class LessonController extends Controller
         $lesson->delete();
         return redirect()->route('teacher.lessons.index')->with('success', 'Bài học đã được xóa thành công.');
     }
+
 }

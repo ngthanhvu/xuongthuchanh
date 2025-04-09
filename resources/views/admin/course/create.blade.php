@@ -43,13 +43,18 @@
             </div>
 
             <div class="form-group mt-3">
+                <input type="checkbox" id="is_free" name="is_free" onchange="togglePriceField()"
+                    {{ old('price') == 0 ? 'checked' : '' }}>
+                <label for="is_free">Miễn phí</label>
+            </div> 
+
+            <div class="form-group mt-3">
                 <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
-                <small class="text-success">Nhập 0 nếu muốn cho khoá học miễn phí</small>
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
-            </div>
+            </div>           
 
             <div class="form-group mt-3">
                 <label for="categories_id">Danh mục</label>
@@ -95,9 +100,11 @@
                 priceField.value = 0;
                 priceField.readOnly = true;
             } else {
+                priceField.value = '';
                 priceField.readOnly = false;
             }
         }
+
 
         // Remove this event listener too
         document.addEventListener('DOMContentLoaded', function() {
