@@ -16,11 +16,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ChatController;
-<<<<<<< HEAD
 use App\Http\Controllers\CommentController;
-=======
 use App\Http\Controllers\ReviewController;
->>>>>>> b4531e3df76f37b560015b56e9884fd955d6a23a
 
 use App\Models\Lesson;
 
@@ -328,7 +325,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
     Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
 });
-Route::post('/comments/{commentId}/like', [CommentController::class, 'like'])->middleware('auth');
 
 
 
