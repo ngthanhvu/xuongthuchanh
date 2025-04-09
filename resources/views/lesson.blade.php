@@ -351,27 +351,30 @@
                         </div>
                         <div class="card-body">
                             @if(Auth::check())
-                            <form action="{{ route('comments.reply') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="course_id" value="{{ $lesson->section->course->id }}">
-                                    <input type="hidden" name="lesson_id" value="{{ $lesson->id }}">
-                                    <div class="d-flex align-items-center">
-                                        <!-- Avatar on the left -->
+                            <form action="{{ route('comments.store') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="course_id" value="{{ $lesson->section->course->id }}">
+                                <input type="hidden" name="lesson_id" value="{{ $lesson->id }}">
+                                <div class="d-flex align-items-center">
+                                    @if (Auth::check())
                                         <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
                                              alt="{{ Auth::user()->username }}" class="rounded-circle me-2" style="width: 40px; height: 40px;">
-                                        <!-- Input field -->
                                         <div class="form-group flex-grow-1 mb-0">
                                             <input type="text" class="form-control comment-input" name="content" 
                                                    placeholder="Nhập bình luận mới của bạn" 
                                                    style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 10px 15px;">
                                         </div>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="submit" id="submitButton" class="btn btn-primary btn-sm" 
+                                            style="border-radius: 20px;">Gửi</button>
+                                </div>
+                                @else
+                                    <div class="alert alert-info">
+                                        Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để gửi bình luận.
                                     </div>
-                                    <!-- Submit button -->
-                                    <div class="d-flex justify-content-end mt-2">
-                                        <button type="submit" id="submitButton" class="btn btn-primary btn-sm" 
-                                                style="border-radius: 20px; display: none;">Gửi</button>
-                                    </div>
-                                </form>
+                                @endif
+                            </form>
                             @else
                                 <div class="alert alert-info">
                                     Vui lòng <a href="{{ route('login') }}">đăng nhập</a> để gửi câu hỏi.
