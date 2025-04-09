@@ -57,6 +57,10 @@
         .course-section h2 {
             margin-bottom: 20px;
         }
+        .list {
+            color: #ff5e00;
+            margin-left: 50px;
+        }
     </style>
 
     @if (session('success'))
@@ -85,8 +89,7 @@
             <div class="col-md-3">
                 <div class="filter-section">
                     <div class="card p-4">
-                        <h5 class="mb-3 text-center">Lọc Khóa Học</h5>
-                        <form method="GET" action="/khoa-hoc" class="d-flex flex-column gap-3">
+                            <form method="GET" action="/khoa-hoc" class="d-flex flex-column gap-3">
                             <!-- Lọc theo danh mục -->
                             <div>
                                 <label for="categories" class="form-label">Danh mục</label>
@@ -139,6 +142,10 @@
 
             <!-- Phần danh sách khóa học (bên phải - 9 cột) -->
             <div class="col-md-9">
+                <div class="list">
+                    <a href="/khoa-hoc">Khóa học</a>
+                    <a href="#">Yêu thích</a>
+                </div>
                 <div class="course-section">
                     <h2>Danh Sách Khóa Học</h2>
                     <div class="row">
