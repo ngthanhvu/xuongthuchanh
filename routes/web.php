@@ -16,7 +16,11 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ChatController;
+<<<<<<< HEAD
 use App\Http\Controllers\CommentController;
+=======
+use App\Http\Controllers\ReviewController;
+>>>>>>> b4531e3df76f37b560015b56e9884fd955d6a23a
 
 use App\Models\Lesson;
 
@@ -237,7 +241,7 @@ Route::get('/frontend-path', [HomeController::class, 'frontendPath'])->name('fro
 Route::get('/backend-path', [HomeController::class, 'backendPath'])->name('backend-path');
 Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learning-paths.index');
 
-
+Route::resource('reviews', ReviewController::class)->middleware('auth');
 
 //teacher
 Route::middleware(['check.teacher'])->group(function () {
