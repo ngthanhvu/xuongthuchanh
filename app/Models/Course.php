@@ -63,4 +63,9 @@ class Course extends Model
         $progress = $this->users()->where('user_id', $user->id)->first();
         return $progress ? $progress->pivot->progress : 0;
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

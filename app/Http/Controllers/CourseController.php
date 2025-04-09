@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\Comment;
+use App\Models\Enrollment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -52,10 +54,41 @@ class CourseController extends Controller
         return redirect()->route('admin.course.index')->with('success', 'Course created successfully.');
     }
 
+    // public function show(Course $course)
+    // {
+    //     $course->load('user', 'category', 'sections', 'posts', 'reviews');
+    //     return view('admin.course.show', compact('course'));
+    // }
     public function show(Course $course)
     {
-        $course->load('user', 'category', 'sections', 'posts', 'reviews');
-        return view('admin.course.show', compact('course'));
+        $course->load('user', 'category', 'sections.lessons.quizzes');
+        $sections = $course->sections;
+        $lessons = $course->sections->flatMap->lessons;
+        $quizzes = $lessons->flatMap->quizzes;
+        
+        // Lấy tất cả các bình luận gốc và sắp xếp theo thứ tự thời gian mới nhất
+        $comments = Comment::where('course_id', $course->id)
+                            ->whereNull('parent_id')
+                            ->with(['user', 'replies.user'])
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+        
+        // Kiểm tra người dùng đã đăng ký khóa học chưa
+        $isEnrolled = false;
+        if (Auth::check()) {
+            $isEnrolled = Enrollment::where('user_id', Auth::id())
+                                    ->where('course_id', $course->id)
+                                    ->exists();
+        }
+        
+        return view('course.show', compact(
+            'course', 
+            'sections', 
+            'lessons', 
+            'quizzes', 
+            'comments', 
+            'isEnrolled'
+        ));
     }
 
     public function edit($id)
@@ -224,4 +257,5 @@ class CourseController extends Controller
         $course->delete();
         return redirect()->route('teacher.course.index')->with('success', 'Khóa học đã được xóa thành công.');
     }
+
 }

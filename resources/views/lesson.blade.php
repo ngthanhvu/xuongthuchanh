@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $lesson->title }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="https://fullstack.edu.vn/favicon/favicon_32x32.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
         }
-
         .iframe-section {
             background-color: #000;
             height: 500px;
@@ -22,34 +25,28 @@
             font-size: 24px;
             position: relative;
         }
-
         .iframe-section iframe {
             width: 100%;
             height: 100%;
             display: block;
         }
-
         .lesson-list {
             background-color: #fff;
             border-left: 1px solid #dee2e6;
             height: 500px;
             overflow-y: auto;
         }
-
         .accordion-button {
             font-weight: bold;
             color: #dc3545;
         }
-
         .accordion-button:not(.collapsed) {
             color: #dc3545;
             background-color: #f8f9fa;
         }
-
         .accordion-body {
             padding: 0;
         }
-
         .lesson-item {
             padding: 10px 20px;
             border-bottom: 1px solid #dee2e6;
@@ -58,43 +55,59 @@
             text-decoration: none;
             color: inherit;
         }
-
         .lesson-item:hover {
             background-color: #f1f1f1;
         }
-
         .lesson-item.active {
             background-color: #ffe5e5;
         }
-
         .header {
             background-color: #343a40;
             color: #fff;
             padding: 10px 20px;
         }
-
         .footer {
             background-color: #f8f9fa;
             padding: 10px 20px;
             border-top: 1px solid #dee2e6;
         }
+        .btn-countdown:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     </style>
 </head>
 
 <body>
+    @if (session('success'))
+        <script>
+            iziToast.success({
+                title: 'Thành công',
+                message: '{{ session('success') }}',
+                position: 'topRight'
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            iziToast.error({
+                title: 'Lỗi',
+                message: '{{ session('error') }}',
+                position: 'topRight'
+            });
+        </script>
+    @endif
     <div class="header d-flex justify-content-between align-items-center">
-        <a href="{{ route('home') }}" class="text-decoration-none text-white"><i class="fa-solid fa-arrow-left"></i>
-            Trang chủ</a>
+        <a href="{{ route('home') }}" class="text-decoration-none text-white"><i class="fa-solid fa-arrow-left"></i> Trang chủ</a>
         <div>{{ $lesson->title }}</div>
         <div>{{ $sections->sum(fn($section) => $section->lessons->count()) }} bài học</div>
         <div class="progress" style="width: 200px;">
-            <div class="progress-bar" role="progressbar" style="width: {{ $progress }}%"
-                aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar" role="progressbar" style="width: {{ $progress }}%" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100">
                 {{ $progress }}%
             </div>
         </div>
     </div>
-
+    
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8 p-0">
@@ -119,27 +132,26 @@
                         <form action="{{ route('nextLesson', $nextLesson->id) }}" method="POST" class="d-inline">
                             @csrf
                             <input type="hidden" name="current_lesson_id" value="{{ $lesson->id }}">
-                            <button type="submit" class="btn btn-primary">BÀI TIẾP THEO</button>
+                            <button type="submit" class="btn btn-primary btn-countdown" id="nextLessonBtn" disabled>
+                                BÀI TIẾP THEO (<span id="countdown">15</span>s)
+                            </button>
                         </form>
                     @else
                         <form action="{{ route('nextLesson') }}" method="POST" class="d-inline">
                             @csrf
                             <input type="hidden" name="current_lesson_id" value="{{ $lesson->id }}">
-                            <button type="submit" class="btn btn-primary">HOÀN THÀNH KHÓA HỌC</button>
+                            <button type="submit" class="btn btn-primary btn-countdown" id="nextLessonBtn" disabled>
+                                HOÀN THÀNH KHÓA HỌC (<span id="countdown">15</span>s)
+                            </button>
                         </form>
                     @endif
-
-                    {{-- <form action="{{ route('completeLesson', $lesson->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-success ms-2">HOÀN THÀNH BÀI HỌC</button>
-                    </form> --}}
                 </div>
 
-                @if (session('success'))
+                {{-- @if (session('success'))
                     <div class="alert alert-success mt-3">
                         {{ session('success') }}
                     </div>
-                @endif
+                @endif --}}
 
                 <div class="footer d-flex justify-content-between align-items-center">
                     <div>
@@ -224,6 +236,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const nextBtn = document.getElementById('nextLessonBtn');
+            const countdownElement = document.getElementById('countdown');
+            let timeLeft = 15;
 
+            const countdown = setInterval(function () {
+                timeLeft--;
+                countdownElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    nextBtn.disabled = false;
+                    nextBtn.innerHTML = nextBtn.innerHTML.replace(/ \(\d+s\)/, ''); 
+                }
+            }, 1000);
+        });
+    </script>
+</body>
 </html>

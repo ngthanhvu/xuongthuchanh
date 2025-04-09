@@ -16,6 +16,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\CommentController;
 
 use App\Models\Lesson;
 
@@ -313,5 +314,13 @@ Route::middleware(['check.teacher'])->group(function () {
         Route::delete('/{answer}', [AnswerController::class, 'destroyTeacher'])->name('destroy');
     });
 });
+
+//bình luận khóa học
+Route::middleware('auth')->group(function () {
+    Route::post('/courses/{courseId}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+});
+Route::get('/courses/{course}', [CourseController::class, 'detail'])->name('courses.detail');
 
 Route::post('/chat-with-gemini', [ChatController::class, 'chat'])->name('chat.gemini');

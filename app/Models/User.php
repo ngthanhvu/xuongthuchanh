@@ -122,4 +122,9 @@ class User extends Authenticatable
     {
         $this->attributes['certificate_images'] = json_encode($value);
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

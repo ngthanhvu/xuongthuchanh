@@ -45,11 +45,7 @@
             <div class="form-group mt-3">
                 <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
-<<<<<<< HEAD
-                <small class="form-text text-muted">Nhập giá 0 nếu muốn giá học miễn phí</small>
-=======
                 <small class="text-success">Nhập 0 nếu muốn cho khoá học miễn phí</small>
->>>>>>> 46c3b2104d0adaba08cb2443fc149ca02aeb4a0b
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror

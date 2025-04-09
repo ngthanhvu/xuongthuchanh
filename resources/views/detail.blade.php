@@ -82,6 +82,170 @@
                         </div>
                     </div>
                 </div>
+                <!-- Phần bình luận - Thêm vào sau phần nội dung khóa học -->
+                <div class="card card-custom mb-4">
+                    <div class="card-body">
+                        {{-- <h5 class="card-title">Bình luận ({{ $comments->count() }})</h5> --}}
+                        
+                        @if(Auth::check() && isset($isEnrolled) && $isEnrolled)
+                            <form action="{{ route('comments.store', $course->id) }}" method="POST" class="mb-4">
+                                @csrf
+                                <div class="form-group">
+                                    <textarea class="form-control @error('content') is-invalid @enderror" 
+                                            name="content" rows="3" 
+                                            placeholder="Viết bình luận của bạn..."></textarea>
+                                    @error('content')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">Đăng bình luận</button>
+                            </form>
+                        @elseif(Auth::check())
+                            <div class="alert alert-info">
+                                Bạn cần đăng ký khóa học để có thể bình luận.
+                            </div>
+                        @else
+                            <div class="alert alert-info">
+                                Vui lòng <a href="{{ route('login') }}">đăng nhập</a> và đăng ký khóa học để bình luận.
+                            </div>
+                        @endif
+
+                        <!-- Danh sách bình luận -->
+                        <div class="comments-list mt-4">
+                            @forelse($comments as $comment)
+                                <div class="comment-item mb-3 pb-3 border-bottom" id="comment-{{ $comment->id }}">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <img src="{{ $comment->user->avatar ? asset($comment->user->avatar) : asset('images/default-avatar.png') }}" 
+                                                alt="{{ $comment->user->username }}" 
+                                                class="rounded-circle" width="50" height="50">
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="mb-0">{{ $comment->user->username }}</h6>
+                                                <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <p>{{ $comment->content }}</p>
+                                            
+                                            @if(Auth::check() && $isEnrolled)
+                                                <div class="comment-actions">
+                                                    <button class="btn btn-sm btn-link reply-btn" 
+                                                            data-parent-id="{{ $comment->id }}">Trả lời</button>
+                                                    
+                                                    @if(Auth::id() == $comment->user_id)
+                                                        <button class="btn btn-sm btn-link edit-btn" 
+                                                                data-comment-id="{{ $comment->id }}" 
+                                                                data-comment-content="{{ $comment->content }}">Sửa</button>
+                                                        
+                                                        <form class="d-inline" 
+                                                            action="{{ route('comments.destroy', $comment->id) }}" 
+                                                            method="POST" 
+                                                            onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-link text-danger">Xóa</button>
+                                                        </form>
+                                                    @endif
+                                                </div>
+                                                
+                                                <!-- Form trả lời (ẩn ban đầu) -->
+                                                <div class="reply-form mt-2" style="display: none;">
+                                                    <form action="{{ route('comments.store', $course->id) }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                                        <div class="form-group">
+                                                            <textarea class="form-control" name="content" rows="2" 
+                                                                    placeholder="Viết trả lời của bạn..."></textarea>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <button type="submit" class="btn btn-sm btn-primary">Gửi trả lời</button>
+                                                            <button type="button" class="btn btn-sm btn-secondary cancel-reply">Hủy</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                
+                                                <!-- Form chỉnh sửa (ẩn ban đầu) -->
+                                                <div class="edit-form mt-2" style="display: none;">
+                                                    <form action="{{ route('comments.update', $comment->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="form-group">
+                                                            <textarea class="form-control edit-content" name="content" rows="2"></textarea>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
+                                                            <button type="button" class="btn btn-sm btn-secondary cancel-edit">Hủy</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            @endif
+                                            
+                                            <!-- Phần trả lời -->
+                                            @if($comment->replies->count() > 0)
+                                                <div class="replies mt-3">
+                                                    @foreach($comment->replies as $reply)
+                                                        <div class="reply-item mt-2 ps-3 border-start" id="comment-{{ $reply->id }}">
+                                                            <div class="d-flex">
+                                                                <div class="flex-shrink-0">
+                                                                    <img src="{{ $reply->user->avatar ? asset($reply->user->avatar) : asset('images/default-avatar.png') }}" 
+                                                                        alt="{{ $reply->user->username }}" 
+                                                                        class="rounded-circle" width="40" height="40">
+                                                                </div>
+                                                                <div class="flex-grow-1 ms-2">
+                                                                    <div class="d-flex justify-content-between">
+                                                                        <h6 class="mb-0">{{ $reply->user->username }}</h6>
+                                                                        <small class="text-muted">{{ $reply->created_at->diffForHumans() }}</small>
+                                                                    </div>
+                                                                    <p>{{ $reply->content }}</p>
+                                                                    
+                                                                    @if(Auth::check() && Auth::id() == $reply->user_id)
+                                                                        <div class="reply-actions">
+                                                                            <button class="btn btn-sm btn-link edit-btn" 
+                                                                                    data-comment-id="{{ $reply->id }}" 
+                                                                                    data-comment-content="{{ $reply->content }}">Sửa</button>
+                                                                            
+                                                                            <form class="d-inline" 
+                                                                                action="{{ route('comments.destroy', $reply->id) }}" 
+                                                                                method="POST" 
+                                                                                onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này?');">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                                <button type="submit" class="btn btn-sm btn-link text-danger">Xóa</button>
+                                                                            </form>
+                                                                        </div>
+                                                                        
+                                                                        <!-- Form chỉnh sửa trả lời (ẩn ban đầu) -->
+                                                                        <div class="edit-form mt-2" style="display: none;">
+                                                                            <form action="{{ route('comments.update', $reply->id) }}" method="POST">
+                                                                                @csrf
+                                                                                @method('PUT')
+                                                                                <div class="form-group">
+                                                                                    <textarea class="form-control edit-content" name="content" rows="2"></textarea>
+                                                                                </div>
+                                                                                <div class="mt-2">
+                                                                                    <button type="submit" class="btn btn-sm btn-primary">Lưu</button>
+                                                                                    <button type="button" class="btn btn-sm btn-secondary cancel-edit">Hủy</button>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center text-muted">
+                                    Chưa có bình luận nào cho khóa học này.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- Right Section -->
             <div class="col-md-4">
@@ -115,6 +279,49 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xử lý hiển thị form trả lời
+            document.querySelectorAll('.reply-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const parentId = this.getAttribute('data-parent-id');
+                    const replyForm = this.closest('.comment-item').querySelector('.reply-form');
+                    replyForm.style.display = 'block';
+                });
+            });
+    
+            // Xử lý hủy trả lời
+            document.querySelectorAll('.cancel-reply').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const replyForm = this.closest('.reply-form');
+                    replyForm.style.display = 'none';
+                });
+            });
+    
+            // Xử lý hiển thị form chỉnh sửa
+            document.querySelectorAll('.edit-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const commentId = this.getAttribute('data-comment-id');
+                    const commentContent = this.getAttribute('data-comment-content');
+                    const editForm = this.closest('.comment-item, .reply-item').querySelector('.edit-form');
+                    
+                    // Đặt nội dung hiện tại vào ô textarea
+                    editForm.querySelector('.edit-content').value = commentContent;
+                    
+                    // Hiển thị form chỉnh sửa
+                    editForm.style.display = 'block';
+                });
+            });
+    
+            // Xử lý hủy chỉnh sửa
+            document.querySelectorAll('.cancel-edit').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const editForm = this.closest('.edit-form');
+                    editForm.style.display = 'none';
+                });
+            });
+        });
+    </script>
 
     <style>
         .card-custom {
