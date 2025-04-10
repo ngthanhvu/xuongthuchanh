@@ -51,8 +51,7 @@
                 @foreach ($courses as $course)
                     <div class="col-md-3 mb-4">
                         @php
-                            $isEnrolled =
-                                isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
+                            $isEnrolled = isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
                             $link = $links[$course->id] ?? route('detail', $course->id);
                             $buttonText = $isEnrolled ? 'Học ngay' : 'Đăng ký';
                             $discountedPrice = $course->price * (1 - ($course->discount ?? 0) / 100);
@@ -62,13 +61,12 @@
                             <a href="{{ $link }}" class="text-decoration-none">
                                 <div class="card-header html-css">
                                     <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid"
-                                        alt="{{ $course->title }}"
-                                        style="width: 100%; height: 200px; object-fit: cover;">
+                                        alt="{{ $course->title }}" style="width: 100%; height: 200px; object-fit: cover;">
                                     <span class="badge">Mới</span>
                                 </div>
                             </a>
                             <div class="card-body">
-                                
+
                                 <div class="title">
                                     <h3 class="fs-5 ellipsis">{{ $course->title }}</h3>
                                 </div>
@@ -101,7 +99,12 @@
                                     </form>
                                 </div>
                                 <div class="meta d-flex justify-content-between">
-                                    <span><i class="fas fa-user"></i> {{ $course->user->username }}</span>
+                                    <span>
+                                        <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} 
+                                            @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
+                                            class="avatar" alt="Avatar" data-bs-toggle="dropdown" aria-expanded="false" style = "width: 20px; height: 20px;">
+                                        {{ $course->user->username }}
+                                    </span>
                                     <span><i class="fas fa-book"></i>
                                         {{ $course->sections_count }} bài học</span>
                                     <span><i class="fas fa-clock"></i>
@@ -126,7 +129,7 @@
                 <p class="lead text-muted">Khám phá các bài viết mới nhất của chúng tôi</p>
             </div>
         </div>
-    
+
         <div class="row g-4">
             @forelse ($posts as $post)
                 <div class="col-md-4 col-sm-6">
@@ -135,14 +138,14 @@
                             @if ($post->course && $post->course->thumbnail)
                                 <div class="position-relative overflow-hidden">
                                     <img src="{{ asset('storage/' . $post->course->thumbnail) }}" class="card-img-top"
-                                        alt="{{ $post->course->title }}" 
+                                        alt="{{ $post->course->title }}"
                                         style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
                                     <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1">Mới</span>
                                 </div>
                             @else
                                 <div class="position-relative">
-                                    <img src="{{ asset('images/default-thumbnail.jpg') }}" class="card-img-top" 
-                                        alt="Default thumbnail" 
+                                    <img src="{{ asset('images/default-thumbnail.jpg') }}" class="card-img-top"
+                                        alt="Default thumbnail"
                                         style="height: 200px; object-fit: cover; transition: transform 0.3s ease;">
                                 </div>
                             @endif
@@ -151,7 +154,8 @@
                                     <h3 class="fs-5 ellipsis">{{ Str::limit($post->title, 50) }}</h3>
                                 </div>
                                 <div class="meta d-flex justify-content-between">
-                                    <span><i class="fas fa-book"></i> {{ $post->course->title ?? 'Không có khóa học' }}</span>
+                                    <span><i class="fas fa-book"></i>
+                                        {{ $post->course->title ?? 'Không có khóa học' }}</span>
                                     <span><i class="fas fa-clock"></i> {{ $post->created_at->format('d/m/Y') }}</span>
                                 </div>
                             </div>
@@ -168,7 +172,7 @@
             @endforelse
         </div>
     </div>
-    
+
     <br>
     <br>
 @endsection

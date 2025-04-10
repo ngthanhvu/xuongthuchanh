@@ -34,6 +34,8 @@ class HomeController extends Controller
 
         $userId = Auth::check() ? Auth::id() : null;
         $courseProgress = [];
+        $query = Course::query();
+        $courses = $query->withCount('sections')->paginate(12);
 
         $enrollmentStatus = [];
         $links = [];
@@ -106,7 +108,6 @@ class HomeController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        // Lấy danh sách khóa học kèm tổng số section
         $courses = $query->withCount('sections')->paginate(12);
 
         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
