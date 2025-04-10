@@ -22,14 +22,15 @@ class ReviewController extends Controller
         return view('reviews.create', compact('users', 'courses'));
     }
 
+    // ReviewController.php
     public function store(Request $request)
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
             'rating' => 'required|numeric|min:1|max:5',
+            'content' => 'nullable|string|max:1000', // Đã đổi từ comment sang content
         ]);
 
-        // Kiểm tra nếu user đã đánh giá
         $existingReview = Review::where('user_id', auth()->id())
             ->where('course_id', $request->course_id)
             ->first();
@@ -42,9 +43,24 @@ class ReviewController extends Controller
             'user_id' => auth()->id(),
             'course_id' => $request->course_id,
             'rating' => $request->rating,
+            'content' => $request->content, // Đã đổi từ comment sang content
         ]);
 
-        return back()->with('success', 'Đánh giá của bạn đã được ghi nhận.');
+        return back()->with('success', 'Đánh giá của bạn đã được ghi nhận. Cảm ơn sự đóng góp của bạn!');
+    }
+
+    // Thêm method mới cho admin reply
+    public function reply(Request $request, Review $review)
+    {
+        $request->validate([
+            'admin_reply' => 'required|string|max:1000',
+        ]);
+
+        $review->update([
+            'admin_reply' => $request->admin_reply
+        ]);
+
+        return back()->with('success', 'Phản hồi của bạn đã được gửi.');
     }
 
     public function show(Review $review)
@@ -66,8 +82,8 @@ class ReviewController extends Controller
             'user_id' => 'required|exists:users,id',
             'course_id' => 'required|exists:courses,id',
             'rating' => 'required|numeric|min:1|max:5',
+            'content' => 'nullable|string|max:1000',
         ]);
-
         $review->update($request->all());
         return redirect()->route('reviews.index')->with('success', 'Review updated successfully.');
     }
