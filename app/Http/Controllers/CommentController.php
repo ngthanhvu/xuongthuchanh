@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
+    // Các phương thức hiện có
     public function store(Request $request)
     {
         $request->validate([
@@ -60,12 +61,10 @@ class CommentController extends Controller
 
     public function update(Request $request, Comment $comment)
     {
-        // Validate the input
         $request->validate([
             'content' => 'required|string|max:1000',
         ]);
 
-        // Update the comment
         $comment->update([
             'content' => $request->input('content'),
         ]);
@@ -77,7 +76,6 @@ class CommentController extends Controller
     {
         $comment = Comment::findOrFail($id);
         
-        // Only comment owner or admin/teacher can delete
         if (Auth::id() === $comment->user_id || Auth::user()->role === 'admin' || Auth::user()->role === 'teacher') {
             $comment->delete();
             return back()->with('success', 'Bình luận đã được xóa thành công.');
@@ -87,57 +85,120 @@ class CommentController extends Controller
     }
 
     public function like(Request $request, $id)
-{
-    try {
-        // Log thông tin để debug
-        \Log::info('Like request received for comment: ' . $id);
-        
-        $comment = Comment::findOrFail($id);
-        $userId = Auth::id();
-        
-        if (!$userId) {
-            return response()->json(['error' => 'User not authenticated'], 401);
-        }
-        
-        // Kiểm tra xem người dùng đã thích bình luận này chưa
-        $liked = DB::table('comment_likes')
+    {
+        try {
+            \Log::info('Like request received for comment: ' . $id);
+            
+            $comment = Comment::findOrFail($id);
+            $userId = Auth::id();
+            
+            if (!$userId) {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
+            
+            $liked = DB::table('comment_likes')
+                        ->where('user_id', $userId)
+                        ->where('comment_id', $id)
+                        ->exists();
+            
+            \Log::info('User ' . $userId . ' has liked comment ' . $id . ': ' . ($liked ? 'yes' : 'no'));
+            
+            if ($liked) {
+                DB::table('comment_likes')
                     ->where('user_id', $userId)
                     ->where('comment_id', $id)
-                    ->exists();
-        
-        \Log::info('User ' . $userId . ' has liked comment ' . $id . ': ' . ($liked ? 'yes' : 'no'));
-        
-        if ($liked) {
-            // Nếu đã thích rồi, bỏ thích
-            DB::table('comment_likes')
-                ->where('user_id', $userId)
-                ->where('comment_id', $id)
-                ->delete();
-            
-            $comment->decrement('likes');
-            return response()->json(['status' => 'unliked', 'likes' => $comment->likes]);
-        } else {
-            // Nếu chưa thích, thêm like mới
-            DB::table('comment_likes')->insert([
-                'user_id' => $userId,
-                'comment_id' => $id,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-            
-            $comment->increment('likes');
-            return response()->json(['status' => 'liked', 'likes' => $comment->likes]);
+                    ->delete();
+                
+                $comment->decrement('likes');
+                return response()->json(['status' => 'unliked', 'likes' => $comment->likes]);
+            } else {
+                DB::table('comment_likes')->insert([
+                    'user_id' => $userId,
+                    'comment_id' => $id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                
+                $comment->increment('likes');
+                return response()->json(['status' => 'liked', 'likes' => $comment->likes]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in like function: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-    } catch (\Exception $e) {
-        \Log::error('Error in like function: ' . $e->getMessage());
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 
-    // Phương thức reply đã có, nhưng có thể cần điều chỉnh để hiển thị form reply
     public function showReplyForm($commentId)
     {
         $parentComment = Comment::findOrFail($commentId);
         return view('comments.reply-form', compact('parentComment'));
     }
+
+    // Các phương thức admin
+    public function adminComments(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect('/dang-nhap')->with('error', 'Vui lòng đăng nhập để tiếp tục');
+        }
+    
+        $user = Auth::user();
+        if ($user->role != 'admin' && $user->role != 'owner') {
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
+        }
+    
+        $title = 'Quản lý bình luận';
+        $query = Comment::with(['user', 'course', 'lesson', 'replies'])
+            ->orderBy('created_at', 'desc');
+    
+        // Tìm kiếm theo nội dung hoặc tên người dùng
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('content', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function ($q) use ($search) {
+                      $q->where('content', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+    
+        // Lọc theo khóa học
+        if ($courseId = $request->input('course_id')) {
+            $query->where('course_id', $courseId);
+        }
+    
+        $comments = $query->paginate(10);
+    
+        // Giữ lại các tham số tìm kiếm trong phân trang
+        $comments->appends($request->only(['search', 'course_id']));
+    
+        return view('admin.comment.index', compact('comments', 'title'));
+    }
+
+    public function adminDelete($id)
+    {
+        $comment = Comment::findOrFail($id);
+        $comment->delete();
+        return back()->with('success', 'Bình luận đã xóa thành công');
+    }
+
+    public function adminBulkDelete(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect('/dang-nhap')->with('error', 'Vui lòng đăng nhập để tiếp tục');
+        }
+
+        $user = Auth::user();
+        if ($user->role != 'admin' && $user->role != 'owner') {
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
+        }
+
+        $request->validate([
+            'comment_ids' => 'required|array',
+            'comment_ids.*' => 'exists:comments,id',
+        ]);
+
+        Comment::whereIn('id', $request->comment_ids)->delete();
+
+        return back()->with('success', 'Đã xóa các bình luận được chọn.');
+    }
+   
 }
