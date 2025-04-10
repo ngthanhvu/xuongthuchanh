@@ -9,9 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckAdmin
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
@@ -19,10 +16,11 @@ class CheckAdmin
         }
 
         $user = Auth::user();
+        $allowedRoles = ['admin', 'owner']; // Danh sách vai trò được phép
 
-        if ($user->role != 'admin' && $user->role != 'owner' ) {
+        if (!in_array($user->role, $allowedRoles)) {
             return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
-        } 
+        }
 
         return $next($request);
     }

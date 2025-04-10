@@ -20,6 +20,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SavedCourseController;
 
+
 use App\Models\Lesson;
 
 //Admin
@@ -331,6 +332,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
     Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
+});
+
+Route::prefix('admin')->group(function () {
+    Route::get('/comments', [CommentController::class, 'adminComments'])->name('admin.comments');
+    Route::delete('/admin/comments/{id}', [CommentController::class, 'adminDelete'])->name('admin.comment.delete');
+    Route::delete('/comments/bulk-delete', [CommentController::class, 'adminBulkDelete'])->name('admin.comments.bulk-delete');
 });
 
 
