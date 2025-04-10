@@ -100,10 +100,10 @@
                                 </div>
                                 <div class="meta d-flex justify-content-between">
                                     <span>
-                                        <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} 
+                                        <img src="@if ($course->user && $course->user->avatar) {{ asset($course->user->avatar) }} 
                                             @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
-                                            class="avatar" alt="Avatar" data-bs-toggle="dropdown" aria-expanded="false" style = "width: 20px; height: 20px;">
-                                        {{ $course->user->username }}
+                                            alt="Avatar" class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover" style="width: 20px; height: 20px; object-fit: cover;">
+                                        {{ $course->user->username ?? 'Chúng tôi' }}
                                     </span>
                                     <span><i class="fas fa-book"></i>
                                         {{ $course->sections_count }} bài học</span>

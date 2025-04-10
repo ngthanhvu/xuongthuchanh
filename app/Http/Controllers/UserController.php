@@ -41,12 +41,13 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required',
+            'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password',
         ], [
             'username.required' => 'Vui lòng nhập tên người dùng',
+            'username.unique' => 'Tên người dùng tồn tại',
             'email.required' => 'Vui lòng nhập email',
             'email.email' => 'Email không đúng định dạng',
             'email.unique' => 'Email đã tồn tại',

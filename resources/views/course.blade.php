@@ -120,12 +120,10 @@
     <!-- Main Content -->
     <div class="container py-5">
         <div class="row">
-            <!-- Phần lọc (bên trái - 3 cột) -->
             <div class="col-md-3">
                 <div class="filter-section">
                     <div class="card p-4">
                         <form method="GET" action="/khoa-hoc" class="d-flex flex-column gap-3">
-                            <!-- Lọc theo danh mục -->
                             <div>
                                 <label for="categories" class="form-label">Danh mục</label>
                                 <select name="categories" id="categories" class="form-select">

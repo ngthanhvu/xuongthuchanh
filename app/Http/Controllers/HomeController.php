@@ -37,6 +37,7 @@ class HomeController extends Controller
         $query = Course::query();
         $courses = $query->withCount('sections')->paginate(12);
 
+
         $enrollmentStatus = [];
         $links = [];
         $posts = Post::with('course')->latest()->get();
