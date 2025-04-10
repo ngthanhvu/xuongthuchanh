@@ -106,7 +106,8 @@ class HomeController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $courses = $query->paginate(12);
+        // Lấy danh sách khóa học kèm tổng số section
+        $courses = $query->withCount('sections')->paginate(12);
 
         $enrollments = Auth::check() ? Enrollment::where('user_id', Auth::id())->get() : null;
         $userId = Auth::check() ? Auth::id() : null;

@@ -51,7 +51,8 @@
                 @foreach ($courses as $course)
                     <div class="col-md-3 mb-4">
                         @php
-                            $isEnrolled = isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
+                            $isEnrolled =
+                                isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
                             $link = $links[$course->id] ?? route('detail', $course->id);
                             $buttonText = $isEnrolled ? 'Học ngay' : 'Đăng ký';
                             $discountedPrice = $course->price * (1 - ($course->discount ?? 0) / 100);
@@ -61,21 +62,23 @@
                             <a href="{{ $link }}" class="text-decoration-none">
                                 <div class="card-header html-css">
                                     <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid"
-                                        alt="{{ $course->title }}" style="width: 460px; height: 200px;">
+                                        alt="{{ $course->title }}"
+                                        style="width: 100%; height: 200px; object-fit: cover;">
                                     <span class="badge">Mới</span>
                                 </div>
                             </a>
                             <div class="card-body">
+                                
                                 <div class="title">
                                     <h3 class="fs-5 ellipsis">{{ $course->title }}</h3>
                                 </div>
                                 <div class="meta d-flex justify-content-between">
-                                    @if($course->price > 0)
+                                    @if ($course->price > 0)
                                         <span class="text-decoration-line-through">
                                             {{ number_format($course->price, 0, ',', '.') }}đ
                                         </span>
                                         <span class="new-pricex fw-bold">
-                                            @if($discountedPrice > 0)
+                                            @if ($discountedPrice > 0)
                                                 {{ number_format($discountedPrice, 0, ',', '.') }}đ
                                             @else
                                                 Miễn phí
@@ -84,19 +87,33 @@
                                     @else
                                         <span class="new-pricex fw-bold">Miễn phí</span>
                                     @endif
+                                    <form action="{{ route('courses.toggleSave', $course->id) }}" method="POST"
+                                        style="display: inline;">
+                                        @csrf
+                                        <button type="submit"
+                                            class="btn btn-outline-warning d-flex align-items-center gap-1">
+                                            @if ($course->isSavedByUser(auth()->id()))
+                                                <i class="fas fa-heart text-orange"></i>
+                                            @else
+                                                <i class="far fa-heart"></i>
+                                            @endif
+                                        </button>
+                                    </form>
                                 </div>
                                 <div class="meta d-flex justify-content-between">
                                     <span><i class="fas fa-user"></i> {{ $course->user->username }}</span>
-                                    <span><i class="fas fa-book"></i> Null </span>
-                                    <span><i class="fas fa-clock"></i> {{ $course->created_at->format('d/m/Y') }}</span>
+                                    <span><i class="fas fa-book"></i>
+                                        {{ $course->sections_count }} bài học</span>
+                                    <span><i class="fas fa-clock"></i>
+                                        {{ $course->created_at->format('d/m/Y') }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @endforeach
-                @if (count($courses) == 0)
+                @if ($courses->isEmpty())
                     <div class="col-md-12">
-                        <p class="text-center">Không có khoá học nào</p>
+                        <p class="text-center">Không có khóa học nào</p>
                     </div>
                 @endif
             </div>
