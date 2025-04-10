@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->decimal('rating', 2, 1);
+            $table->text('comment')->nullable();
+            $table->text('admin_reply')->nullable();
             $table->timestamps();
         });
     }

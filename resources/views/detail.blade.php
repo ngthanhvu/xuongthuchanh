@@ -83,35 +83,148 @@
                 </div>
             </div>
 
-            <!-- Phần đánh giá trung bình -->
             <div class="card card-custom mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Đánh giá khóa học</h5>
+                    <h5 class="card-title text-center">Đánh giá khóa học</h5>
                     @php
-                    $reviews = \App\Models\Review::where('course_id', $course->id)->get();
+                    // Phần thống kê đánh giá
+                    $reviews = \App\Models\Review::with('user')
+                    ->where('course_id', $course->id)
+                    ->orderBy('created_at', 'desc')
+                    ->get();
                     $averageRating = $reviews->avg('rating');
+                    $ratingCounts = $reviews->groupBy('rating')->map->count();
                     @endphp
-                    <p>Điểm trung bình: {{ number_format($averageRating, 1) }} / 5 (dựa trên {{ $reviews->count() }} đánh giá)</p>
+
+                    <div class="col-md-12
+                        d-flex justify-content-center align-items-center mb-4">
+                        <div class="col-md-3 text-center">
+                            <h2 class="text-primary">{{ number_format($averageRating, 1) }}</h2>
+                            <div class="star-rating mb-2">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="fas fa-star {{ $i <= round($averageRating) ? 'text-warning' : 'text-secondary' }}"></i>
+                                    @endfor
+                            </div>
+                            <p>{{ $reviews->count() }} đánh giá</p>
+                        </div>
+                        <!-- <div class="col-md-9">
+                            @for($i = 5; $i >= 1; $i--)
+                            <div class="row align-items-center mb-2">
+                                <div class="col-2 text-end">
+                                    <span>{{ $i }} <i class="fas fa-star text-warning"></i></span>
+                                </div>
+                                <div class="col-7">
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" role="progressbar"
+                                            style="width: {{ $reviews->count() > 0 ? ($ratingCounts[$i] ?? 0) / $reviews->count() * 100 : 0 }}%"
+                                            aria-valuenow="{{ $ratingCounts[$i] ?? 0 }}"
+                                            aria-valuemin="0"
+                                            aria-valuemax="{{ $reviews->count() }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <span>{{ $ratingCounts[$i] ?? 0 }}</span>
+                                </div>
+                            </div>
+                            @endfor
+                        </div> -->
+                    </div>
 
                     @auth
                     @if(!$reviews->where('user_id', auth()->id())->first())
-                    <form method="POST" action="{{ route('reviews.store') }}">
-                        @csrf
-                        <input type="hidden" name="course_id" value="{{ $course->id }}">
-                        <div class="form-group">
-                            <label for="rating">Đánh giá của bạn:</label>
-                            <select name="rating" id="rating" class="form-control">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <option value="{{ $i }}">{{ $i }} sao</option>
-                                    @endfor
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-2">Gửi đánh giá</button>
-                    </form>
+                    <div class="review-form mb-4">
+                        <h6>Đánh giá của bạn</h6>
+                        <form method="POST" action="{{ route('reviews.store') }}" id="reviewForm">
+                            @csrf
+                            <input type="hidden" name="course_id" value="{{ $course->id }}">
+
+                            <div class="form-group mb-3">
+                                <div class="star-rating">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="far fa-star" data-rating="{{ $i }}"></i>
+                                        @endfor
+                                        <input type="hidden" name="rating" id="ratingValue" value="5" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <textarea name="content" class="form-control" rows="3"
+                                    placeholder="Chia sẻ trải nghiệm của bạn về khóa học này..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+                        </form>
+                    </div>
                     @endif
                     @else
-                    <p><a href="{{ route('login') }}">Đăng nhập</a> để đánh giá khóa học</p>
+                    <p><a href="{{ route('login') }}" class="btn btn-outline-primary">Đăng nhập</a> để đánh giá khóa học</p>
                     @endauth
+
+                    <div class="reviews-list">
+                        <h6>Đánh giá từ học viên</h6>
+                        @if($reviews->count() > 0)
+                        @foreach($reviews as $review)
+                        <div class="review-item mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <strong>{{ $review->user->name }}</strong>
+                                    <div class="star-rating d-inline-block ms-2">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="fas fa-star {{ $i <= $review->rating ? 'text-warning' : 'text-secondary' }}"></i>
+                                            @endfor
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                            </div>
+
+                            @if($review->content)
+                            <p class="mb-2">{{ $review->content }}</p>
+                            @endif
+
+                            @if($review->admin_reply)
+                            <div class="admin-reply p-3 bg-light rounded mt-2">
+                                <div class="d-flex justify-content-between">
+                                    <strong>Phản hồi từ quản trị viên</strong>
+                                    <small class="text-muted">{{ $review->updated_at->diffForHumans() }}</small>
+                                </div>
+                                <p class="mb-0">{{ $review->admin_reply }}</p>
+                            </div>
+                            @endif
+
+                            {{-- Nút reply cho admin --}}
+                            @auth
+                            <div style="display: none;">
+                                User Role: {{ auth()->user()->role }}<br>
+                                Is Admin: {{ auth()->user()->role === 'admin' ? 'Yes' : 'No' }}<br>
+                                Review ID: {{ $review->id }}<br>
+                                Has Reply: {{ $review->admin_reply ? 'Yes' : 'No' }}
+                            </div>
+                            @if(auth()->user()->role === 'admin' && !$review->admin_reply)
+                            <button class="btn btn-sm btn-outline-primary mt-2 toggle-reply" data-review-id="{{ $review->id }}">
+                                <i class="fas fa-reply"></i> Phản hồi
+                            </button>
+
+                            <div class="reply-form mt-2" id="reply-form-{{ $review->id }}" style="display: none;">
+                                <form method="POST" action="{{ route('reviews.reply', $review) }}">
+                                    @csrf
+                                    <div class="form-group mb-2">
+                                        <textarea name="admin_reply" class="form-control" rows="2"
+                                            placeholder="Nhập phản hồi của bạn..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary">Gửi</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary cancel-reply"
+                                        data-review-id="{{ $review->id }}">Hủy</button>
+                                </form>
+                            </div>
+                            @endif
+                            @endauth
+                        </div>
+                        @endforeach
+                        @else
+                        <p>Chưa có đánh giá nào cho khóa học này.</p>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -168,6 +281,36 @@
         text-align: center;
     }
 
+    .admin-reply {
+        border-left: 3px solid #007bff;
+        background-color: #f8f9fa;
+    }
+
+    .toggle-reply {
+        transition: all 0.3s ease;
+    }
+
+    .toggle-reply:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .reply-form {
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     .btn-custom {
         background-color: #007bff;
         color: white;
@@ -194,5 +337,116 @@
     .list-group-item {
         border: none;
     }
+
+    .star-rating {
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .star-rating .far {
+        color: #ffc107;
+    }
+
+    .star-rating .fas {
+        color: #ffc107;
+    }
+
+    .review-item {
+        transition: all 0.3s ease;
+    }
+
+    .review-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .admin-reply {
+        border-left: 3px solid #0d6efd;
+    }
+
+    .progress {
+        background-color: #e9ecef;
+    }
 </style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý nút reply
+        document.querySelectorAll('.toggle-reply').forEach(button => {
+            button.addEventListener('click', function() {
+                const reviewId = this.getAttribute('data-review-id');
+                const replyForm = document.getElementById(`reply-form-${reviewId}`);
+                replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+
+        // Xử lý nút hủy reply
+        document.querySelectorAll('.cancel-reply').forEach(button => {
+            button.addEventListener('click', function() {
+                const reviewId = this.getAttribute('data-review-id');
+                document.getElementById(`reply-form-${reviewId}`).style.display = 'none';
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý rating star
+        const stars = document.querySelectorAll('.star-rating .far.fa-star');
+        const ratingInput = document.getElementById('ratingValue');
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                ratingInput.value = rating;
+
+                // Cập nhật giao diện
+                stars.forEach((s, index) => {
+                    if (index < rating) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                    }
+                });
+            });
+
+            star.addEventListener('mouseover', function() {
+                const rating = this.getAttribute('data-rating');
+
+                stars.forEach((s, index) => {
+                    if (index < rating) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                    }
+                });
+            });
+
+            star.addEventListener('mouseout', function() {
+                const currentRating = ratingInput.value;
+
+                stars.forEach((s, index) => {
+                    if (index < currentRating) {
+                        s.classList.remove('far');
+                        s.classList.add('fas');
+                    } else {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                    }
+                });
+            });
+        });
+
+        // Khởi tạo rating mặc định là 5 sao
+        stars.forEach((star, index) => {
+            if (index < 5) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+            }
+        });
+    });
+</script>
+
 @endsection
