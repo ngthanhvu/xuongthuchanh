@@ -178,6 +178,9 @@ Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrol
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
+// Route cho Momo
+Route::post('/momo/payment', [PaymentController::class, 'createMomoPayment'])->name('payment.createMomoPayment');
+Route::post('/momo/callback', [PaymentController::class, 'momoCallback'])->name('payment.momoCallback');
 
 //quen mat khau
 Route::get('/quen-mat-khau', [UserController::class, 'forgotPassword'])->name('password.forgot');

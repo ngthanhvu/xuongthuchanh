@@ -303,6 +303,155 @@
             padding-top: 10px;
             margin-top: 15px;
         }
+
+        /* Màu cam chủ đạo */
+        :root {
+            --orange-primary: #ff7518;
+            --orange-hover: #ff8c33;
+            --orange-light: #fff1e6;
+            --orange-border: #ffa366;
+            --orange-dark: #e65c00;
+        }
+
+        /* Tiêu đề modal */
+        .modal-header {
+            background-color: var(--orange-primary) !important;
+            color: white !important;
+        }
+
+        /* Nút đóng */
+        .btn-close-white {
+            filter: brightness(100);
+        }
+
+        /* Các icon */
+        .fas {
+            color: var(--orange-primary) !important;
+        }
+
+        /* Nền thông tin khóa học */
+        .course-info {
+            background-color: var(--orange-light) !important;
+            border-color: var(--orange-border) !important;
+        }
+
+        /* Nút chính */
+        .btn-primary {
+            background-color: var(--orange-primary) !important;
+            border-color: var(--orange-dark) !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--orange-hover) !important;
+            border-color: var(--orange-primary) !important;
+        }
+
+        /* Outline button */
+        .btn-outline-primary {
+            color: var(--orange-primary) !important;
+            border-color: var(--orange-primary) !important;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--orange-primary) !important;
+            color: white !important;
+        }
+
+        /* Bậc giá */
+        .text-primary {
+            color: var(--orange-primary) !important;
+        }
+
+        /* Phương thức thanh toán */
+        .btn-check:checked+.btn-outline-primary {
+            background-color: var(--orange-primary) !important;
+            color: white !important;
+        }
+
+        /* Viền phân cách */
+        .border-bottom {
+            border-color: var(--orange-border) !important;
+        }
+
+        /* Phần chi tiết thanh toán */
+        .bg-light {
+            background-color: var(--orange-light) !important;
+        }
+
+        /* Mã giảm giá */
+        #couponMessage .text-success {
+            color: var(--orange-dark) !important;
+        }
+
+        /* Hiệu ứng shadow */
+        .shadow-sm {
+            box-shadow: 0 .125rem .25rem rgba(255, 117, 24, 0.15) !important;
+        }
+
+        /* Nút thanh toán */
+        .btn-primary:focus,
+        .btn-primary:active {
+            box-shadow: 0 0 0 0.25rem rgba(255, 117, 24, 0.5) !important;
+        }
+
+        /* Viền input khi focus */
+        .form-control:focus {
+            border-color: var(--orange-primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(255, 117, 24, 0.25) !important;
+        }
+
+        /* Nút phương thức thanh toán với logo */
+        #vnpay+label {
+            background-image: url('https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR.png');
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: white;
+        }
+
+        #momo+label {
+            background-image: url('https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png');
+            background-size: 30%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: white;
+        }
+
+        /* Căn chỉnh và hiệu ứng khi chọn */
+        .btn-check+label {
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-check:checked+label {
+            border-width: 2px;
+            box-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+        }
+
+        .btn-check:checked+label::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--orange-primary);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Ẩn text trong label */
+        #vnpay+label span,
+        #momo+label span {
+            display: none;
+        }
     </style>
 </head>
 
@@ -356,94 +505,259 @@
 
     <!-- Buy Now Modal -->
     <div class="modal fade" id="buyNowModal" tabindex="-1" aria-labelledby="buyNowModalLabel" aria-hidden="true">
-    <form id="paymentForm" method="POST" action="{{ route('payment.create') }}">
-        @csrf
-        <input type="hidden" name="course_id" value="{{ $course->id }}">
-        <input type="hidden" id="priceInput" name="price" value="{{ $course->price }}">
+        <form id="paymentForm" method="POST" action="{{ route('payment.create') }}">
+            @csrf
+            <input type="hidden" name="course_id" value="{{ $course->id }}">
+            <input type="hidden" id="priceInput" name="price" value="{{ $course->price }}">
 
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="buyNowModalLabel">Thanh toán cho khóa học: {{ $course->title ?? 'Khóa học' }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h5 class="mt-4">Bạn nhận được gì từ khóa học này?</h5>
-                    <ul>
-                        <p class="mt-3">{{ is_countable($sections) ? count($sections) : 0 }} Chương học</p>
-                        <p class="mt-3">{{ is_countable($lessons) ? count($lessons) : 0 }} Bài học</p>
-                        <p class="mt-3">{{ is_countable($quizzes) ? count($quizzes) : 0 }} Bài kiểm tra</p>
-                    </ul>
-
-                    <div class="price-section">
-                        <h5>Chi tiết thanh toán</h5>
-                        <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid" alt="{{ $course->title }}" style="width: 100px; height: 50px;">
-                        <p>Khóa học {{ $course->title ?? 'Khóa học' }}
-                            <span>{{ number_format($course->price, 0, ',', '.') }}đ</span>
-                        </p>
-
-                        <div class="discount-code">
-                            <input type="text" id="couponCode" name="coupon_code" placeholder="Nhập mã giảm giá nếu có">
-                            <button type="button" id="applyCouponBtn">Áp dụng</button>
-                            <span id="couponMessage"></span>
-                        </div>
-
-                        <p class="total">TỔNG
-                            <span id="totalPrice">{{ number_format($course->price, 0, ',', '.') }}đ</span>
-                        </p>
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="buyNowModalLabel">
+                            <i class="fas fa-shopping-cart me-2"></i>Thanh toán khóa học:
+                            {{ $course->title ?? 'Khóa học' }}
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
+                    <div class="modal-body p-4">
+                        <div class="row">
+                            <!-- Thông tin khóa học -->
+                            <div class="col-md-5 mb-4">
+                                <div class="course-info p-3 border rounded bg-light h-100">
+                                    <div class="text-center mb-3">
+                                        <img src="{{ asset('storage/' . $course->thumbnail) }}"
+                                            class="img-fluid rounded border" alt="{{ $course->title }}"
+                                            style="max-height: 180px; width: 100%; object-fit: contain;">
 
-                    <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+                                    </div>
+
+                                    <h6 class="border-bottom pb-2 d-flex align-items-center">
+                                        <i class="fas fa-gift text-primary me-2"></i>Bạn nhận được:
+                                    </h6>
+                                    <ul class="list-unstyled mt-3">
+                                        <li class="mb-2 d-flex align-items-center">
+                                            <i class="fas fa-book-open text-primary me-2"></i>
+                                            <span>{{ is_countable($sections) ? count($sections) : 0 }} Chương
+                                                học</span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                            <i class="fas fa-file-alt text-primary me-2"></i>
+                                            <span>{{ is_countable($lessons) ? count($lessons) : 0 }} Bài học</span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                            <i class="fas fa-clipboard-check text-primary me-2"></i>
+                                            <span>{{ is_countable($quizzes) ? count($quizzes) : 0 }} Bài kiểm
+                                                tra</span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                            <i class="fas fa-certificate text-primary me-2"></i>
+                                            <span>Chứng nhận hoàn thành</span>
+                                        </li>
+                                        <li class="mb-2 d-flex align-items-center">
+                                            <i class="fas fa-infinity text-primary me-2"></i>
+                                            <span>Truy cập trọn đời</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Thông tin thanh toán -->
+                            <div class="col-md-7">
+                                <div class="payment-details border rounded p-4 bg-white shadow-sm">
+                                    <h6 class="border-bottom pb-2 mb-3">
+                                        <i class="fas fa-receipt text-primary me-2"></i>Chi tiết thanh toán
+                                    </h6>
+
+                                    <div
+                                        class="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded">
+                                        <div>
+                                            <span class="fw-bold">{{ $course->title ?? 'Khóa học' }}</span>
+                                            <p class="text-muted small mb-0">Giá gốc</p>
+                                        </div>
+                                        <span class="fw-bold">{{ number_format($course->price, 0, ',', '.') }}đ</span>
+                                    </div>
+
+                                    <!-- Mã giảm giá -->
+                                    <div class="coupon-section mb-4">
+                                        <div class="input-group">
+                                            <input type="text" id="couponCode" name="coupon_code"
+                                                class="form-control" placeholder="Nhập mã giảm giá nếu có">
+                                            <button type="button" id="applyCouponBtn"
+                                                class="btn btn-outline-primary">Áp dụng</button>
+                                        </div>
+                                        <div id="couponMessage" class="small mt-2"></div>
+                                    </div>
+
+                                    <!-- Phần hiển thị giảm giá (ẩn ban đầu) -->
+                                    <div class="discount-amount d-none" id="discountSection">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="text-muted">Giảm giá:</span>
+                                            <span class="text-success fw-bold" id="discountAmount">-0đ</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tổng cộng -->
+                                    <div
+                                        class="d-flex justify-content-between align-items-center pt-3 border-top mb-4">
+                                        <span class="fw-bold fs-5">TỔNG CỘNG:</span>
+                                        <span class="fw-bold fs-5 text-primary"
+                                            id="totalPrice">{{ number_format($course->price, 0, ',', '.') }}đ</span>
+                                    </div>
+
+                                    <!-- Phương thức thanh toán -->
+                                    <div class="payment-method mb-4">
+                                        <label class="form-label d-flex align-items-center">
+                                            <i class="fas fa-credit-card text-primary me-2"></i>Chọn phương thức thanh
+                                            toán:
+                                        </label>
+
+                                        <div class="row g-2 mt-2">
+                                            <div class="col-6">
+                                                <input type="radio" class="btn-check" name="payment_method"
+                                                    id="vnpay" value="vnpay" checked>
+                                                <label class="btn btn-outline-primary w-100" for="vnpay"
+                                                    style="height: 60px;">
+                                                    <span
+                                                        class="position-absolute top-50 start-50 translate-middle">VNPAY</span>
+                                                </label>
+                                                <div class="text-center mt-1">
+                                                    <small class="text-muted">Thanh toán an toàn</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="radio" class="btn-check" name="payment_method"
+                                                    id="momo" value="momo">
+                                                <label class="btn btn-outline-primary w-100" for="momo"
+                                                    style="height: 60px;">
+                                                    <span
+                                                        class="position-absolute top-50 start-50 translate-middle">MOMO</span>
+                                                </label>
+                                                <div class="text-center mt-1">
+                                                    <small class="text-muted">Thanh toán nhanh chóng</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nút đăng ký -->
+                                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                                        <i class="fas fa-lock me-2"></i>Thanh toán ngay
+                                    </button>
+
+                                    <div class="text-center mt-3 small text-muted">
+                                        <i class="fas fa-shield-alt me-1"></i>Thanh toán an toàn & bảo mật
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 
-<script>
-document.getElementById('applyCouponBtn').addEventListener('click', function(e) {
-    e.preventDefault();
-    const couponCode = document.getElementById('couponCode').value;
-    const originalPrice = {{ $course->price }};
-    
-    fetch('/coupon/apply', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            coupon_code: couponCode,
-            order_amount: originalPrice
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const messageElement = document.getElementById('couponMessage');
-        const priceInput = document.getElementById('priceInput');
-        const totalPrice = document.getElementById('totalPrice');
-        
-        if (data.success) {
-            messageElement.style.color = 'green';
-            messageElement.textContent = `Giảm: ${data.discount_amount.toLocaleString('vi-VN')}đ, Tổng cuối: ${data.final_amount.toLocaleString('vi-VN')}đ`;
-            // Cập nhật giá trị price trong form
-            priceInput.value = data.final_amount;
-            // Cập nhật hiển thị tổng tiền
-            totalPrice.textContent = `${data.final_amount.toLocaleString('vi-VN')}đ`;
-        } else {
-            messageElement.style.color = 'red';
-            messageElement.textContent = data.message;
-            // Reset về giá gốc nếu áp dụng thất bại
-            priceInput.value = originalPrice;
-            totalPrice.textContent = `${originalPrice.toLocaleString('vi-VN')}đ`;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('couponMessage').textContent = 'Đã xảy ra lỗi khi áp dụng mã giảm giá.';
-    });
-});
-</script>
+    <script>
+        // Khi người dùng chọn phương thức thanh toán, thay đổi action của form
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethodInputs = document.querySelectorAll('input[name="payment_method"]');
+            const form = document.getElementById('paymentForm');
+
+            paymentMethodInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.value === 'momo') {
+                        form.action =
+                            "{{ route('payment.createMomoPayment') }}"; // Chuyển đến route Momo
+                    } else {
+                        form.action = "{{ route('payment.create') }}"; // Chuyển đến route VNPAY
+                    }
+                });
+            });
+
+            // Xử lý mã giảm giá
+            document.getElementById('applyCouponBtn').addEventListener('click', function() {
+                const couponCode = document.getElementById('couponCode').value.trim();
+                const couponMessage = document.getElementById('couponMessage');
+
+                if (!couponCode) {
+                    couponMessage.innerHTML =
+                        '<span class="text-danger"><i class="fas fa-exclamation-circle"></i> Vui lòng nhập mã giảm giá</span>';
+                    return;
+                }
+
+                // Hiển thị đang kiểm tra
+                couponMessage.innerHTML =
+                    '<span class="text-info"><i class="fas fa-spinner fa-spin"></i> Đang kiểm tra mã...</span>';
+
+                // Gửi AJAX để kiểm tra mã giảm giá (code mẫu - cần thay thế bằng code thật)
+                // Giả lập kết quả thành công sau 1 giây
+                setTimeout(function() {
+                    const originalPrice = {{ $course->price }};
+                    const discount = Math.round(originalPrice * 0.1); // Giả sử giảm 10%
+                    const newTotal = originalPrice - discount;
+
+                    document.getElementById('discountSection').classList.remove('d-none');
+                    document.getElementById('discountAmount').textContent = '-' + new Intl
+                        .NumberFormat('vi-VN').format(discount) + 'đ';
+                    document.getElementById('totalPrice').textContent = new Intl.NumberFormat(
+                        'vi-VN').format(newTotal) + 'đ';
+                    document.getElementById('priceInput').value = newTotal;
+
+                    couponMessage.innerHTML =
+                        '<span class="text-success"><i class="fas fa-check-circle"></i> Mã giảm giá đã được áp dụng!</span>';
+                }, 1000);
+            });
+        });
+    </script>
+
+    </div>
+
+    <script>
+        document.getElementById('applyCouponBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const couponCode = document.getElementById('couponCode').value;
+            const originalPrice = {{ $course->price }};
+
+            fetch('/coupon/apply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        coupon_code: couponCode,
+                        order_amount: originalPrice
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const messageElement = document.getElementById('couponMessage');
+                    const priceInput = document.getElementById('priceInput');
+                    const totalPrice = document.getElementById('totalPrice');
+
+                    if (data.success) {
+                        messageElement.style.color = 'green';
+                        messageElement.textContent =
+                            `Giảm: ${data.discount_amount.toLocaleString('vi-VN')}đ, Tổng cuối: ${data.final_amount.toLocaleString('vi-VN')}đ`;
+                        // Cập nhật giá trị price trong form
+                        priceInput.value = data.final_amount;
+                        // Cập nhật hiển thị tổng tiền
+                        totalPrice.textContent = `${data.final_amount.toLocaleString('vi-VN')}đ`;
+                    } else {
+                        messageElement.style.color = 'red';
+                        messageElement.textContent = data.message;
+                        // Reset về giá gốc nếu áp dụng thất bại
+                        priceInput.value = originalPrice;
+                        totalPrice.textContent = `${originalPrice.toLocaleString('vi-VN')}đ`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('couponMessage').textContent =
+                        'Đã xảy ra lỗi khi áp dụng mã giảm giá.';
+                });
+        });
+    </script>
 
 
 
@@ -451,39 +765,3 @@ document.getElementById('applyCouponBtn').addEventListener('click', function(e) 
 </body>
 
 </html>
-
-<!-- <script>
-    document.getElementById('applyCouponBtn').addEventListener('click', function() {
-        const couponCode = document.getElementById('couponCode').value;
-        const orderAmount = 1000000; // Thay bằng giá trị thực tế của đơn hàng từ hệ thống của bạn
-
-        fetch('/coupon/apply', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    coupon_code: couponCode,
-                    order_amount: orderAmount
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const messageElement = document.getElementById('couponMessage');
-                if (data.success) {
-                    messageElement.style.color = 'green';
-                    messageElement.textContent = `${data.message} Giảm: ${data.discount_amount}đ, Tổng cuối: ${data.final_amount}đ`;
-                    // Lưu coupon_id nếu cần cho quá trình thanh toán
-                    localStorage.setItem('appliedCouponId', data.coupon_id);
-                } else {
-                    messageElement.style.color = 'red';
-                    messageElement.textContent = data.message;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('couponMessage').textContent = 'Đã xảy ra lỗi khi áp dụng mã giảm giá.';
-            });
-    });
-</script> -->

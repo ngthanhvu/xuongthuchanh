@@ -362,4 +362,196 @@ class PaymentController extends Controller
             ]);
         }
     }
+
+    public function createMomoPayment(Request $request)
+    {
+        $partnerCode = config('services.momo.partner_code');
+        $accessKey = config('services.momo.access_key');
+        $secretKey = config('services.momo.secret_key');
+        $endpoint = config('services.momo.endpoint');
+        $redirectUrl = config('services.momo.return_url');
+        $ipnUrl = $redirectUrl; 
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'price' => 'required|numeric|min:0',
+            'coupon_code' => 'nullable|string|max:50',
+        ]);
+
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để thanh toán');
+        }
+
+        $course = Course::findOrFail($request->course_id);
+        $originalPrice = $course->price;
+
+        $enrollment = Enrollment::where('user_id', $user->id)
+            ->where('course_id', $request->course_id)
+            ->first();
+        if ($enrollment) {
+            return redirect()->route('payment.result', [
+                'status' => 'already_enrolled',
+                'course_id' => $request->course_id,
+            ]);
+        }
+
+        $finalAmount = $originalPrice;
+        $coupon = null;
+        $discountAmount = 0;
+
+        if ($request->coupon_code) {
+            $coupon = Coupon::where('code', $request->coupon_code)->first();
+            if ($coupon && $coupon->isValid()) {
+                if ($finalAmount >= $coupon->min_order_value) {
+                    if ($coupon->discount_type === 'percentage') {
+                        $discountAmount = ($coupon->discount_value / 100) * $finalAmount;
+                        if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
+                            $discountAmount = $coupon->max_discount_amount;
+                        }
+                    } else {
+                        $discountAmount = $coupon->discount_value;
+                    }
+                    $finalAmount = max(0, $finalAmount - $discountAmount);
+                }
+            }
+        }
+
+        if (abs($request->price - $finalAmount) > 0.01) {
+            Log::warning('Price mismatch detected', [
+                'request_price' => $request->price,
+                'calculated_final_amount' => $finalAmount,
+                'course_id' => $request->course_id,
+            ]);
+            return redirect()->back()->with('error', 'Giá thanh toán không hợp lệ.');
+        }
+
+        $payment = Payment::create([
+            'user_id' => $user->id,
+            'course_id' => $request->course_id,
+            'payment_date' => now(),
+            'amount' => $finalAmount,
+            'payment_method' => 'Momo',
+            'status' => 'pending',
+            'coupon_id' => $coupon?->id,
+        ]);
+
+        $orderId = time() . "_" . $payment->id;
+        $orderInfo = "Thanh toán khóa học '{$course->name}'";
+        $amount = (int)$finalAmount;
+        $extraData = base64_encode(json_encode([
+            'payment_id' => $payment->id,
+            'course_id' => $request->course_id
+        ]));
+        $requestId = time() . "";
+
+        $requestData = [
+            'partnerCode' => $partnerCode,
+            'accessKey' => $accessKey,
+            'requestId' => $requestId,
+            'amount' => $amount,
+            'orderId' => $orderId,
+            'orderInfo' => $orderInfo,
+            'redirectUrl' => $redirectUrl,
+            'ipnUrl' => $ipnUrl,
+            'extraData' => $extraData,
+            'requestType' => 'captureWallet',
+            'lang' => 'vi'
+        ];
+
+        $rawHash = "accessKey=" . $accessKey .
+            "&amount=" . $amount .
+            "&extraData=" . $extraData .
+            "&ipnUrl=" . $ipnUrl .
+            "&orderId=" . $orderId .
+            "&orderInfo=" . $orderInfo .
+            "&partnerCode=" . $partnerCode .
+            "&redirectUrl=" . $redirectUrl .
+            "&requestId=" . $requestId .
+            "&requestType=captureWallet";
+
+        $signature = hash_hmac('sha256', $rawHash, $secretKey);
+        $requestData['signature'] = $signature;
+
+        Log::info('MoMo Request Data', $requestData);
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->post($endpoint, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $requestData
+            ]);
+
+            $responseBody = json_decode($response->getBody()->getContents(), true);
+            Log::info('MoMo Response', $responseBody);
+
+            $payment->update([
+                'transaction_info' => json_encode([
+                    'request' => $requestData,
+                    'response' => $responseBody
+                ])
+            ]);
+            if (isset($responseBody['payUrl'])) {
+                return redirect()->to($responseBody['payUrl']);
+            } else {
+                Log::error('MoMo payment error', $responseBody);
+                return redirect()->back()->with('error', 'Không thể kết nối với cổng thanh toán MoMo. Chi tiết: ' . ($responseBody['message'] ?? 'Unknown error'));
+            }
+        } catch (\Exception $e) {
+            Log::error('MoMo API Exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi kết nối với MoMo: ' . $e->getMessage());
+        }
+    }
+
+    public function momoCallback(Request $request)
+    {
+        Log::info('Momo Callback Received:', $request->all());
+        $resultCode = $request->resultCode;
+
+        if ($resultCode == 0) {
+            $orderId = $request->orderId;
+            $orderParts = explode('_', $orderId);
+            $paymentId = $orderParts[1] ?? null;
+
+            if ($paymentId) {
+                $payment = Payment::find($paymentId);
+
+                if ($payment) {
+                    $payment->update([
+                        'status' => 'success',
+                        'payment_date' => now(),
+                        'transaction_id' => $request->transId
+                    ]);
+
+                    $user = User::find($payment->user_id);
+                    if ($user) {
+                        Enrollment::firstOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'course_id' => $payment->course_id,
+                            ],
+                            [
+                                'enrollment_at' => now(),
+                            ]
+                        );
+                    }
+
+                    return redirect()->route('payment.result', [
+                        'status' => 'success',
+                        'course_id' => $payment->course_id
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('payment.result', [
+            'status' => 'failed',
+            'message' => $request->message ?? 'Thanh toán thất bại',
+            'code' => $resultCode
+        ]);
+    }
 }
