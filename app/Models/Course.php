@@ -67,13 +67,14 @@ class Course extends Model
     {
         return $this->savedByUsers()->where('user_id', $userId)->exists();
     }
-    
+
     // Add relationship to users who saved this course
     public function savedByUsers()
     {
         return $this->hasMany(SavedCourse::class);
     }
-    
+
+   
 
     public function comments()
     {
