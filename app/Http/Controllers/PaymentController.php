@@ -90,6 +90,12 @@ class PaymentController extends Controller
         }
 
         $course = Course::findOrFail($request->course_id);
+
+        // Check if the course has at least one section
+        if ($course->sections()->count() === 0) {
+            return redirect()->back()->with('error', 'Khóa học chưa được hoàn tất, bạn không thể đăng ký.');
+        }
+
         $originalPrice = $course->price;
 
         $enrollment = Enrollment::where('user_id', $user->id)
@@ -139,7 +145,7 @@ class PaymentController extends Controller
                     'course_id' => $request->course_id,
                 ]);
             }
-            if ($existingPayment->status === 'failed' ) {
+            if ($existingPayment->status === 'failed') {
                 $existingPayment->delete();
             }
         }
@@ -398,6 +404,11 @@ class PaymentController extends Controller
         }
 
         $course = Course::findOrFail($request->course_id);
+
+        if ($course->sections()->count() === 0) {
+            return redirect()->back()->with('error', 'Khóa học chưa được hoàn tất, bạn không thể đăng ký.');
+        }
+
         $originalPrice = $course->price;
 
         $enrollment = Enrollment::where('user_id', $user->id)
@@ -450,7 +461,6 @@ class PaymentController extends Controller
             'coupon_id' => $coupon?->id,
         ]);
 
-        // Tạo bản ghi PaymentItem
         $payment->paymentItems()->create([
             'course_id' => $request->course_id,
             'amount' => $finalAmount,

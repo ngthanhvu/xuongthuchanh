@@ -457,6 +457,14 @@
 
 <body>
     <!-- Hero Section -->
+    @if (session('error'))
+        <div class="container mt-4">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    @endif
     <section class="hero-section">
         <div class="container">
             <h1>Khóa Học {{ $course->title ?? 'Khóa học' }}</h1>
