@@ -189,7 +189,7 @@ class CommentController extends Controller
 
         Comment::whereIn('id', $request->comment_ids)->delete();
 
-        return back()->with('success', 'Đã xóa các bình luận được chọn.');
+        return back()->with('success', 'Bình luận đã xóa thành công');
     }
    
 }

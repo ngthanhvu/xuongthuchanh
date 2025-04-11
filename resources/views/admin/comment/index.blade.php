@@ -1,27 +1,24 @@
 @extends('layouts.admin')
 
 @section('content')
-@if (session('success'))
-<script>
-    iziToast.success({
-        title: 'Thành công',
-        message: '{{ session('
-        success ') }}',
-        position: 'topRight'
-    });
-</script>
-@endif
-@if (session('error'))
-<script>
-    iziToast.error({
-        title: 'Lỗi',
-        message: '{{ session('
-        error ') }}',
-        position: 'topRight'
-    });
-</script>
-@endif
-
+ @if (session('success'))
+        <script>
+            iziToast.success({
+                title: 'Thành công',
+                message: '{{ session('success') }}',
+                position: 'topRight'
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            iziToast.error({
+                title: 'Lỗi',
+                message: '{{ session('error') }}',
+                position: 'topRight'
+            });
+        </script>
+    @endif
 <!-- Header -->
 <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
     <div>
@@ -66,7 +63,6 @@
                     <th class="tw-py-3">Khóa học</th>
                     <th class="tw-py-3">Bài học</th>
                     <th class="tw-py-3">Thích</th>
-                    <th class="tw-py-3">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,15 +76,6 @@
                     <td class="text-center">{{ $comment->course ? $comment->course->title : 'Không xác định' }}</td>
                     <td class="text-center">{{ $comment->lesson ? $comment->lesson->title : 'Không xác định' }}</td>
                     <td class="text-center">{{ $comment->likes ?? 0 }}</td>
-                    <td class="text-center">
-                        <form action="{{ route('admin.comment.delete', $comment->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này?');" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </form>
-                    </td>
                 </tr>
                 @endforeach
                 @if ($comments->isEmpty())
