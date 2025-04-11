@@ -28,7 +28,7 @@ class ReviewController extends Controller
         $request->validate([
             'course_id' => 'required|exists:courses,id',
             'rating' => 'required|numeric|min:1|max:5',
-            'content' => 'nullable|string|max:1000', // Đã đổi từ comment sang content
+            'content' => 'nullable|string|max:1000', 
         ]);
 
         $existingReview = Review::where('user_id', auth()->id())
@@ -43,13 +43,12 @@ class ReviewController extends Controller
             'user_id' => auth()->id(),
             'course_id' => $request->course_id,
             'rating' => $request->rating,
-            'content' => $request->content, // Đã đổi từ comment sang content
+            'content' => $request->content, 
         ]);
 
         return back()->with('success', 'Đánh giá của bạn đã được ghi nhận. Cảm ơn sự đóng góp của bạn!');
     }
 
-    // Thêm method mới cho admin reply
     public function reply(Request $request, Review $review)
     {
         $request->validate([
@@ -90,8 +89,7 @@ class ReviewController extends Controller
 
     public function destroy(Review $review)
     {
-        // Kiểm tra quyền: chỉ admin hoặc chủ sở hữu đánh giá mới được xóa
-        if (auth()->user()->role ==! 'admin' || auth()->user()->role ==! 'owner' || auth()->user()->role ==! 'teacher' && auth()->user()->id !== $review->user_id) {
+        if (auth()->user()->role ==! 'admin' && auth()->user()->id !== $review->user_id) {
             return back()->with('error', 'Bạn không có quyền thực hiện hành động này.');
         }
 

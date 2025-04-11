@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mt-3">
     <div class="row">
-        <!-- Left Section -->
+        
         <div class="col-md-8">
             <div class="card card-custom mb-4">
                 <div class="card-body">
@@ -87,7 +87,7 @@
                 <div class="card-body">
                     <h5 class="card-title text-center">Đánh giá khóa học</h5>
                     @php
-                    // Phần thống kê đánh giá
+                    
                     $reviews = \App\Models\Review::with('user')
                     ->where('course_id', $course->id)
                     ->orderBy('created_at', 'desc')
@@ -205,7 +205,7 @@
                             </div>
                             @endif
 
-                            {{-- Nút reply cho admin --}}
+                            
                             @auth
                             <div style="display: none;">
                                 User Role: {{ auth()->user()->role }}<br>
@@ -243,7 +243,7 @@
 
 
         </div>
-        <!-- Right Section -->
+        
         <div class="col-md-4">
             <div class="card iframe-card mb-4">
                 <h5 class="card-title">{{ $course->title }}</h5>
@@ -385,7 +385,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Xử lý nút reply
+        
         document.querySelectorAll('.toggle-reply').forEach(button => {
             button.addEventListener('click', function() {
                 const reviewId = this.getAttribute('data-review-id');
@@ -394,7 +394,7 @@
             });
         });
 
-        // Xử lý nút hủy reply
+        
         document.querySelectorAll('.cancel-reply').forEach(button => {
             button.addEventListener('click', function() {
                 const reviewId = this.getAttribute('data-review-id');
@@ -403,7 +403,7 @@
         });
     });
     document.addEventListener('DOMContentLoaded', function() {
-        // Xử lý rating star
+       
         const stars = document.querySelectorAll('.star-rating .far.fa-star');
         const ratingInput = document.getElementById('ratingValue');
 
@@ -412,7 +412,7 @@
                 const rating = this.getAttribute('data-rating');
                 ratingInput.value = rating;
 
-                // Cập nhật giao diện
+                
                 stars.forEach((s, index) => {
                     if (index < rating) {
                         s.classList.remove('far');
@@ -453,7 +453,6 @@
             });
         });
 
-        // Khởi tạo rating mặc định là 5 sao
         stars.forEach((star, index) => {
             if (index < 5) {
                 star.classList.remove('far');
