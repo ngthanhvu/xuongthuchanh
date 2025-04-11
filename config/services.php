@@ -36,12 +36,12 @@ return [
     ],
 
     // config/services.php
-    'vnpay' => [
-        'tmn_code' => env('VNPAY_TMN_CODE'),
-        'hash_secret' => env('VNPAY_HASH_SECRET'),
-        'url' => env('VNPAY_URL'),
-        'callback' => env('VNPAY_CALLBACK_URL'),
-    ],
+        'vnpay' => [
+            'tmn_code' => env('VNPAY_TMN_CODE'),
+            'hash_secret' => env('VNPAY_HASH_SECRET'),
+            'url' => env('VNPAY_URL'),
+            'callback' => env('VNPAY_CALLBACK_URL'),
+        ],
 
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
@@ -58,6 +58,13 @@ return [
     'gemini' => [
         'api_key' => env('GEMINI_API_KEY'),
         'api_url' => env('GEMINI_API_URL'),
+    ],
+    'momo' => [
+        'partner_code' => env('MOMO_PARTNER_CODE'),
+        'access_key' => env('MOMO_ACCESS_KEY'),
+        'secret_key' => env('MOMO_SECRET_KEY'),
+        'endpoint' => env('MOMO_URL'),
+        'return_url' => env('MOMO_RETURN_URL'),
     ],
 
 ];

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use App\Models\PaymentItem;
 use App\Models\User;
 use App\Models\Coupon;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,7 @@ class PaymentController extends Controller
     public function __construct()
     {
         $this->geminiClient = new Client([
-            'base_uri' => 'https://api.gemini.google.com/v1/', // URL giả định, thay bằng URL thực tế của Gemini API
+            'base_uri' => 'https://api.gemini.google.com/v1/',
             'headers' => [
                 'Authorization' => 'Bearer ' . config('services.gemini.api_key'),
                 'Content-Type' => 'application/json',
@@ -29,11 +30,10 @@ class PaymentController extends Controller
         ]);
     }
 
-    // Hàm gọi API Gemini
     private function callGeminiApi($prompt)
     {
         try {
-            $response = $this->geminiClient->post('generate', [ // Đường dẫn endpoint giả định
+            $response = $this->geminiClient->post('generate', [
                 'json' => [
                     'prompt' => $prompt,
                     'max_tokens' => 100,
@@ -50,15 +50,22 @@ class PaymentController extends Controller
     public function index()
     {
         $title = 'Quản Lí Hóa Đơn';
-        $payments = Payment::with(['user', 'course'])->paginate(12);
+        $payments = Payment::with(['user', 'course', 'paymentItems'])->paginate(5);
         return view('admin.order.index', compact('title', 'payments'));
+    }
+
+    public function show($id)
+    {
+        $payment = Payment::with(['user', 'course', 'paymentItems.course'])->findOrFail($id);
+        $title = 'Chi Tiết Hóa Đơn #' . $payment->id;
+        return view('admin.order.show', compact('title', 'payment'));
     }
 
     public function delete($id)
     {
         $payment = Payment::find($id);
         if ($payment) {
-            $payment->delete();
+            $payment->delete(); // Các PaymentItem sẽ tự động bị xóa do ON DELETE CASCADE
             return redirect()->route('admin.order.index')->with('success', 'Xóa Hóa Đơn Thành Công');
         }
         return redirect()->route('admin.order.index')->with('error', 'Không tìm thấy hóa đơn');
@@ -151,7 +158,7 @@ class PaymentController extends Controller
                         if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
                             $discountAmount = $coupon->max_discount_amount;
                         }
-                    } else { // fixed
+                    } else {
                         $discountAmount = $coupon->discount_value;
                     }
                     $finalAmount = max(0, $finalAmount - $discountAmount);
@@ -178,14 +185,21 @@ class PaymentController extends Controller
             'coupon_id' => $coupon?->id,
         ]);
 
+        // Tạo bản ghi PaymentItem
+        $payment->paymentItems()->create([
+            'course_id' => $request->course_id,
+            'amount' => $finalAmount,
+            'description' => "Thanh toán cho khóa học {$course->title}",
+        ]);
+
         // Sử dụng Gemini để tạo thông điệp thanh toán
-        $prompt = "Tạo một thông điệp ngắn gọn và thân thiện để thông báo người dùng về thanh toán khóa học '{$course->name}' với số tiền " . number_format($finalAmount) . " VND.";
+        $prompt = "Tạo một thông điệp ngắn gọn và thân thiện để thông báo người dùng về thanh toán khóa học '{$course->title}' với số tiền " . number_format($finalAmount) . " VND.";
         $geminiMessage = $this->callGeminiApi($prompt);
         Log::info('Gemini generated message:', ['message' => $geminiMessage]);
 
         $randomString = strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
         $vnp_TxnRef = $payment->id . '_' . $randomString;
-        $vnp_OrderInfo = $geminiMessage; // Sử dụng thông điệp từ Gemini
+        $vnp_OrderInfo = $geminiMessage;
         $vnp_OrderType = 'course_payment';
         $vnp_Amount = $finalAmount * 100;
         $vnp_Locale = 'vn';
@@ -361,5 +375,205 @@ class PaymentController extends Controller
                 'course_id' => $courseId,
             ]);
         }
+    }
+
+    public function createMomoPayment(Request $request)
+    {
+        $partnerCode = config('services.momo.partner_code');
+        $accessKey = config('services.momo.access_key');
+        $secretKey = config('services.momo.secret_key');
+        $endpoint = config('services.momo.endpoint');
+        $redirectUrl = config('services.momo.return_url');
+        $ipnUrl = $redirectUrl;
+
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'price' => 'required|numeric|min:0',
+            'coupon_code' => 'nullable|string|max:50',
+        ]);
+
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để thanh toán');
+        }
+
+        $course = Course::findOrFail($request->course_id);
+        $originalPrice = $course->price;
+
+        $enrollment = Enrollment::where('user_id', $user->id)
+            ->where('course_id', $request->course_id)
+            ->first();
+        if ($enrollment) {
+            return redirect()->route('payment.result', [
+                'status' => 'already_enrolled',
+                'course_id' => $request->course_id,
+            ]);
+        }
+
+        $finalAmount = $originalPrice;
+        $coupon = null;
+        $discountAmount = 0;
+
+        if ($request->coupon_code) {
+            $coupon = Coupon::where('code', $request->coupon_code)->first();
+            if ($coupon && $coupon->isValid()) {
+                if ($finalAmount >= $coupon->min_order_value) {
+                    if ($coupon->discount_type === 'percentage') {
+                        $discountAmount = ($coupon->discount_value / 100) * $finalAmount;
+                        if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
+                            $discountAmount = $coupon->max_discount_amount;
+                        }
+                    } else {
+                        $discountAmount = $coupon->discount_value;
+                    }
+                    $finalAmount = max(0, $finalAmount - $discountAmount);
+                }
+            }
+        }
+
+        if (abs($request->price - $finalAmount) > 0.01) {
+            Log::warning('Price mismatch detected', [
+                'request_price' => $request->price,
+                'calculated_final_amount' => $finalAmount,
+                'course_id' => $request->course_id,
+            ]);
+            return redirect()->back()->with('error', 'Giá thanh toán không hợp lệ.');
+        }
+
+        $payment = Payment::create([
+            'user_id' => $user->id,
+            'course_id' => $request->course_id,
+            'payment_date' => now(),
+            'amount' => $finalAmount,
+            'payment_method' => 'Momo',
+            'status' => 'pending',
+            'coupon_id' => $coupon?->id,
+        ]);
+
+        // Tạo bản ghi PaymentItem
+        $payment->paymentItems()->create([
+            'course_id' => $request->course_id,
+            'amount' => $finalAmount,
+            'description' => "Thanh toán cho khóa học {$course->title}",
+        ]);
+
+        $orderId = time() . "_" . $payment->id;
+        $orderInfo = "Thanh toán khóa học '{$course->title}'";
+        $amount = (int)$finalAmount;
+        $extraData = base64_encode(json_encode([
+            'payment_id' => $payment->id,
+            'course_id' => $request->course_id
+        ]));
+        $requestId = time() . "";
+
+        $requestData = [
+            'partnerCode' => $partnerCode,
+            'accessKey' => $accessKey,
+            'requestId' => $requestId,
+            'amount' => $amount,
+            'orderId' => $orderId,
+            'orderInfo' => $orderInfo,
+            'redirectUrl' => $redirectUrl,
+            'ipnUrl' => $ipnUrl,
+            'extraData' => $extraData,
+            'requestType' => 'captureWallet',
+            'lang' => 'vi'
+        ];
+
+        $rawHash = "accessKey=" . $accessKey .
+            "&amount=" . $amount .
+            "&extraData=" . $extraData .
+            "&ipnUrl=" . $ipnUrl .
+            "&orderId=" . $orderId .
+            "&orderInfo=" . $orderInfo .
+            "&partnerCode=" . $partnerCode .
+            "&redirectUrl=" . $redirectUrl .
+            "&requestId=" . $requestId .
+            "&requestType=captureWallet";
+
+        $signature = hash_hmac('sha256', $rawHash, $secretKey);
+        $requestData['signature'] = $signature;
+
+        Log::info('MoMo Request Data', $requestData);
+
+        try {
+            $client = new \GuzzleHttp\Client();
+            $response = $client->post($endpoint, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => $requestData
+            ]);
+
+            $responseBody = json_decode($response->getBody()->getContents(), true);
+            Log::info('MoMo Response', $responseBody);
+
+            $payment->update([
+                'transaction_info' => json_encode([
+                    'request' => $requestData,
+                    'response' => $responseBody
+                ])
+            ]);
+            if (isset($responseBody['payUrl'])) {
+                return redirect()->to($responseBody['payUrl']);
+            } else {
+                Log::error('MoMo payment error', $responseBody);
+                return redirect()->back()->with('error', 'Không thể kết nối với cổng thanh toán MoMo. Chi tiết: ' . ($responseBody['message'] ?? 'Unknown error'));
+            }
+        } catch (\Exception $e) {
+            Log::error('MoMo API Exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi kết nối với MoMo: ' . $e->getMessage());
+        }
+    }
+
+    public function momoCallback(Request $request)
+    {
+        Log::info('Momo Callback Received:', $request->all());
+        $resultCode = $request->resultCode;
+
+        if ($resultCode == 0) {
+            $orderId = $request->orderId;
+            $orderParts = explode('_', $orderId);
+            $paymentId = $orderParts[1] ?? null;
+
+            if ($paymentId) {
+                $payment = Payment::find($paymentId);
+
+                if ($payment) {
+                    $payment->update([
+                        'status' => 'success',
+                        'payment_date' => now(),
+                        'transaction_id' => $request->transId
+                    ]);
+
+                    $user = User::find($payment->user_id);
+                    if ($user) {
+                        Enrollment::firstOrCreate(
+                            [
+                                'user_id' => $user->id,
+                                'course_id' => $payment->course_id,
+                            ],
+                            [
+                                'enrollment_at' => now(),
+                            ]
+                        );
+                    }
+
+                    return redirect()->route('payment.success', [
+                        'status' => 'success',
+                        'course_id' => $payment->course_id
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('payment.failure', [
+            'status' => 'failed',
+            'message' => $request->message ?? 'Thanh toán thất bại',
+            'code' => $resultCode
+        ]);
     }
 }

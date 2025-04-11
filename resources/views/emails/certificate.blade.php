@@ -16,7 +16,7 @@
             margin: 20px auto;
             background-color: #fff;
             padding: 40px;
-            border: 5px double #ff0000; /* Viền đỏ kiểu giấy khen */
+            border: 5px double #ff0000;
             position: relative;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
@@ -27,7 +27,7 @@
             left: 0;
             width: 100%;
             height: 20px;
-            background: linear-gradient(to right, #ff0000, #ffd700, #ff0000); /* Đường viền trên màu đỏ-vàng */
+            background: linear-gradient(to right, #ff0000, #ffd700, #ff0000); 
         }
         .certificate::after {
             content: '';
@@ -36,7 +36,7 @@
             left: 0;
             width: 100%;
             height: 20px;
-            background: linear-gradient(to right, #ff0000, #ffd700, #ff0000); /* Đường viền dưới màu đỏ-vàng */
+            background: linear-gradient(to right, #ff0000, #ffd700, #ff0000); 
         }
         .header {
             display: flex;

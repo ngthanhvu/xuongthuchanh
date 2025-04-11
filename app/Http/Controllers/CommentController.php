@@ -7,8 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class CommentController extends Controller
-{
+class CommentController extends Controller {  // Các phương thức hiện có
     public function store(Request $request)
     {
         $request->validate([
@@ -137,10 +136,75 @@ class CommentController extends Controller
         }
     }
 
-    // Phương thức reply đã có, nhưng có thể cần điều chỉnh để hiển thị form reply
     public function showReplyForm($commentId)
     {
         $parentComment = Comment::findOrFail($commentId);
+        return view('comments.reply-form', compact('parentComment'));
+    }
+
+    // Các phương thức admin
+    public function adminComments(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect('/dang-nhap')->with('error', 'Vui lòng đăng nhập để tiếp tục');
+        }
+    
+        $user = Auth::user();
+        if ($user->role != 'admin' && $user->role != 'owner') {
+            return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
+        }
+    
+        $title = 'Quản lý bình luận';
+        $query = Comment::with(['user', 'course', 'lesson', 'replies'])
+            ->orderBy('created_at', 'desc');
+    
+        // Tìm kiếm theo nội dung hoặc tên người dùng
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('content', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function ($q) use ($search) {
+                      $q->where('content', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+    
+        // Lọc theo khóa học
+        if ($courseId = $request->input('course_id')) {
+            $query->where('course_id', $courseId);
+        }
+    
+        $comments = $query->paginate(10);
+    
+        // Giữ lại các tham số tìm kiếm trong phân trang
+        $comments->appends($request->only(['search', 'course_id']));
+    
+        return view('admin.comment.index', compact('comments', 'title'));
+    }
+
+    public function adminDelete($id)
+    {
+        $comment = Comment::findOrFail($id);
+        $comment->delete();
+        return back()->with('success', 'Bình luận đã xóa thành công');
+    }
+
+    public function adminBulkDelete(Request $request)
+    {
+        $request->validate([
+            'comment_ids' => 'required|array',
+            'comment_ids.*' => 'exists:comments,id',
+        ]);
+
+        Comment::whereIn('id', $request->comment_ids)->delete();
+
+        return back()->with('success', 'Đã xóa các bình luận được chọn.');
+    }
+   
+   {
+        $parentComment = Comment::findOrFail($commentId);
+        return view('comments.reply-form', compact('parentComment'));
+    }
+}     $parentComment = Comment::findOrFail($commentId);
         return view('comments.reply-form', compact('parentComment'));
     }
 }

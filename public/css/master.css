@@ -502,11 +502,8 @@
 }
 
 .user-message {
-<<<<<<< HEAD
     background-color: #007bff;
-=======
     background-color: #ff5316;
->>>>>>> 2277f91d269147a0579447f314ce47a47b6cb9c7
     color: white;
     align-self: flex-end;
 }
@@ -526,11 +523,8 @@
     padding: 6px 12px;
     margin-right: 5px;
     margin-bottom: 5px;
-<<<<<<< HEAD
     background-color: #007bff;
-=======
     background-color: #ff5316;
->>>>>>> 2277f91d269147a0579447f314ce47a47b6cb9c7
     color: white;
     border: none;
     border-radius: 5px;

@@ -327,20 +327,20 @@
         </div>
 
         <!-- Learning Paths Section -->
-        <h5 class="mb-3 mt-5">Các Khóa Học</h5>
+        <h5 class="mb-3 mt-5 tw-text-2x1"><strong>Các Khóa Học</strong></h5>
         @if (Auth::check() && $courses->isNotEmpty())
             @foreach ($courses as $course)
                 <div class="card mb-4 shadow-sm">
                     <div class="row g-0">
                         <div class="col-md-3 d-flex align-items-center justify-content-center">
                             <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid rounded-start"
-                                alt="Thumbnail" style="max-width: 100%; height: auto;">
+                                alt="Thumbnail" style="max-width: 100%; height: 100%;">
                         </div>
                         <div class="col-md-9">
                             <div class="card-body">
                                 <h5 class="card-title">{{ $course->title }}</h5>
                                 <p class="card-text"><strong>Tiến độ: </strong></p>
-                                <div class="progress mb-2" style="height: 10px;">
+                                <div class="progress mb-2" style="height: 7px;">
                                     <div class="progress-bar bg-success" role="progressbar"
                                         style="width: {{ $course->pivot->progress }}%;"
                                         aria-valuenow="{{ $course->pivot->progress }}" aria-valuemin="0"
@@ -354,7 +354,7 @@
                                         {{ $course->pivot->completed_at->format('d/m/Y') }}</p>
                                 @endif
 
-                                <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#courseModal"
+                                <button class="btn btn-orange w-100" data-bs-toggle="modal" data-bs-target="#courseModal"
                                     data-course-id="{{ $course->id }}">Xem chi tiết</button>
                             </div>
                         </div>

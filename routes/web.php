@@ -20,6 +20,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SavedCourseController;
 
+
 use App\Models\Lesson;
 
 //Admin
@@ -172,6 +173,10 @@ Route::put('/profile/update-password', [UserController::class, 'updatePassword']
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile/you-course', [UserController::class, 'youcourse'])->name('profile.youcourse');
 });
+
+//userPayment
+Route::get('/userPayment', [UserController::class, 'userPayment'])->name('userPayment');
+
 //enrollment
 Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
 
@@ -180,6 +185,11 @@ Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrol
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
+
+// Route cho Momo
+Route::post('/momo/payment', [PaymentController::class, 'createMomoPayment'])->name('payment.createMomoPayment');
+Route::post('/momo/callback', [PaymentController::class, 'momoCallback'])->name('payment.momoCallback');
+Route::get('/orders/{id}', [PaymentController::class, 'show'])->name('admin.order.show');
 
 //quen mat khau
 Route::get('/quen-mat-khau', [UserController::class, 'forgotPassword'])->name('password.forgot');
@@ -242,6 +252,9 @@ Route::get('/backend-path', [HomeController::class, 'backendPath'])->name('backe
 Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learning-paths.index');
 
 Route::resource('reviews', ReviewController::class)->middleware('auth');
+Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])
+    ->name('reviews.reply')
+    ->middleware('check.admin');
 
 //teacher
 Route::middleware(['check.teacher'])->group(function () {
@@ -330,6 +343,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
 });
 
+Route::prefix('admin')->group(function () {
+    Route::get('/comments', [CommentController::class, 'adminComments'])->name('admin.comments');
+    Route::delete('/admin/comments/{id}', [CommentController::class, 'adminDelete'])->name('admin.comment.delete');
+    Route::delete('/comments/bulk-delete', [CommentController::class, 'adminBulkDelete'])->name('admin.comments.bulk-delete');
+});
+
+
+
 Route::get('/courses/{course}', [CourseController::class, 'detail'])->name('courses.detail');
 
 Route::post('/chat-with-gemini', [ChatController::class, 'chat'])->name('chat.gemini');
@@ -337,6 +358,5 @@ Route::post('/chat-with-gemini', [ChatController::class, 'chat'])->name('chat.ge
 //luu khoa học và yêu thích
 Route::middleware(['auth'])->group(function () {
     Route::post('/save-course/{courseId}', [SavedCourseController::class, 'toggleSave'])->name('courses.toggleSave');
-
 });
 Route::get('/khoa-hoc/yeu-thich', [CourseController::class, 'favoriteCourses'])->name('courses.favorites');

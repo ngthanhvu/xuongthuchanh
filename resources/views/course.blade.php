@@ -84,7 +84,7 @@
             background-color: #dc0f0f;
             border-color: #dc0f0f;
         }
-        .heading{
+        .heading {
             margin: 0;
         }
     </style>
@@ -108,7 +108,7 @@
         </script>
     @endif
     <div class="mb-4 text-center">
-        <h1 class="display-6 fw-bold  ">Danh sách khóa học</h1>
+        <h1 class="display-6 fw-bold">Danh sách khóa học</h1>
         <p class="text-muted">Khám phá lại những khóa học bạn đã lưu để học bất cứ lúc nào bạn muốn.</p>
     </div>
 
@@ -116,15 +116,14 @@
         <a href="#" class="btn btn-primary fw-bold button4">Tất cả khóa học</a>
         <a href="/khoa-hoc/yeu-thich" class="btn btn-outline-secondary me-2">Yêu thích</a>
     </div>
+
     <!-- Main Content -->
     <div class="container py-5">
         <div class="row">
-            <!-- Phần lọc (bên trái - 3 cột) -->
             <div class="col-md-3">
                 <div class="filter-section">
                     <div class="card p-4">
                         <form method="GET" action="/khoa-hoc" class="d-flex flex-column gap-3">
-                            <!-- Lọc theo danh mục -->
                             <div>
                                 <label for="categories" class="form-label">Danh mục</label>
                                 <select name="categories" id="categories" class="form-select">
@@ -180,9 +179,7 @@
                 </div>
             </div>
 
-            <!-- Phần danh sách khóa học (bên phải - 9 cột) -->
             <div class="col-md-9">
-
                 <div class="course-section">
                     <h2>Danh Sách Khóa Học</h2>
                     <div class="row">
@@ -206,6 +203,7 @@
                                         </div>
                                     </a>
                                     <div class="card-body">
+                                        
                                         <div class="title">
                                             <h3 class="fs-5 ellipsis">{{ $course->title }}</h3>
                                         </div>
@@ -224,28 +222,26 @@
                                             @else
                                                 <span class="new-pricex fw-bold">Miễn phí</span>
                                             @endif
+                                            <form action="{{ route('courses.toggleSave', $course->id) }}" method="POST"
+                                                style="display: inline;">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="btn btn-outline-warning d-flex align-items-center gap-1">
+                                                    @if ($course->isSavedByUser(auth()->id()))
+                                                        <i class="fas fa-heart text-orange"></i>
+                                                    @else
+                                                        <i class="far fa-heart"></i>
+                                                    @endif
+                                                </button>
+                                            </form>
                                         </div>
                                         <div class="meta d-flex justify-content-between">
                                             <span><i class="fas fa-user"></i> {{ $course->user->username }}</span>
                                             <span><i class="fas fa-book"></i>
-                                                {{ $course->category ? $course->category->name : 'Chưa có danh mục' }}</span>
+                                                {{ $course->sections_count }} bài học</span>
                                             <span><i class="fas fa-clock"></i>
                                                 {{ $course->created_at->format('d/m/Y') }}</span>
                                         </div>
-                                        <form action="{{ route('courses.toggleSave', $course->id) }}" method="POST"
-                                            style="display: inline;">
-                                            @csrf
-                                            <button type="submit"
-                                                class="btn btn-outline-warning d-flex align-items-center gap-1">
-                                                @if ($course->isSavedByUser(auth()->id()))
-                                                    <i class="fas fa-heart text-orange"></i> Đã lưu khóa học
-                                                @else
-                                                    <i class="far fa-heart"></i> Lưu khóa học
-                                                @endif
-                                            </button>
-                                        </form>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -269,7 +265,6 @@
     <br>
     <br>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
     <script>
         @if (session('info'))

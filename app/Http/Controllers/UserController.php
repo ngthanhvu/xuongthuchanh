@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\UserCourseProgress;
@@ -41,12 +42,13 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required',
+            'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password',
         ], [
             'username.required' => 'Vui lòng nhập tên người dùng',
+            'username.unique' => 'Tên người dùng tồn tại',
             'email.required' => 'Vui lòng nhập email',
             'email.email' => 'Email không đúng định dạng',
             'email.unique' => 'Email đã tồn tại',
@@ -96,6 +98,7 @@ class UserController extends Controller
         $user = Auth::user();
         return view('profile', compact('user', 'title'));
     }
+
 
     public function updateProfile(Request $request)
     {
@@ -514,5 +517,18 @@ class UserController extends Controller
         ]);
 
         return redirect()->route('profile')->with('success', 'Đã gửi yêu cầu thành công!');
+    }
+
+    public function userPayment()
+    {
+        $title = 'Lịch sử hóa đơn';
+        $user = Auth::user();
+
+        $payments = Payment::where('user_id', $user->id)
+            ->with(['course', 'coupon'])
+            ->orderBy('payment_date', 'desc')
+            ->paginate(10);
+
+        return view('userPayment', compact('title', 'user', 'payments'));
     }
 }

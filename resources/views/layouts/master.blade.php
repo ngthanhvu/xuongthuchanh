@@ -199,7 +199,7 @@
                                         </div>
                                     </li>
                                     <li><a class="dropdown-item" href="{{ url('/profile') }}">Trang cá nhân</a></li>
-                                    <li><a class="dropdown-item" href="#">Viết blog</a></li>
+                                    <li><a class="dropdown-item" href="{{url('/khoa-hoc/yeu-thich')}}">Khóa học đã thích</a></li>
                                     <li><a class="dropdown-item" href="#">Bài viết của tui</a></li>
                                     <li><a class="dropdown-item" href="#">Cài đặt</a></li>
                                     <li>
