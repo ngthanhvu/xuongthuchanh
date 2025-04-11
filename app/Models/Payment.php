@@ -18,10 +18,7 @@ class Payment extends Model
         return $this->belongsTo(Course::class);
     }
 
-    public function paymentItems()
-    {
-        return $this->hasMany(PaymentItem::class);
-    }
+   
 
     public function coupon()
     {

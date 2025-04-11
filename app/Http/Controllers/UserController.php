@@ -99,18 +99,6 @@ class UserController extends Controller
         return view('profile', compact('user', 'title'));
     }
 
-    public function userPayment()
-    {
-        $title = 'Lịch sử hóa đơn';
-        $user = Auth::user();
-
-        $payments = Payment::where('user_id', $user->id)
-            ->with(['course', 'paymentItems.course', 'coupon']) 
-            ->orderBy('payment_date', 'desc')
-            ->paginate(10); 
-
-        return view('userPayment', compact('title', 'user', 'payments'));
-    }
 
     public function updateProfile(Request $request)
     {
@@ -529,5 +517,18 @@ class UserController extends Controller
         ]);
 
         return redirect()->route('profile')->with('success', 'Đã gửi yêu cầu thành công!');
+    }
+
+    public function userPayment()
+    {
+        $title = 'Lịch sử hóa đơn';
+        $user = Auth::user();
+
+        $payments = Payment::where('user_id', $user->id)
+            ->with(['course', 'coupon'])
+            ->orderBy('payment_date', 'desc')
+            ->paginate(10);
+
+        return view('userPayment', compact('title', 'user', 'payments'));
     }
 }

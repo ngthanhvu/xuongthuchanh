@@ -66,6 +66,43 @@
         background-color: #e55a00;
         border-color: #e55a00;
     }
+
+    .modal-content {
+        border-radius: 10px;
+    }
+
+    .modal-header {
+        background-color: #f0f2f5;
+        border-bottom: none;
+    }
+
+    .modal-title {
+        font-weight: 600;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .detail-item {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .detail-item strong {
+        display: inline-block;
+        width: 150px;
+        font-weight: 600;
+    }
+
+    .course-thumbnail {
+        max-width: 200px;
+        max-height: 120px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
 </style>
 
 <div class="container mt-3">
@@ -80,7 +117,7 @@
                     <a class="nav-link" href="{{ route('profile.youcourse') }}">Các khóa học</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('userPayment') }}">Hóa đơn</a>
+                    <a class="nav-link active" href="{{ route('userPayment') }}">Hóa đơn</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('profile.changePassword') }}">Đổi mật khẩu</a>
@@ -133,7 +170,7 @@
                                     @foreach ($payments as $payment)
                                         <tr>
                                             <td>{{ $payment->id }}</td>
-                                            <td>{{ $payment->course ? $payment->course->title : 'Không có khóa học' }}</td>
+                                            <td><img src="{{ asset('storage/' . $payment->course->thumbnail) }}" alt="Thumbnail" width="80" class="tw-rounded"> {{ $payment->course ? $payment->course->title : 'Không có khóa học' }}</td>
                                             <td>{{ number_format($payment->amount, 0, ',', '.') }} VNĐ</td>
                                             <td>{{ $payment->payment_method }}</td>
                                             <td>
@@ -144,6 +181,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('d/m/Y H:i') }}</td>
+                                           
                                         </tr>
                                     @endforeach
                                 </tbody>
