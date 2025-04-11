@@ -182,15 +182,6 @@ class CommentController extends Controller
 
     public function adminBulkDelete(Request $request)
     {
-        if (!Auth::check()) {
-            return redirect('/dang-nhap')->with('error', 'Vui lòng đăng nhập để tiếp tục');
-        }
-
-        $user = Auth::user();
-        if ($user->role != 'admin' && $user->role != 'owner') {
-            return redirect('/')->with('error', 'Bạn không có quyền truy cập trang này');
-        }
-
         $request->validate([
             'comment_ids' => 'required|array',
             'comment_ids.*' => 'exists:comments,id',

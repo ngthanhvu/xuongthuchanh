@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use App\Models\PaymentItem;
 use App\Models\User;
 use App\Models\Coupon;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,7 @@ class PaymentController extends Controller
     public function __construct()
     {
         $this->geminiClient = new Client([
-            'base_uri' => 'https://api.gemini.google.com/v1/', // URL giả định, thay bằng URL thực tế của Gemini API
+            'base_uri' => 'https://api.gemini.google.com/v1/',
             'headers' => [
                 'Authorization' => 'Bearer ' . config('services.gemini.api_key'),
                 'Content-Type' => 'application/json',
@@ -29,11 +30,10 @@ class PaymentController extends Controller
         ]);
     }
 
-    // Hàm gọi API Gemini
     private function callGeminiApi($prompt)
     {
         try {
-            $response = $this->geminiClient->post('generate', [ // Đường dẫn endpoint giả định
+            $response = $this->geminiClient->post('generate', [
                 'json' => [
                     'prompt' => $prompt,
                     'max_tokens' => 100,
@@ -50,15 +50,22 @@ class PaymentController extends Controller
     public function index()
     {
         $title = 'Quản Lí Hóa Đơn';
-        $payments = Payment::with(['user', 'course'])->paginate(12);
+        $payments = Payment::with(['user', 'course', 'paymentItems'])->paginate(5);
         return view('admin.order.index', compact('title', 'payments'));
+    }
+
+    public function show($id)
+    {
+        $payment = Payment::with(['user', 'course', 'paymentItems.course'])->findOrFail($id);
+        $title = 'Chi Tiết Hóa Đơn #' . $payment->id;
+        return view('admin.order.show', compact('title', 'payment'));
     }
 
     public function delete($id)
     {
         $payment = Payment::find($id);
         if ($payment) {
-            $payment->delete();
+            $payment->delete(); // Các PaymentItem sẽ tự động bị xóa do ON DELETE CASCADE
             return redirect()->route('admin.order.index')->with('success', 'Xóa Hóa Đơn Thành Công');
         }
         return redirect()->route('admin.order.index')->with('error', 'Không tìm thấy hóa đơn');
@@ -151,7 +158,7 @@ class PaymentController extends Controller
                         if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
                             $discountAmount = $coupon->max_discount_amount;
                         }
-                    } else { // fixed
+                    } else {
                         $discountAmount = $coupon->discount_value;
                     }
                     $finalAmount = max(0, $finalAmount - $discountAmount);
@@ -178,14 +185,21 @@ class PaymentController extends Controller
             'coupon_id' => $coupon?->id,
         ]);
 
+        // Tạo bản ghi PaymentItem
+        $payment->paymentItems()->create([
+            'course_id' => $request->course_id,
+            'amount' => $finalAmount,
+            'description' => "Thanh toán cho khóa học {$course->title}",
+        ]);
+
         // Sử dụng Gemini để tạo thông điệp thanh toán
-        $prompt = "Tạo một thông điệp ngắn gọn và thân thiện để thông báo người dùng về thanh toán khóa học '{$course->name}' với số tiền " . number_format($finalAmount) . " VND.";
+        $prompt = "Tạo một thông điệp ngắn gọn và thân thiện để thông báo người dùng về thanh toán khóa học '{$course->title}' với số tiền " . number_format($finalAmount) . " VND.";
         $geminiMessage = $this->callGeminiApi($prompt);
         Log::info('Gemini generated message:', ['message' => $geminiMessage]);
 
         $randomString = strtoupper(substr(md5(uniqid(rand(), true)), 0, 6));
         $vnp_TxnRef = $payment->id . '_' . $randomString;
-        $vnp_OrderInfo = $geminiMessage; // Sử dụng thông điệp từ Gemini
+        $vnp_OrderInfo = $geminiMessage;
         $vnp_OrderType = 'course_payment';
         $vnp_Amount = $finalAmount * 100;
         $vnp_Locale = 'vn';
@@ -370,7 +384,8 @@ class PaymentController extends Controller
         $secretKey = config('services.momo.secret_key');
         $endpoint = config('services.momo.endpoint');
         $redirectUrl = config('services.momo.return_url');
-        $ipnUrl = $redirectUrl; 
+        $ipnUrl = $redirectUrl;
+
         $request->validate([
             'course_id' => 'required|exists:courses,id',
             'price' => 'required|numeric|min:0',
@@ -435,8 +450,15 @@ class PaymentController extends Controller
             'coupon_id' => $coupon?->id,
         ]);
 
+        // Tạo bản ghi PaymentItem
+        $payment->paymentItems()->create([
+            'course_id' => $request->course_id,
+            'amount' => $finalAmount,
+            'description' => "Thanh toán cho khóa học {$course->title}",
+        ]);
+
         $orderId = time() . "_" . $payment->id;
-        $orderInfo = "Thanh toán khóa học '{$course->name}'";
+        $orderInfo = "Thanh toán khóa học '{$course->title}'";
         $amount = (int)$finalAmount;
         $extraData = base64_encode(json_encode([
             'payment_id' => $payment->id,

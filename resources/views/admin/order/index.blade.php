@@ -47,7 +47,7 @@
                 @foreach ($payments as $payment)
                     <tr>
                         <td class="text-center">{{ $index++ }}</td>
-                        <td class ="text-center">{{ $payment->user->username ?? 'N/A' }}</td>
+                        <td class="text-center">{{ $payment->user->username ?? 'N/A' }}</td>
                         <td class="text-center">{{ $payment->course->title ?? 'N/A' }}</td>
                         <td class="text-center">{{ number_format($payment->amount, 0) }} VNĐ</td>
                         <td class="text-center">{{ $payment->payment_method }}</td>
@@ -57,12 +57,16 @@
                             </span>
                         </td>
                         <td class="text-center">
-                           
+                            <!-- Nút Xem chi tiết -->
+                            <a href="{{ route('admin.order.show', $payment->id) }}" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                            <!-- Nút Xóa -->
                             <form action="{{ route('admin.order.delete', $payment->id) }}" method="POST"
                                 onsubmit="return confirm('Bạn có chắc muốn xóa hóa đơn này?');" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </form>
