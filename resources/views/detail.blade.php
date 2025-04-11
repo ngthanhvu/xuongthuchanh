@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mt-3">
     <div class="row">
-        <!-- Left Section -->
+        
         <div class="col-md-8">
             <div class="card card-custom mb-4">
                 <div class="card-body">
@@ -87,7 +87,7 @@
                 <div class="card-body">
                     <h5 class="card-title text-center">Đánh giá khóa học</h5>
                     @php
-                    // Phần thống kê đánh giá
+                    
                     $reviews = \App\Models\Review::with('user')
                     ->where('course_id', $course->id)
                     ->orderBy('created_at', 'desc')
@@ -175,7 +175,20 @@
                                             @endfor
                                     </div>
                                 </div>
-                                <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                <div>
+                                    <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                    @auth
+                                    @if(auth()->user()->role == 'admin'|| auth()->user()->role == 'teacher' || auth()->user()->role == 'owner' ||  auth()->user()->id === $review->user_id)
+                                    <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-2" onclick="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                    @endauth
+                                </div>
                             </div>
 
                             @if($review->content)
@@ -192,7 +205,7 @@
                             </div>
                             @endif
 
-                            {{-- Nút reply cho admin --}}
+                            
                             @auth
                             <div style="display: none;">
                                 User Role: {{ auth()->user()->role }}<br>
@@ -200,7 +213,7 @@
                                 Review ID: {{ $review->id }}<br>
                                 Has Reply: {{ $review->admin_reply ? 'Yes' : 'No' }}
                             </div>
-                            @if(auth()->user()->role === 'admin' && !$review->admin_reply)
+                            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'teacher' || auth()->user()->role === 'owner' && !$review->admin_reply)
                             <button class="btn btn-sm btn-outline-primary mt-2 toggle-reply" data-review-id="{{ $review->id }}">
                                 <i class="fas fa-reply"></i> Phản hồi
                             </button>
@@ -230,7 +243,7 @@
 
 
         </div>
-        <!-- Right Section -->
+        
         <div class="col-md-4">
             <div class="card iframe-card mb-4">
                 <h5 class="card-title">{{ $course->title }}</h5>
@@ -366,12 +379,13 @@
     .progress {
         background-color: #e9ecef;
     }
+    
 </style>
 
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Xử lý nút reply
+        
         document.querySelectorAll('.toggle-reply').forEach(button => {
             button.addEventListener('click', function() {
                 const reviewId = this.getAttribute('data-review-id');
@@ -380,7 +394,7 @@
             });
         });
 
-        // Xử lý nút hủy reply
+        
         document.querySelectorAll('.cancel-reply').forEach(button => {
             button.addEventListener('click', function() {
                 const reviewId = this.getAttribute('data-review-id');
@@ -389,7 +403,7 @@
         });
     });
     document.addEventListener('DOMContentLoaded', function() {
-        // Xử lý rating star
+       
         const stars = document.querySelectorAll('.star-rating .far.fa-star');
         const ratingInput = document.getElementById('ratingValue');
 
@@ -398,7 +412,7 @@
                 const rating = this.getAttribute('data-rating');
                 ratingInput.value = rating;
 
-                // Cập nhật giao diện
+                
                 stars.forEach((s, index) => {
                     if (index < rating) {
                         s.classList.remove('far');
@@ -439,7 +453,6 @@
             });
         });
 
-        // Khởi tạo rating mặc định là 5 sao
         stars.forEach((star, index) => {
             if (index < 5) {
                 star.classList.remove('far');

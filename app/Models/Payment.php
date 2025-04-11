@@ -19,14 +19,13 @@ class Payment extends Model
         return $this->belongsTo(Course::class);
     }
 
+    public function paymentItems()
+    {
+        return $this->hasMany(PaymentItem::class);
+    }
 
     public function coupon()
     {
         return $this->belongsTo(Coupon::class);
-    }
-
-    public function paymentItems()
-    {
-        return $this->hasMany(PaymentItem::class);
     }
 }

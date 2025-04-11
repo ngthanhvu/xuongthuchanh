@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class CommentController extends Controller {  // Các phương thức hiện có
+class CommentController extends Controller
+{
+    // Các phương thức hiện có
     public function store(Request $request)
     {
         $request->validate([
@@ -57,83 +59,75 @@ class CommentController extends Controller {  // Các phương thức hiện có
         return view('comments.edit', compact('comment'));
     }
 
-    // Trong CommentController.php
     public function update(Request $request, Comment $comment)
     {
         $request->validate([
-            'content' => 'required|string',
+            'content' => 'required|string|max:1000',
         ]);
-
-        // Kiểm tra quyền
-        if (Auth::id() !== $comment->user_id && !in_array(Auth::user()->role, ['admin', 'teacher'])) {
-            return back()->with('error', 'Bạn không có quyền chỉnh sửa bình luận này.');
-        }
 
         $comment->update([
-            'content' => $request->content,
+            'content' => $request->input('content'),
         ]);
 
-        return back()->with('success', 'Bình luận đã được cập nhật thành công.');
+        return redirect()->back()->with('success', 'Bình luận đã được cập nhật thành công!');
     }
 
-    public function destroy(Comment $comment)
+    public function destroy($id)
     {
-        // Kiểm tra quyền
-        if (Auth::id() !== $comment->user_id && !in_array(Auth::user()->role, ['admin', 'teacher'])) {
-            return back()->with('error', 'Bạn không có quyền xóa bình luận này.');
+        $comment = Comment::findOrFail($id);
+        
+        if (Auth::id() === $comment->user_id || Auth::user()->role === 'admin' || Auth::user()->role === 'teacher') {
+            $comment->delete();
+            return back()->with('success', 'Bình luận đã được xóa thành công.');
         }
-
-        $comment->delete();
-
-        return back()->with('success', 'Bình luận đã được xóa thành công.');
+        
+        return back()->with('error', 'Bạn không có quyền xóa bình luận này.');
     }
 
     public function like(Request $request, $id)
     {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+        
         try {
-            // Log thông tin để debug
-            \Log::info('Like request received for comment: ' . $id);
-            
             $comment = Comment::findOrFail($id);
             $userId = Auth::id();
             
-            if (!$userId) {
-                return response()->json(['error' => 'User not authenticated'], 401);
-            }
-            
-            // Kiểm tra xem người dùng đã thích bình luận này chưa
-            $liked = DB::table('comment_likes')
-                        ->where('user_id', $userId)
-                        ->where('comment_id', $id)
-                        ->exists();
-            
-            \Log::info('User ' . $userId . ' has liked comment ' . $id . ': ' . ($liked ? 'yes' : 'no'));
+            $liked = $comment->likes()->where('user_id', $userId)->exists();
             
             if ($liked) {
-                // Nếu đã thích rồi, bỏ thích
-                DB::table('comment_likes')
-                    ->where('user_id', $userId)
-                    ->where('comment_id', $id)
-                    ->delete();
-                
-                $comment->decrement('likes');
-                return response()->json(['status' => 'unliked', 'likes' => $comment->likes]);
+                // Bỏ thích
+                $comment->likes()->detach($userId);
+                $status = 'unliked';
             } else {
-                // Nếu chưa thích, thêm like mới
-                DB::table('comment_likes')->insert([
-                    'user_id' => $userId,
-                    'comment_id' => $id,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-                
-                $comment->increment('likes');
-                return response()->json(['status' => 'liked', 'likes' => $comment->likes]);
+                // Thích
+                $comment->likes()->attach($userId);
+                $status = 'liked';
             }
+            
+            // Cập nhật cột likes
+            $likesCount = $comment->likes()->count();
+            $comment->update(['likes' => $likesCount]);
+            
+            return response()->json(['status' => $status, 'likes' => $likesCount]);
         } catch (\Exception $e) {
             \Log::error('Error in like function: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function showLesson($lessonId)
+    {
+        $lesson = Lesson::findOrFail($lessonId);
+        $likedComments = [];
+
+        if (Auth::check()) {
+            // Lấy danh sách ID bình luận/phản hồi mà người dùng đã thích
+            $likedComments = Auth::user()->likedComments()->pluck('comment_id')->toArray();
+        }
+
+        return view('lessons.show', compact('lesson', 'likedComments'));
     }
 
     public function showReplyForm($commentId)
@@ -197,14 +191,7 @@ class CommentController extends Controller {  // Các phương thức hiện có
 
         Comment::whereIn('id', $request->comment_ids)->delete();
 
-        return back()->with('success', 'Đã xóa các bình luận được chọn.');
+        return back()->with('success', 'Bình luận đã xóa thành công');
     }
    
-   {
-        $parentComment = Comment::findOrFail($commentId);
-        return view('comments.reply-form', compact('parentComment'));
-    }
-}     $parentComment = Comment::findOrFail($commentId);
-        return view('comments.reply-form', compact('parentComment'));
-    }
 }

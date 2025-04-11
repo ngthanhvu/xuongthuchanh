@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    protected $fillable = ['content', 'user_id', 'course_id', 'lesson_id', 'parent_id'];
+    protected $fillable = ['content', 'likes', 'user_id', 'course_id', 'lesson_id', 'parent_id'];
 
     public function user()
     {
@@ -32,4 +32,11 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'parent_id')->orderBy('created_at', 'desc');
     }
+
+    public function likes()
+    {
+        return $this->belongsToMany(User::class, 'comment_likes', 'comment_id', 'user_id')
+                    ->withTimestamps();
+    }
+    
 }

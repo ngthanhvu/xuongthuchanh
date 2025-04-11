@@ -139,7 +139,7 @@ class PaymentController extends Controller
                     'course_id' => $request->course_id,
                 ]);
             }
-            if ($existingPayment->status === 'pending' || $existingPayment->status === 'failed') {
+            if ($existingPayment->status === 'failed' ) {
                 $existingPayment->delete();
             }
         }
@@ -181,7 +181,7 @@ class PaymentController extends Controller
             'payment_date' => now(),
             'amount' => $finalAmount,
             'payment_method' => 'VNPay',
-            'status' => 'pending',
+            'status' => 'failed',
             'coupon_id' => $coupon?->id,
         ]);
 
@@ -446,7 +446,7 @@ class PaymentController extends Controller
             'payment_date' => now(),
             'amount' => $finalAmount,
             'payment_method' => 'Momo',
-            'status' => 'pending',
+            'status' => 'failed',
             'coupon_id' => $coupon?->id,
         ]);
 

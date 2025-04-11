@@ -91,15 +91,14 @@
             gap: 6px;
             background-color: #fff;
             color: #f4511e;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 999px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
+            border: 1px solid #f4511e; /* Thêm viền cho giống các nút khác */
+            padding: 6px 12px; /* Giảm padding để nút nhỏ hơn */
+            border-radius: 5px; /* Bo góc nhẹ hơn */
+            box-shadow: none; /* Loại bỏ shadow nếu muốn đơn giản */
+            font-size: 14px; /* Giảm kích thước chữ */
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-left: 890px; 
         }
         .toggle-comments-btn:hover {
             background-color: #ffece5;
@@ -233,6 +232,7 @@
                         <img src="{{ asset('path-to-iframe-placeholder.jpg') }}" alt="Video Placeholder">
                     @endif
                 </div>
+
                 <div class="d-flex justify-content-end mt-3">
                     @if ($prevLesson)
                         <a href="{{ route('lesson', $prevLesson->id) }}" class="btn btn-light me-2">BÀI TRƯỚC</a>
@@ -256,6 +256,12 @@
                             </button>
                         </form>
                     @endif
+                    <button class="toggle-comments-btn ms-2" type="button" onclick="toggleComments()">
+                        <span class="icon">
+                            <i class="fas fa-comments"></i>
+                        </span>
+                        <span class="text">Hỏi đáp</span>
+                    </button>
                 </div>
 
                 <div class="footer d-flex justify-content-between align-items-center">
@@ -266,12 +272,6 @@
                     </div>
                 </div>
 
-                <button class="toggle-comments-btn" type="button" onclick="toggleComments()">
-                    <span class="icon">
-                        <i class="fas fa-comments"></i>
-                    </span>
-                    <span class="text">Hỏi đáp</span>
-                </button>
             </div>
 
             <div class="col-md-4 p-0">
@@ -491,7 +491,7 @@
 
                                                 <div class="user-info">
                                                     <img src="{{ $reply->user->avatar ? asset($reply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
-                                                         alt="{{ $reply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                        alt="{{ $reply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                     <span>{{ $reply->user->username }}</span>
                                                     <span class="comment-time">{{ $reply->created_at->diffForHumans() }}</span>
                                                 </div>
@@ -499,8 +499,12 @@
                                                     <p>{{ $reply->content }}</p>
                                                 </div>
 
-                                                <!-- Thêm nút "Phản hồi" cho phản hồi -->
+                                                <!-- Thêm nút "Thích" và "Phản hồi" cho phản hồi -->
                                                 <div class="actions">
+                                                    <a href="#" class="like-btn" data-comment-id="{{ $reply->id }}" onclick="likeComment({{ $reply->id }}); return false;">
+                                                        <i class="fa-{{ in_array($reply->id, $likedComments ?? []) ? 'solid' : 'regular' }} fa-thumbs-up"></i>
+                                                        <span id="likes-count-{{ $reply->id }}">{{ $reply->likes }}</span> Thích
+                                                    </a>
                                                     <a href="#" onclick="showNestedReplyForm({{ $reply->id }}); return false;">Phản hồi</a>
                                                 </div>
 
@@ -511,11 +515,11 @@
                                                         @method('PUT')
                                                         <div class="d-flex align-items-center">
                                                             <img src="{{ $reply->user->avatar ? asset($reply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
-                                                                 alt="{{ $reply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                                alt="{{ $reply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                             <div class="form-group flex-grow-1 mb-0">
                                                                 <input type="text" class="form-control edit-input" name="content" 
-                                                                       value="{{ $reply->content }}" 
-                                                                       style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                                    value="{{ $reply->content }}" 
+                                                                    style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
                                                             </div>
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-2">
@@ -534,12 +538,12 @@
                                                         <input type="hidden" name="comment_id" value="{{ $reply->id }}">
                                                         <div class="d-flex align-items-center">
                                                             <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
-                                                                 alt="{{ Auth::user()->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                                alt="{{ Auth::user()->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                             <div class="form-group flex-grow-1 mb-0">
                                                                 <input type="text" class="form-control nested-reply-input" name="content" 
-                                                                       placeholder="Viết phản hồi..." 
-                                                                       data-username="{{ $reply->user->username }}"
-                                                                       style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                                    placeholder="Viết phản hồi..." 
+                                                                    data-username="{{ $reply->user->username }}"
+                                                                    style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
                                                             </div>
                                                         </div>
                                                         <div class="d-flex justify-content-end mt-2">
@@ -586,12 +590,22 @@
 
                                                         <div class="user-info">
                                                             <img src="{{ $nestedReply->user->avatar ? asset($nestedReply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
-                                                                 alt="{{ $nestedReply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                                alt="{{ $nestedReply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                             <span>{{ $nestedReply->user->username }}</span>
                                                             <span class="comment-time">{{ $nestedReply->created_at->diffForHumans() }}</span>
                                                         </div>
                                                         <div class="comment-content">
                                                             <p>{{ $nestedReply->content }}</p>
+                                                        </div>
+
+                                                        <!-- Thêm nút "Thích" và "Phản hồi" cho phản hồi lồng nhau -->
+                                                        <div class="actions">
+                                                            <a href="#" class="like-btn" data-comment-id="{{ $nestedReply->id }}" onclick="likeComment({{ $nestedReply->id }}); return false;">
+                                                                <i class="fa-{{ in_array($nestedReply->id, $likedComments ?? []) ? 'solid' : 'regular' }} fa-thumbs-up"></i>
+                                                                {{-- <span id="likes-count-{{ $nestedReply->id }}">{{ $nestedReply->likes }}</span> Thích --}}
+                                                                <span id="likes-count-{{ $comment->id }}">{{ $comment->likes }}</span> Thích
+                                                            </a>
+                                                            <a href="#" onclick="showNestedReplyForm({{ $nestedReply->id }}); return false;">Phản hồi</a>
                                                         </div>
 
                                                         <!-- Form chỉnh sửa cho phản hồi lồng nhau -->
@@ -601,11 +615,11 @@
                                                                 @method('PUT')
                                                                 <div class="d-flex align-items-center">
                                                                     <img src="{{ $nestedReply->user->avatar ? asset($nestedReply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
-                                                                         alt="{{ $nestedReply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                                        alt="{{ $nestedReply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                                     <div class="form-group flex-grow-1 mb-0">
                                                                         <input type="text" class="form-control edit-input" name="content" 
-                                                                               value="{{ $nestedReply->content }}" 
-                                                                               style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                                            value="{{ $nestedReply->content }}" 
+                                                                            style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
                                                                     </div>
                                                                 </div>
                                                                 <div class="d-flex justify-content-end mt-2">
@@ -617,11 +631,6 @@
                                                             </form>
                                                         </div>
 
-                                                        <!-- Thêm nút "Phản hồi" cho phản hồi lồng nhau -->
-                                                        <div class="actions">
-                                                            <a href="#" onclick="showNestedReplyForm({{ $nestedReply->id }}); return false;">Phản hồi</a>
-                                                        </div>
-
                                                         <!-- Form phản hồi cho phản hồi lồng nhau -->
                                                         <div id="nestedReplyForm-{{ $nestedReply->id }}" class="nested-reply-form mt-3" style="display: none;">
                                                             <form action="{{ route('comments.reply') }}" method="POST">
@@ -629,12 +638,12 @@
                                                                 <input type="hidden" name="comment_id" value="{{ $nestedReply->id }}">
                                                                 <div class="d-flex align-items-center">
                                                                     <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
-                                                                         alt="{{ Auth::user()->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                                        alt="{{ Auth::user()->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                                     <div class="form-group flex-grow-1 mb-0">
                                                                         <input type="text" class="form-control nested-reply-input" name="content" 
-                                                                               placeholder="Viết phản hồi..." 
-                                                                               data-username="{{ $nestedReply->user->username }}"
-                                                                               style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                                            placeholder="Viết phản hồi..." 
+                                                                            data-username="{{ $nestedReply->user->username }}"
+                                                                            style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
                                                                     </div>
                                                                 </div>
                                                                 <div class="d-flex justify-content-end mt-2">
@@ -660,7 +669,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{{ $comment->user->avatar ? asset($comment->user->avatar) : asset('images/default-avatar.jpg') }}" 
+                                                    <img src="{{ $comment->user->avatar ? asset($comment->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
                                                          alt="{{ $comment->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                     <div class="form-group flex-grow-1 mb-0">
                                                         <input type="text" class="form-control edit-input" name="content" 
@@ -822,33 +831,36 @@
     }
 
     function likeComment(commentId) {
-        $.ajax({
-            url: `/comments/${commentId}/like`,
-            type: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(data) {
-                console.log('Success:', data);
-                
-                const likeBtn = $(`.like-btn[data-comment-id="${commentId}"] i`);
-                const likesCount = $(`#likes-count-${commentId}`);
-                
-                if (data.status === 'liked') {
-                    likeBtn.removeClass('fa-regular').addClass('fa-solid');
-                } else {
-                    likeBtn.removeClass('fa-solid').addClass('fa-regular');
-                }
-                
-                likesCount.text(data.likes);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('AJAX Error:', textStatus, errorThrown);
-                console.log(jqXHR.responseText);
+    $.ajax({
+        url: `/comments/${commentId}/like`,
+        type: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(data) {
+            const likeBtn = $(`.like-btn[data-comment-id="${commentId}"] i`);
+            const likesCount = $(`#likes-count-${commentId}`);
+            
+            if (data.status === 'liked') {
+                likeBtn.removeClass('fa-regular').addClass('fa-solid');
+            } else {
+                likeBtn.removeClass('fa-solid').addClass('fa-regular');
+            }
+            
+            likesCount.text(data.likes);
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+            console.log('Response:', xhr.responseText);
+            
+            if (xhr.status === 401) {
+                alert('Vui lòng đăng nhập để thích bình luận');
+            } else {
                 alert('Có lỗi xảy ra khi thực hiện thao tác like');
             }
-        });
-    }
+        }
+    });
+}
 
     function showReplyForm(commentId) {
         const replyForm = document.getElementById(`replyForm-${commentId}`);

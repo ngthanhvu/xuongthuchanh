@@ -251,10 +251,13 @@ Route::get('/frontend-path', [HomeController::class, 'frontendPath'])->name('fro
 Route::get('/backend-path', [HomeController::class, 'backendPath'])->name('backend-path');
 Route::get('/learning-paths', [HomeController::class, 'lotrinh'])->name('learning-paths.index');
 
+// Review
 Route::resource('reviews', ReviewController::class)->middleware('auth');
 Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])
     ->name('reviews.reply')
     ->middleware('check.admin');
+Route::resource('reviews', ReviewController::class)->middleware('auth');
+
 
 //teacher
 Route::middleware(['check.teacher'])->group(function () {
