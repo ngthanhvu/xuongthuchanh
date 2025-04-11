@@ -171,6 +171,10 @@ Route::put('/profile/update-password', [UserController::class, 'updatePassword']
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile/you-course', [UserController::class, 'youcourse'])->name('profile.youcourse');
 });
+
+//userPayment
+Route::get('/userPayment', [UserController::class, 'userPayment'])->name('userPayment');
+
 //enrollment
 Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrollments.store');
 
@@ -179,9 +183,11 @@ Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('enrol
 Route::post('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 Route::get('/payment/result', [PaymentController::class, 'showResult'])->name('payment.result');
+
 // Route cho Momo
 Route::post('/momo/payment', [PaymentController::class, 'createMomoPayment'])->name('payment.createMomoPayment');
 Route::post('/momo/callback', [PaymentController::class, 'momoCallback'])->name('payment.momoCallback');
+Route::get('/orders/{id}', [PaymentController::class, 'show'])->name('admin.order.show');
 
 //quen mat khau
 Route::get('/quen-mat-khau', [UserController::class, 'forgotPassword'])->name('password.forgot');
@@ -349,6 +355,5 @@ Route::post('/chat-with-gemini', [ChatController::class, 'chat'])->name('chat.ge
 //luu khoa học và yêu thích
 Route::middleware(['auth'])->group(function () {
     Route::post('/save-course/{courseId}', [SavedCourseController::class, 'toggleSave'])->name('courses.toggleSave');
-
 });
 Route::get('/khoa-hoc/yeu-thich', [CourseController::class, 'favoriteCourses'])->name('courses.favorites');

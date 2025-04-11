@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\UserCourseProgress;
@@ -96,6 +97,19 @@ class UserController extends Controller
         $title = 'Hồ sơ người dùng';
         $user = Auth::user();
         return view('profile', compact('user', 'title'));
+    }
+
+    public function userPayment()
+    {
+        $title = 'Lịch sử hóa đơn';
+        $user = Auth::user();
+
+        $payments = Payment::where('user_id', $user->id)
+            ->with(['course', 'paymentItems.course', 'coupon']) 
+            ->orderBy('payment_date', 'desc')
+            ->paginate(10); 
+
+        return view('userPayment', compact('title', 'user', 'payments'));
     }
 
     public function updateProfile(Request $request)
