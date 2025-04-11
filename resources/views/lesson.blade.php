@@ -383,11 +383,11 @@
                         </div>
 
                         <div class="comments-list mt-4">
-                            @if($lesson->section->course->comments->count() > 0)
+                            @if($lesson->section->course->comments->where('parent_id', null)->count() > 0)
                                 <div class="comment-header">
-                                    <h4>{{ $lesson->section->course->comments->count() }} bình luận</h4>
+                                    <h4>{{ $lesson->section->course->comments->where('parent_id', null)->count() }} bình luận</h4>
                                 </div>
-                                @foreach($lesson->section->course->comments->sortByDesc('created_at') as $comment)
+                                @foreach($lesson->section->course->comments->where('parent_id', null)->sortByDesc('created_at') as $comment)
                                     <div class="comment-item" id="comment-{{ $comment->id }}">
                                         @if(Auth::id() === $comment->user_id || Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
                                             <div class="dropdown text-end">
@@ -417,7 +417,7 @@
                                         @endif
                                         <div class="user-info">
                                             <img src="{{ $comment->user->avatar ? asset($comment->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
-                                                alt="{{ $comment->user->username }}">
+                                                 alt="{{ $comment->user->username }}">
                                             <span>{{ $comment->user->username }}</span>
                                             <span class="comment-time">{{ $comment->created_at->diffForHumans() }}</span>
                                         </div>
@@ -432,7 +432,7 @@
                                             <a href="#" onclick="showReplyForm({{ $comment->id }}); return false;">Phản hồi</a>
                                         </div>
                                         
-                                        <!-- Form phản hồi (ẩn ban đầu) -->
+                                        <!-- Form phản hồi -->
                                         <div id="replyForm-{{ $comment->id }}" class="reply-form mt-3" style="display: none;">
                                             <form action="{{ route('comments.reply') }}" method="POST">
                                                 @csrf
@@ -443,6 +443,7 @@
                                                     <div class="form-group flex-grow-1 mb-0">
                                                         <input type="text" class="form-control reply-input" name="content" 
                                                                placeholder="Viết phản hồi..." 
+                                                               data-username="{{ $comment->user->username }}"
                                                                style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
                                                     </div>
                                                 </div>
@@ -460,7 +461,194 @@
                                         <div class="replies ms-4 mt-3">
                                             @foreach($comment->replies as $reply)
                                             <div class="comment-item" id="comment-{{ $reply->id }}">
-                                                <!-- Hiển thị nội dung phản hồi tương tự như bình luận -->
+                                                <!-- Menu dropdown cho phản hồi -->
+                                                @if(Auth::id() === $reply->user_id || Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
+                                                    <div class="dropdown text-end">
+                                                        <a class="text-muted" href="#" role="button" id="dropdownMenuReply{{ $reply->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-h"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuReply{{ $reply->id }}">
+                                                            <li><a class="dropdown-item" href="#" onclick="showEditReplyForm({{ $reply->id }}); return false;">Chỉnh sửa</a></li>
+                                                            <li>
+                                                                <form action="{{ route('comments.destroy', $reply->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phản hồi này?')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="dropdown-item">Xóa phản hồi</button>
+                                                                </form>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                @else
+                                                    <div class="dropdown text-end">
+                                                        <a class="text-muted" href="#" role="button" id="dropdownMenuReportReply{{ $reply->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="fas fa-ellipsis-h"></i>
+                                                        </a>
+                                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuReportReply{{ $reply->id }}">
+                                                            <li><a class="dropdown-item" href="#">Báo cáo vi phạm</a></li>
+                                                        </ul>
+                                                    </div>
+                                                @endif
+
+                                                <div class="user-info">
+                                                    <img src="{{ $reply->user->avatar ? asset($reply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
+                                                         alt="{{ $reply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                    <span>{{ $reply->user->username }}</span>
+                                                    <span class="comment-time">{{ $reply->created_at->diffForHumans() }}</span>
+                                                </div>
+                                                <div class="comment-content">
+                                                    <p>{{ $reply->content }}</p>
+                                                </div>
+
+                                                <!-- Thêm nút "Phản hồi" cho phản hồi -->
+                                                <div class="actions">
+                                                    <a href="#" onclick="showNestedReplyForm({{ $reply->id }}); return false;">Phản hồi</a>
+                                                </div>
+
+                                                <!-- Form chỉnh sửa phản hồi (ẩn ban đầu) -->
+                                                <div id="editReplyForm-{{ $reply->id }}" class="edit-reply-form mt-2" style="display: none;">
+                                                    <form action="{{ route('comments.update', $reply->id) }}" method="POST">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="{{ $reply->user->avatar ? asset($reply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
+                                                                 alt="{{ $reply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                            <div class="form-group flex-grow-1 mb-0">
+                                                                <input type="text" class="form-control edit-input" name="content" 
+                                                                       value="{{ $reply->content }}" 
+                                                                       style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex justify-content-end mt-2">
+                                                            <button type="button" class="btn btn-light btn-sm me-2" onclick="hideEditReplyForm({{ $reply->id }})" 
+                                                                    style="border-radius: 20px;">Hủy</button>
+                                                            <button type="submit" class="btn btn-primary btn-sm" 
+                                                                    style="border-radius: 20px;">Lưu</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                <!-- Form phản hồi cho phản hồi (nested reply) -->
+                                                <div id="nestedReplyForm-{{ $reply->id }}" class="nested-reply-form mt-3" style="display: none;">
+                                                    <form action="{{ route('comments.reply') }}" method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="comment_id" value="{{ $reply->id }}">
+                                                        <div class="d-flex align-items-center">
+                                                            <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
+                                                                 alt="{{ Auth::user()->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                            <div class="form-group flex-grow-1 mb-0">
+                                                                <input type="text" class="form-control nested-reply-input" name="content" 
+                                                                       placeholder="Viết phản hồi..." 
+                                                                       data-username="{{ $reply->user->username }}"
+                                                                       style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex justify-content-end mt-2">
+                                                            <button type="button" class="btn btn-light btn-sm me-2" onclick="hideNestedReplyForm({{ $reply->id }})" 
+                                                                    style="border-radius: 20px;">Hủy</button>
+                                                            <button type="submit" class="btn btn-primary btn-sm" 
+                                                                    style="border-radius: 20px;">Gửi</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                <!-- Hiển thị các phản hồi lồng nhau (nested replies) -->
+                                                @if($reply->replies->count() > 0)
+                                                <div class="nested-replies ms-4 mt-3">
+                                                    @foreach($reply->replies as $nestedReply)
+                                                    <div class="comment-item" id="comment-{{ $nestedReply->id }}">
+                                                        <!-- Menu dropdown cho phản hồi lồng nhau -->
+                                                        @if(Auth::id() === $nestedReply->user_id || Auth::user()->role === 'admin' || Auth::user()->role === 'teacher')
+                                                            <div class="dropdown text-end">
+                                                                <a class="text-muted" href="#" role="button" id="dropdownMenuNestedReply{{ $nestedReply->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <i class="fas fa-ellipsis-h"></i>
+                                                                </a>
+                                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuNestedReply{{ $nestedReply->id }}">
+                                                                    <li><a class="dropdown-item" href="#" onclick="showEditReplyForm({{ $nestedReply->id }}); return false;">Chỉnh sửa</a></li>
+                                                                    <li>
+                                                                        <form action="{{ route('comments.destroy', $nestedReply->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phản hồi này?')">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit" class="dropdown-item">Xóa phản hồi</button>
+                                                                        </form>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        @else
+                                                            <div class="dropdown text-end">
+                                                                <a class="text-muted" href="#" role="button" id="dropdownMenuReportNestedReply{{ $nestedReply->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <i class="fas fa-ellipsis-h"></i>
+                                                                </a>
+                                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuReportNestedReply{{ $nestedReply->id }}">
+                                                                    <li><a class="dropdown-item" href="#">Báo cáo vi phạm</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+
+                                                        <div class="user-info">
+                                                            <img src="{{ $nestedReply->user->avatar ? asset($nestedReply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
+                                                                 alt="{{ $nestedReply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                            <span>{{ $nestedReply->user->username }}</span>
+                                                            <span class="comment-time">{{ $nestedReply->created_at->diffForHumans() }}</span>
+                                                        </div>
+                                                        <div class="comment-content">
+                                                            <p>{{ $nestedReply->content }}</p>
+                                                        </div>
+
+                                                        <!-- Form chỉnh sửa cho phản hồi lồng nhau -->
+                                                        <div id="editReplyForm-{{ $nestedReply->id }}" class="edit-reply-form mt-2" style="display: none;">
+                                                            <form action="{{ route('comments.update', $nestedReply->id) }}" method="POST">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <div class="d-flex align-items-center">
+                                                                    <img src="{{ $nestedReply->user->avatar ? asset($nestedReply->user->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
+                                                                         alt="{{ $nestedReply->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                                    <div class="form-group flex-grow-1 mb-0">
+                                                                        <input type="text" class="form-control edit-input" name="content" 
+                                                                               value="{{ $nestedReply->content }}" 
+                                                                               style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="d-flex justify-content-end mt-2">
+                                                                    <button type="button" class="btn btn-light btn-sm me-2" onclick="hideEditReplyForm({{ $nestedReply->id }})" 
+                                                                            style="border-radius: 20px;">Hủy</button>
+                                                                    <button type="submit" class="btn btn-primary btn-sm" 
+                                                                            style="border-radius: 20px;">Lưu</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+
+                                                        <!-- Thêm nút "Phản hồi" cho phản hồi lồng nhau -->
+                                                        <div class="actions">
+                                                            <a href="#" onclick="showNestedReplyForm({{ $nestedReply->id }}); return false;">Phản hồi</a>
+                                                        </div>
+
+                                                        <!-- Form phản hồi cho phản hồi lồng nhau -->
+                                                        <div id="nestedReplyForm-{{ $nestedReply->id }}" class="nested-reply-form mt-3" style="display: none;">
+                                                            <form action="{{ route('comments.reply') }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="comment_id" value="{{ $nestedReply->id }}">
+                                                                <div class="d-flex align-items-center">
+                                                                    <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g') }}" 
+                                                                         alt="{{ Auth::user()->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                                    <div class="form-group flex-grow-1 mb-0">
+                                                                        <input type="text" class="form-control nested-reply-input" name="content" 
+                                                                               placeholder="Viết phản hồi..." 
+                                                                               data-username="{{ $nestedReply->user->username }}"
+                                                                               style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="d-flex justify-content-end mt-2">
+                                                                    <button type="button" class="btn btn-light btn-sm me-2" onclick="hideNestedReplyForm({{ $nestedReply->id }})" 
+                                                                            style="border-radius: 20px;">Hủy</button>
+                                                                    <button type="submit" class="btn btn-primary btn-sm" 
+                                                                            style="border-radius: 20px;">Gửi</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    @endforeach
+                                                </div>
+                                                @endif
                                             </div>
                                             @endforeach
                                         </div>
@@ -473,11 +661,11 @@
                                                 @method('PUT')
                                                 <div class="d-flex align-items-center">
                                                     <img src="{{ $comment->user->avatar ? asset($comment->user->avatar) : asset('images/default-avatar.jpg') }}" 
-                                                        alt="{{ $comment->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                                         alt="{{ $comment->user->username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                                     <div class="form-group flex-grow-1 mb-0">
                                                         <input type="text" class="form-control edit-input" name="content" 
-                                                            value="{{ $comment->content }}" 
-                                                            style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
+                                                               value="{{ $comment->content }}" 
+                                                               style="border-radius: 20px; background-color: #e6f0fa; border: none; padding: 8px 15px;">
                                                     </div>
                                                 </div>
                                                 <div class="d-flex justify-content-end mt-2">
@@ -507,21 +695,21 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const nextBtn = document.getElementById('nextLessonBtn');
-    const countdownElement = document.getElementById('countdown');
-    let timeLeft = 15;
+        const nextBtn = document.getElementById('nextLessonBtn');
+        const countdownElement = document.getElementById('countdown');
+        let timeLeft = 15;
 
-    const countdown = setInterval(function () {
-        timeLeft--;
-        countdownElement.textContent = timeLeft;
+        const countdown = setInterval(function () {
+            timeLeft--;
+            countdownElement.textContent = timeLeft;
 
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            nextBtn.disabled = false;
-            nextBtn.innerHTML = nextBtn.innerHTML.replace(/ \(\d+s\)/, ''); 
-        }
-    }, 1000);
-    
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = nextBtn.innerHTML.replace(/ \(\d+s\)/, ''); 
+            }
+        }, 1000);
+        
         // Xử lý input comment
         const input = document.querySelector('.comment-input');
         const button = document.getElementById('submitButton');
@@ -584,6 +772,55 @@
         }
     }
 
+    function showEditReplyForm(replyId) {
+        try {
+            // Ẩn nội dung phản hồi
+            document.querySelector(`#comment-${replyId} .comment-content`).style.display = 'none';
+            // Ẩn các actions
+            document.querySelector(`#comment-${replyId} .actions`).style.display = 'none';
+            // Hiển thị form chỉnh sửa
+            document.querySelector(`#editReplyForm-${replyId}`).style.display = 'block';
+        } catch (e) {
+            console.error("Lỗi khi hiển thị form chỉnh sửa phản hồi:", e);
+        }
+    }
+
+    function hideEditReplyForm(replyId) {
+        try {
+            // Hiển thị lại nội dung phản hồi
+            document.querySelector(`#comment-${replyId} .comment-content`).style.display = 'block';
+            // Hiển thị lại actions
+            document.querySelector(`#comment-${replyId} .actions`).style.display = 'block';
+            // Ẩn form chỉnh sửa
+            document.querySelector(`#editReplyForm-${replyId}`).style.display = 'none';
+        } catch (e) {
+            console.error("Lỗi khi ẩn form chỉnh sửa phản hồi:", e);
+        }
+    }
+
+    function showNestedReplyForm(replyId) {
+        const nestedReplyForm = document.getElementById(`nestedReplyForm-${replyId}`);
+        if (nestedReplyForm) {
+            nestedReplyForm.style.display = 'block';
+            const input = nestedReplyForm.querySelector('.nested-reply-input');
+            // Lấy username từ data-username
+            const username = input.getAttribute('data-username');
+            // Tự động chèn @username nếu ô input trống
+            if (!input.value) {
+                input.value = `@${username} `;
+            }
+            // Focus vào ô input
+            input.focus();
+        }
+    }
+
+    function hideNestedReplyForm(replyId) {
+        const nestedReplyForm = document.getElementById(`nestedReplyForm-${replyId}`);
+        if (nestedReplyForm) {
+            nestedReplyForm.style.display = 'none';
+        }
+    }
+
     function likeComment(commentId) {
         $.ajax({
             url: `/comments/${commentId}/like`,
@@ -617,8 +854,15 @@
         const replyForm = document.getElementById(`replyForm-${commentId}`);
         if (replyForm) {
             replyForm.style.display = 'block';
+            const input = replyForm.querySelector('.reply-input');
+            // Lấy username từ data-username
+            const username = input.getAttribute('data-username');
+            // Tự động chèn @username nếu ô input trống
+            if (!input.value) {
+                input.value = `@${username} `;
+            }
             // Focus vào ô input
-            replyForm.querySelector('.reply-input').focus();
+            input.focus();
         }
     }
 

@@ -58,81 +58,84 @@ class CommentController extends Controller
         return view('comments.edit', compact('comment'));
     }
 
+    // Trong CommentController.php
     public function update(Request $request, Comment $comment)
     {
-        // Validate the input
         $request->validate([
-            'content' => 'required|string|max:1000',
+            'content' => 'required|string',
         ]);
 
-        // Update the comment
+        // Kiểm tra quyền
+        if (Auth::id() !== $comment->user_id && !in_array(Auth::user()->role, ['admin', 'teacher'])) {
+            return back()->with('error', 'Bạn không có quyền chỉnh sửa bình luận này.');
+        }
+
         $comment->update([
-            'content' => $request->input('content'),
+            'content' => $request->content,
         ]);
 
-        return redirect()->back()->with('success', 'Bình luận đã được cập nhật thành công!');
+        return back()->with('success', 'Bình luận đã được cập nhật thành công.');
     }
 
-    public function destroy($id)
+    public function destroy(Comment $comment)
     {
-        $comment = Comment::findOrFail($id);
-        
-        // Only comment owner or admin/teacher can delete
-        if (Auth::id() === $comment->user_id || Auth::user()->role === 'admin' || Auth::user()->role === 'teacher') {
-            $comment->delete();
-            return back()->with('success', 'Bình luận đã được xóa thành công.');
+        // Kiểm tra quyền
+        if (Auth::id() !== $comment->user_id && !in_array(Auth::user()->role, ['admin', 'teacher'])) {
+            return back()->with('error', 'Bạn không có quyền xóa bình luận này.');
         }
-        
-        return back()->with('error', 'Bạn không có quyền xóa bình luận này.');
+
+        $comment->delete();
+
+        return back()->with('success', 'Bình luận đã được xóa thành công.');
     }
 
     public function like(Request $request, $id)
-{
-    try {
-        // Log thông tin để debug
-        \Log::info('Like request received for comment: ' . $id);
-        
-        $comment = Comment::findOrFail($id);
-        $userId = Auth::id();
-        
-        if (!$userId) {
-            return response()->json(['error' => 'User not authenticated'], 401);
-        }
-        
-        // Kiểm tra xem người dùng đã thích bình luận này chưa
-        $liked = DB::table('comment_likes')
+    {
+        try {
+            // Log thông tin để debug
+            \Log::info('Like request received for comment: ' . $id);
+            
+            $comment = Comment::findOrFail($id);
+            $userId = Auth::id();
+            
+            if (!$userId) {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
+            
+            // Kiểm tra xem người dùng đã thích bình luận này chưa
+            $liked = DB::table('comment_likes')
+                        ->where('user_id', $userId)
+                        ->where('comment_id', $id)
+                        ->exists();
+            
+            \Log::info('User ' . $userId . ' has liked comment ' . $id . ': ' . ($liked ? 'yes' : 'no'));
+            
+            if ($liked) {
+                // Nếu đã thích rồi, bỏ thích
+                DB::table('comment_likes')
                     ->where('user_id', $userId)
                     ->where('comment_id', $id)
-                    ->exists();
-        
-        \Log::info('User ' . $userId . ' has liked comment ' . $id . ': ' . ($liked ? 'yes' : 'no'));
-        
-        if ($liked) {
-            // Nếu đã thích rồi, bỏ thích
-            DB::table('comment_likes')
-                ->where('user_id', $userId)
-                ->where('comment_id', $id)
-                ->delete();
-            
-            $comment->decrement('likes');
-            return response()->json(['status' => 'unliked', 'likes' => $comment->likes]);
-        } else {
-            // Nếu chưa thích, thêm like mới
-            DB::table('comment_likes')->insert([
-                'user_id' => $userId,
-                'comment_id' => $id,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-            
-            $comment->increment('likes');
-            return response()->json(['status' => 'liked', 'likes' => $comment->likes]);
+                    ->delete();
+                
+                $comment->decrement('likes');
+                return response()->json(['status' => 'unliked', 'likes' => $comment->likes]);
+            } else {
+                // Nếu chưa thích, thêm like mới
+                DB::table('comment_likes')->insert([
+                    'user_id' => $userId,
+                    'comment_id' => $id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                
+                $comment->increment('likes');
+                return response()->json(['status' => 'liked', 'likes' => $comment->likes]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error in like function: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-    } catch (\Exception $e) {
-        \Log::error('Error in like function: ' . $e->getMessage());
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 
     // Phương thức reply đã có, nhưng có thể cần điều chỉnh để hiển thị form reply
     public function showReplyForm($commentId)

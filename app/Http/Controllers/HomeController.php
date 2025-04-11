@@ -39,6 +39,11 @@ class HomeController extends Controller
         $links = [];
         $posts = Post::with('course')->latest()->get();
 
+        $freeCourses = Course::where('is_free', true)
+                    ->with('user', 'category')
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(8);
+
         if ($userId) {
             foreach ($courses as $course) {
                 $isEnrolled = Enrollment::where('user_id', $userId)->where('course_id', $course->id)->exists();
@@ -66,7 +71,7 @@ class HomeController extends Controller
             }
         }
 
-        return view('index', compact('title', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'posts'));
+        return view('index', compact('title', 'freeCourses', 'courses', 'enrollmentStatus', 'enrollments', 'links', 'courseProgress', 'posts'));
     }
 
     public function course(Request $request)

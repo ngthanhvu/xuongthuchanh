@@ -303,6 +303,9 @@
             padding-top: 10px;
             margin-top: 15px;
         }
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 
@@ -313,7 +316,7 @@
             <h1>Khóa Học {{ $course->title ?? 'Khóa học' }}</h1>
             <p>Khởi động từ cơ bản, đi sâu kiến thức và vận dụng. Sẵn sàng - Bắt đầu!</p>
             <div>
-                <a href="#" class="btn btn-primary">Các khóa học miễn phí</a>
+                <a href="{{ url('/#free-courses') }}" class="btn btn-primary">Các khóa học miễn phí</a>
                 <button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
                     data-bs-target="#buyNowModal">
                     Mua ngay

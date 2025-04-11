@@ -44,6 +44,7 @@ Route::middleware(['check.admin'])->group(function () {
     //khóa học
     Route::prefix('admin/course')->name('admin.course.')->group(function () {
         Route::get('/', [CourseController::class, 'index'])->name('index');
+        Route::get('/free', [CourseController::class, 'freeCourses'])->name('free');
         Route::get('/create', [CourseController::class, 'create'])->name('create');
         Route::post('/store', [CourseController::class, 'store'])->name('store');
 
@@ -51,6 +52,7 @@ Route::middleware(['check.admin'])->group(function () {
         Route::put('/update/{id}', [CourseController::class, 'update'])->name('update');
         Route::delete('/delete/{id}', [CourseController::class, 'delete'])->name('delete');
     });
+   
 
     //chương bài học
     Route::prefix('admin/sections')->name('admin.sections.')->group(function () {
@@ -254,9 +256,10 @@ Route::middleware(['check.teacher'])->group(function () {
         Route::post('/delete/{id}', [CategoryController::class, 'destroyTeacher'])->name('delete');
     });
 
-    //khóa học
+    //khoa hoc
     Route::prefix('teacher/course')->name('teacher.course.')->group(function () {
         Route::get('/', [CourseController::class, 'indexTeacher'])->name('index');
+        Route::get('/free', [CourseController::class, 'freeCoursesTeacher'])->name('free');
         Route::get('/create', [CourseController::class, 'createTeacher'])->name('create');
         Route::post('/store', [CourseController::class, 'storeTeacher'])->name('store');
 
@@ -326,8 +329,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/{id}/like', [CommentController::class, 'like'])->name('comments.like');
     Route::post('/comments/reply', [CommentController::class, 'reply'])->name('comments.reply');
 });
-
-
 
 Route::get('/courses/{course}', [CourseController::class, 'detail'])->name('courses.detail');
 

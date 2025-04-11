@@ -44,6 +44,9 @@
                     class="img-thumbnail" style="max-height: 100px; {{ $course->thumbnail ? '' : 'display: none;' }}">
             </div>
 
+            <!-- Lưu giá gốc trong input ẩn -->
+            <input type="hidden" id="original_price" value="{{ $course->is_free ? $course->original_price ?? '' : '' }}">
+
             <div class="form-check mt-2">
                 <input type="checkbox" id="is_free" class="form-check-input" onchange="togglePriceField()"
                     {{ old('price', $course->price) == 0 ? 'checked' : '' }}>
@@ -100,12 +103,22 @@
         function togglePriceField() {
             const isFree = document.getElementById('is_free').checked;
             const priceInput = document.getElementById('price');
+            const originalPriceInput = document.getElementById('original_price');
 
             if (isFree) {
+                // Nếu chưa lưu giá gốc và giá hiện tại > 0, thì lưu lại
+                if (!originalPriceInput.value && priceInput.value > 0) {
+                    originalPriceInput.value = priceInput.value;
+                }
                 priceInput.value = 0;
                 priceInput.readOnly = true;
             } else {
-                if (priceInput.value == 0) priceInput.value = '';
+                // Khôi phục giá gốc nếu có
+                if (originalPriceInput.value) {
+                    priceInput.value = originalPriceInput.value;
+                } else if (priceInput.value == 0) {
+                    priceInput.value = '';
+                }
                 priceInput.readOnly = false;
             }
         }

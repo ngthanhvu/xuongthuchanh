@@ -102,6 +102,52 @@
             </div>
         </div>
     </div>
+
+    <div class="container" id="free-courses">
+        <div class="course-section">
+            <h2>Khóa học Miễn Phí</h2>
+            <div class="row">
+                @foreach ($freeCourses as $course)
+                    <div class="col-md-3 mb-4">
+                        @php
+                            $isEnrolled = isset($enrollmentStatus[$course->id]) && $enrollmentStatus[$course->id];
+                            $link = $links[$course->id] ?? route('detail', $course->id);
+                            $buttonText = $isEnrolled ? 'Học ngay' : 'Đăng ký';
+                        @endphp
+
+                        <div class="card course-card">
+                            <a href="{{ $link }}" class="text-decoration-none">
+                                <div class="card-header html-css">
+                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" class="img-fluid"
+                                        alt="{{ $course->title }}" style="width: 460px; height: 200px;">
+                                    <span class="badge">Miễn Phí</span>
+                                </div>
+                            </a>
+                            <div class="card-body">
+                                <div class="title">
+                                    <h3 class="fs-5 ellipsis">{{ $course->title }}</h3>
+                                </div>
+                                <div class="meta d-flex justify-content-between">
+                                    <span class="new-pricex fw-bold">Miễn phí</span>
+                                </div>
+                                <div class="meta d-flex justify-content-between">
+                                    <span><i class="fas fa-user"></i> {{ $course->user->username }}</span>
+                                    <span><i class="fas fa-book"></i> Null </span>
+                                    <span><i class="fas fa-clock"></i> {{ $course->created_at->format('d/m/Y') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+                @if (count($freeCourses) == 0)
+                    <div class="col-md-12">
+                        <p class="text-center">Không có khóa học miễn phí nào</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <div class="container mt-5">
         <div class="course-section">
             <h2>Bài viết Mới <span class="badge bg-primary">Mới</span></h2>

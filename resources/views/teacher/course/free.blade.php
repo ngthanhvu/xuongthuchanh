@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.teacher')
 
 @section('content')
     @if (session('success'))
@@ -23,14 +23,14 @@
     <!-- Header -->
     <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
         <div>
-            <h3 class="tw-text-2xl tw-font-bold">Quản lý khoá học</h3>
-            <p class="tw-text-gray-500 tw-mt-1">Danh sách các khoá học đang có!</p>
+            <h3 class="tw-text-2xl tw-font-bold">{{ $title }}</h3>
+            <p class="tw-text-gray-500 tw-mt-1">Danh sách các khoá học miễn phí!</p>
         </div>
         <div>
-            <a href="{{ route('admin.course.free') }}" class="btn btn-outline-secondary me-2">
-                <i class="fa-solid fa-list tw-mr-1"></i> Khóa học miễn phí
+            <a href="{{ route('teacher.course.index') }}" class="btn btn-outline-secondary me-2">
+                <i class="fa-solid fa-list tw-mr-1"></i> Tất cả khóa học
             </a>
-            <a href="{{ route('admin.course.create') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('teacher.course.create') }}" class="btn btn-outline-secondary">
                 <i class="fa-solid fa-plus tw-mr-1"></i> Tạo khoá học mới
             </a>
         </div>
@@ -46,6 +46,8 @@
                     <th class="tw-py-3">Danh mục</th>
                     <th class="tw-py-3">Thumbnail</th>
                     <th class="tw-py-3">Giá</th>
+                    <th class="tw-py-3">Người tạo</th>
+                    <th class="tw-py-3">Ngày tạo</th>
                     <th class="tw-py-3">Thao tác</th>
                 </tr>
             </thead>
@@ -70,8 +72,10 @@
                                 <span>{{ number_format($course->price, 0) }}đ</span>
                             @endif
                         </td>
+                        <td class="text-center">{{ $course->user->username ?? 'N/A' }}</td>
+                        <td class="text-center">{{ $course->created_at->format('d/m/Y') }}</td>
                         <td class="text-center">
-                            <a href="{{ route('admin.course.edit', $course->id) }}"
+                            <a href="{{ route('teacher.course.edit', $course->id) }}"
                                 class="btn btn-sm btn-outline-primary tw-me-1">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
@@ -88,7 +92,7 @@
                 @endforeach
                 @if ($courses->isEmpty())
                     <tr>
-                        <td colspan="6" class="text-center py-3">Không có dữ liệu</td>
+                        <td colspan="7" class="text-center py-3">Không có khóa học miễn phí</td>
                     </tr>
                 @endif
             </tbody>

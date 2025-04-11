@@ -43,13 +43,18 @@
             </div>
 
             <div class="form-group mt-3">
+                <input type="checkbox" id="is_free" name="is_free" onchange="togglePriceField()"
+                    {{ old('price') == 0 ? 'checked' : '' }}>
+                <label for="is_free">Miễn phí</label>
+            </div> 
+
+            <div class="form-group mt-3">
                 <label for="price">Giá</label>
                 <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
-                <small class="form-text text-muted">Nhập giá 0 nếu muốn giá học miễn phí</small>
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
-            </div>
+            </div>           
 
             <div class="form-group mt-3">
                 <label for="categories_id">Danh mục</label>
@@ -67,7 +72,7 @@
                 <button type="submit" class="btn btn-primary ">Thêm ngay</button>
                 <a href="{{ route('teacher.course.index') }}" class="btn btn-secondary ">Hủy</a>
             </div>
-   
+
         </form>
     </div>
 
@@ -90,14 +95,16 @@
         function togglePriceField() {
             var isFree = document.getElementById('is_free').checked;
             var priceField = document.getElementById('price');
-            
+
             if (isFree) {
                 priceField.value = 0;
                 priceField.readOnly = true;
             } else {
+                priceField.value = '';
                 priceField.readOnly = false;
             }
         }
+
 
         // Remove this event listener too
         document.addEventListener('DOMContentLoaded', function() {

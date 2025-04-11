@@ -132,6 +132,7 @@
                 </a>
                 <div class="submenu">
                     <a href="{{ $prefix }}/course"><i class="fas fa-list tw-mr-2"></i> Quản lý khoá học</a>
+                    <a href="{{ $prefix }}/course/free"><i class="fas fa-certificate tw-mr-2"></i> Quản lý khoá học miễn phí</a>
                     <a href="{{ $prefix }}/sections"><i class="fas fa-plus tw-mr-2"></i> Quản lý chương học</a>
                     <a href="{{ $prefix }}/lessons"><i class="fas fa-folder tw-mr-2"></i> Quản lý bài học</a>
                 </div>
