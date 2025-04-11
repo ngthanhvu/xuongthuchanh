@@ -540,7 +540,7 @@ class PaymentController extends Controller
                         );
                     }
 
-                    return redirect()->route('payment.result', [
+                    return redirect()->route('payment.success', [
                         'status' => 'success',
                         'course_id' => $payment->course_id
                     ]);
@@ -548,7 +548,7 @@ class PaymentController extends Controller
             }
         }
 
-        return redirect()->route('payment.result', [
+        return redirect()->route('payment.failure', [
             'status' => 'failed',
             'message' => $request->message ?? 'Thanh toán thất bại',
             'code' => $resultCode
