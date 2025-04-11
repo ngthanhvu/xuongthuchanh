@@ -253,6 +253,8 @@ Route::resource('reviews', ReviewController::class)->middleware('auth');
 Route::post('/reviews/{review}/reply', [ReviewController::class, 'reply'])
     ->name('reviews.reply')
     ->middleware('check.admin');
+Route::resource('reviews', ReviewController::class)->middleware('auth');
+
 
 //teacher
 Route::middleware(['check.teacher'])->group(function () {

@@ -175,7 +175,20 @@
                                             @endfor
                                     </div>
                                 </div>
-                                <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                <div>
+                                    <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                                    @auth
+                                    @if(auth()->user()->role == 'admin'|| auth()->user()->role == 'teacher' || auth()->user()->role == 'owner' ||  auth()->user()->id === $review->user_id)
+                                    <form action="{{ route('reviews.destroy', $review->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-2" onclick="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                    @endif
+                                    @endauth
+                                </div>
                             </div>
 
                             @if($review->content)
@@ -200,7 +213,7 @@
                                 Review ID: {{ $review->id }}<br>
                                 Has Reply: {{ $review->admin_reply ? 'Yes' : 'No' }}
                             </div>
-                            @if(auth()->user()->role === 'admin' && !$review->admin_reply)
+                            @if(auth()->user()->role === 'admin' || auth()->user()->role === 'teacher' || auth()->user()->role === 'owner' && !$review->admin_reply)
                             <button class="btn btn-sm btn-outline-primary mt-2 toggle-reply" data-review-id="{{ $review->id }}">
                                 <i class="fas fa-reply"></i> Phản hồi
                             </button>
@@ -366,6 +379,7 @@
     .progress {
         background-color: #e9ecef;
     }
+    
 </style>
 
 

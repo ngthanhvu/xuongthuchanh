@@ -90,7 +90,12 @@ class ReviewController extends Controller
 
     public function destroy(Review $review)
     {
+        // Kiểm tra quyền: chỉ admin hoặc chủ sở hữu đánh giá mới được xóa
+        if (auth()->user()->role ==! 'admin' || auth()->user()->role ==! 'owner' || auth()->user()->role ==! 'teacher' && auth()->user()->id !== $review->user_id) {
+            return back()->with('error', 'Bạn không có quyền thực hiện hành động này.');
+        }
+
         $review->delete();
-        return redirect()->route('reviews.index')->with('success', 'Review deleted successfully.');
+        return back()->with('success', 'Đánh giá đã được xóa thành công.');
     }
 }
