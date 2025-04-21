@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('teacher_request_status')->nullable();
             $table->string('qualifications')->nullable();
             $table->text('teacher_request_message')->nullable();
+            $table->string('certificate_images')->nullable();
         });
     }
 

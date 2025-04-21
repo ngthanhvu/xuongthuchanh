@@ -48,7 +48,7 @@
 </ul>
 
 <div class="tab-content" id="userTabsContent">
-    
+
     <div class="tab-pane fade show active" id="all-users" role="tabpanel">
         <div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-overflow-hidden">
             <table class="table table-bordered align-middle mb-0">
@@ -176,7 +176,7 @@
                         <th class="tw-py-3 tw-px-4">Email</th>
                         <th class="tw-py-3 tw-px-4">Trình độ</th>
                         <th class="tw-py-3 tw-px-4">Lý do</th>
-                        <th class="tw-py-3 tw-px-4">Bằng cấp</th> 
+                        <th class="tw-py-3 tw-px-4">Bằng cấp</th>
                         <th class="tw-py-3 tw-px-4">Trạng thái</th>
                         <th class="tw-py-3 tw-px-4 tw-text-center">Thao tác</th>
                     </tr>
@@ -240,7 +240,7 @@
                         </td>
                         <td class="tw-px-4 tw-text-center">
                             @if($request->teacher_request_status === 'pending')
-                            
+
                             <form action="{{ route('admin.users.approve-teacher', $request->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('PUT')
@@ -248,7 +248,7 @@
                                     <i class="fas fa-check"></i> Duyệt
                                 </button>
                             </form>
-                            
+
                             <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ $request->id }}">
                                 <i class="fas fa-times"></i> Từ chối
                             </button>
@@ -306,7 +306,6 @@
 
 @push('scripts')
 <script>
-    
     document.addEventListener('DOMContentLoaded', function() {
         var tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
         tabEls.forEach(function(tabEl) {

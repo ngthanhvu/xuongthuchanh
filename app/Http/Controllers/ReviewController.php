@@ -89,7 +89,7 @@ class ReviewController extends Controller
 
     public function destroy(Review $review)
     {
-        if (auth()->user()->role ==! 'admin' && auth()->user()->id !== $review->user_id) {
+        if (auth()->user()->role ==! 'admin' || auth()->user()->role ==! 'teacher' || auth()->user()->role ==! 'owner' && auth()->user()->id !== $review->user_id) {
             return back()->with('error', 'Bạn không có quyền thực hiện hành động này.');
         }
 
