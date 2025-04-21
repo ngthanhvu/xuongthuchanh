@@ -131,35 +131,6 @@
                         </div> -->
                     </div>
 
-                    @auth
-                    @if(!$reviews->where('user_id', auth()->id())->first())
-                    <div class="review-form mb-4">
-                        <h6>Đánh giá của bạn</h6>
-                        <form method="POST" action="{{ route('reviews.store') }}" id="reviewForm">
-                            @csrf
-                            <input type="hidden" name="course_id" value="{{ $course->id }}">
-
-                            <div class="form-group mb-3">
-                                <div class="star-rating">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <i class="far fa-star" data-rating="{{ $i }}"></i>
-                                        @endfor
-                                        <input type="hidden" name="rating" id="ratingValue" value="5" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <textarea name="content" class="form-control" rows="3"
-                                    placeholder="Chia sẻ trải nghiệm của bạn về khóa học này..."></textarea>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
-                        </form>
-                    </div>
-                    @endif
-                    @else
-                    <p><a href="{{ route('login') }}" class="btn btn-outline-primary">Đăng nhập</a> để đánh giá khóa học</p>
-                    @endauth
 
                     <div class="reviews-list">
                         <h6>Đánh giá từ học viên</h6>
@@ -204,8 +175,7 @@
                                 <p class="mb-0">{{ $review->admin_reply }}</p>
                             </div>
                             @endif
-
-                            
+    
                             @auth
                             <div style="display: none;">
                                 User Role: {{ auth()->user()->role }}<br>
