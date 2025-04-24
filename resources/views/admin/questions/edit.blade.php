@@ -20,6 +20,7 @@
                 <input type="text" name="question_text" class="form-control" value="{{ $question->question_text }}" required>
             </div>
             <button type="submit" class="btn btn-primary">Cập nhật</button>
+            <a href="{{ route('admin.questions.index') }}" class="btn btn-secondary">Thoát</a>
         </form>
     </div>
 @endsection

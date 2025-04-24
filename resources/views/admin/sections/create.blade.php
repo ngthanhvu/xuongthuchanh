@@ -4,26 +4,20 @@
 <div class="container">
     <h1>{{ $title }}</h1>
     
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
     <form action="{{ route('admin.sections.store') }}" method="POST">
         @csrf
         
         <div class="form-group mb-3">
             <label for="course_id">Khóa học</label>
-            <select name="course_id" id="course_id" class="form-control" required>
+            <select name="course_id" id="course_id" class="form-control" placeholder="Chọn khóa học">
                 <option value="">Chọn khóa học</option>
                 @foreach ($courses as $course)
                     <option value="{{ $course->id }}">{{ $course->title }}</option>
                 @endforeach
+                @error('course_id')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
             </select>
         </div>
 
@@ -34,7 +28,10 @@
                    id="title" 
                    class="form-control" 
                    value="{{ old('title') }}"
-                   required>
+                   placeholder="Nhập tiêu đề">
+            @error('title')
+                <span class="text-danger">{{ $message }}</span>
+            @enderror
         </div>
 
         <div class="form-group">

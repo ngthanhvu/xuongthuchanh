@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container">
+    <div class="">
         <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
             <div>
                 <h3 class="tw-text-2xl tw-font-bold">Quản lý câu hỏi</h3>
@@ -67,10 +67,10 @@
                         </tr>
                     @endforeach
                     @if ($questions->isEmpty())
-                    <tr>
-                        <td colspan="4" class="text-center">Không có dữ liệu</td>
-                    </tr>
-                @endif
+                        <tr>
+                            <td colspan="4" class="text-center">Không có dữ liệu</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>

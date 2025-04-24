@@ -22,7 +22,7 @@
 
             <div class="form-group mt-3">
                 <label for="description">Mô tả</label>
-                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+                <textarea id="description" name="description" class="form-control" placeholder="Nhập mô tả">{{ old('description') }}</textarea>
                 @error('description')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
@@ -43,12 +43,18 @@
             </div>
 
             <div class="form-group mt-3">
+                <input type="checkbox" id="is_free" name="is_free" onchange="togglePriceField()"
+                    {{ old('price') == 0 ? 'checked' : '' }}>
+                <label for="is_free">Miễn phí</label>
+            </div> 
+
+            <div class="form-group mt-3">
                 <label for="price">Giá</label>
-                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}">
+                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" placeholder="Nhập giá">
                 @error('price')
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
-            </div>
+            </div>           
 
             <div class="form-group mt-3">
                 <label for="categories_id">Danh mục</label>
@@ -62,11 +68,11 @@
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
             </div>
-
             <div class="form-group mt-3">
-                <button type="submit" class="btn btn-primary w-100">Thêm ngay</button>
-                <a href="{{ route('admin.course.index') }}" class="btn btn-secondary w-100 mt-2">Hủy</a>
+                <button type="submit" class="btn btn-primary ">Thêm ngay</button>
+                <a href="{{ route('admin.course.index') }}" class="btn btn-secondary ">Hủy</a>
             </div>
+
         </form>
     </div>
 
@@ -85,5 +91,24 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        function togglePriceField() {
+            var isFree = document.getElementById('is_free').checked;
+            var priceField = document.getElementById('price');
+
+            if (isFree) {
+                priceField.value = 0;
+                priceField.readOnly = true;
+            } else {
+                priceField.value = '';
+                priceField.readOnly = false;
+            }
+        }
+
+
+        // Remove this event listener too
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePriceField();
+        });
     </script>
 @endsection

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Thêm câu trả lời</h1>
+    <h1>{{ $title }}</h1>
     <form action="{{ route('admin.answers.store') }}" method="POST">
         @csrf
         <div class="mb-3">
@@ -16,7 +16,7 @@
         
         <div class="mb-3">
             <label for="answer_text" class="form-label">Câu trả lời</label>
-            <input type="text" name="answer_text" id="answer_text" class="form-control" required>
+            <input type="text" name="answer_text" id="answer_text" class="form-control" placeholder="Nhập câu trả lời">
         </div>
 
         <div class="mb-3">
@@ -27,7 +27,7 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success">Thêm</button>
+        <button type="submit" class="btn btn-primary">Thêm câu hỏi</button>
         <a href="{{ route('admin.answers.index') }}" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>

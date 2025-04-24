@@ -1,0 +1,537 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+.footer {
+    background-color: #1a1a1a;
+    padding: 40px 20px;
+    border-top: 1px solid #333;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.footer-column {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+}
+
+.footer-column h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.footer-column p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ccc;
+    margin-bottom: 8px;
+}
+
+.footer-column .logo {
+    color: #ff6200;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.dmca img {
+    margin-top: 10px;
+    width: 100px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 20px auto 0;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+}
+
+.copyright {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.social-icons img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-column {
+        margin-bottom: 30px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.header {
+    background-color: #fff;
+    padding: 5px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.logo span {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-left: 10px;
+    color: #333;
+}
+
+.navbar-nav .nav-link {
+    color: #333;
+    font-weight: 500;
+    padding: 10px 15px;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ff6200;
+}
+
+.navbar-nav .nav-link.active {
+    color: #ff6200;
+    font-weight: bold;
+}
+
+.btn-login {
+    background-color: #ff6200;
+    border-color: #ff6200;
+}
+
+.btn-login:hover {
+    background-color: #e55a00;
+    border-color: #e55a00;
+}
+
+@media (max-width: 991px) {
+    .btn-login {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* CSS cho avatar và dropdown */
+.avatar-container {
+    position: relative;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    padding: 10px;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f0f2f5;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-info .user-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.user-info .user-handle {
+    color: #606770;
+    font-size: 14px;
+}
+
+/* CSS cho dropdown của "Khoá học của tôi" */
+.courses-dropdown {
+    width: 300px;
+    padding: 15px;
+}
+
+.courses-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.courses-header h6 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.courses-header a {
+    color: #ff6200;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.course-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.course-item:last-child {
+    border-bottom: none;
+}
+
+.course-item img {
+    width: 60px;
+    height: 40px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.course-info h6 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.course-info p {
+    margin: 0;
+    font-size: 12px;
+    color: #606770;
+}
+
+.new-pricex {
+    color: #ff6200;
+    font-size: 18px;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.btn-outline-custom {
+    border-color: #ff6200;
+    /* Viền màu cam */
+    color: #ff6200;
+    /* Màu chữ/biểu tượng */
+}
+
+.btn-outline-custom:hover {
+    background-color: #ff6200;
+    /* Nền màu cam khi hover */
+    color: white;
+    /* Chữ/biểu tượng trắng khi hover */
+}
+
+.search-container {
+    position: relative;
+    width: 300px;
+    /* Adjust width as needed */
+}
+
+.search-input {
+    border-radius: 20px;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 5px;
+}
+
+.search-results {
+    padding: 15px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.search-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.search-title {
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+}
+
+.search-title:hover {
+    color: #ff5316;
+}
+
+.view-more {
+    display: block;
+    text-align: center;
+    color: #ff5316;
+    font-size: 14px;
+    margin-top: 10px;
+    text-decoration: none;
+}
+
+.view-more:hover {
+    text-decoration: underline;
+}
+
+
+/* //chatbox */
+
+.chatbox {
+    position: fixed;
+    bottom: 140px;
+    right: 20px;
+    width: 550px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none;
+}
+
+.chatbox-header {
+    background: #ff5316;
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.chatbox-close {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.chatbox-body {
+    display: none;
+    flex-direction: column;
+    max-height: 700px;
+}
+
+.chatbox-messages {
+    padding: 10px;
+    height: 900px;
+    overflow-y: auto;
+    flex-grow: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.chatbox-messages .message {
+    margin-bottom: 10px;
+}
+
+.chatbox-messages .user-message {
+    text-align: right;
+    /* color: #ff5316; */
+}
+
+.chatbox-messages .bot-message {
+    text-align: left;
+    color: #333;
+}
+
+.chatbox-input {
+    display: flex;
+    padding: 10px;
+}
+
+.chatbox-input input {
+    flex-grow: 1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+.chatbox-input button {
+    background: #ff5316;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.chatbox-input button:hover {
+    background: #c24112;
+}
+
+.chatbox-toggle-btn {
+    position: fixed;
+    bottom: 80px;
+    right: 10px;
+    background: #ff5316;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.chatbox-messages {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background-color: #ff5316;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.bot-message {
+    background-color: #f1f1f1;
+    color: #333;
+    margin-right: auto;
+    white-space: pre-line;
+    /* Giữ định dạng xuống dòng */
+}
+
+.chatbox-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    max-width: 80%;
+}
+
+.user-message {
+    background-color: #007bff;
+    background-color: #ff5316;
+    color: white;
+    align-self: flex-end;
+}
+
+.bot-message {
+    background-color: #f1f1f1;
+    color: #333;
+    align-self: flex-start;
+}
+
+.option-buttons {
+    margin-top: 10px;
+}
+
+.option-button {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    background-color: #007bff;
+    background-color: #ff5316;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.option-button:hover {
+    background-color: #0056b3;
+}

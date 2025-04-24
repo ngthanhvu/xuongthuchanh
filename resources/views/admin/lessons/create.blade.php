@@ -4,7 +4,7 @@
 <div class="container">
     <h1>{{ $title }}</h1>
 
-    @if ($errors->any())
+    {{-- @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
                 @foreach ($errors->all() as $error)
@@ -12,7 +12,7 @@
                 @endforeach
             </ul>
         </div>
-    @endif
+    @endif --}}
 
     <form action="{{ route('admin.lessons.store') }}" method="POST">
         @csrf
@@ -20,7 +20,7 @@
         <!-- Section -->
         <div class="form-group mb-3">
             <label for="section_id">Section</label>
-            <select name="section_id" id="section_id" class="form-control" required>
+            <select name="section_id" id="section_id" class="form-control" >
                 <option value="">Chọn section</option>
                 @foreach ($sections as $section)
                     <option value="{{ $section->id }}">{{ $section->title }}</option>
@@ -38,8 +38,7 @@
                    name="title" 
                    id="title" 
                    class="form-control" 
-                   value="{{ old('title') }}"
-                   required>
+                   value="{{ old('title') }}" placeholder="Nhập tiêu đề">
             @error('title')
                 <span class="text-danger">{{ $message }}</span>
             @enderror
@@ -48,7 +47,7 @@
         <!-- Type -->
         <div class="form-group mb-3">
             <label for="type">Loại bài học</label>
-            <select name="type" id="type" class="form-control" required>
+            <select name="type" id="type" class="form-control" >
                 <option value="">Chọn loại</option>
                 <option value="video" {{ old('type') == 'video' ? 'selected' : '' }}>Video</option>
                 <option value="text" {{ old('type') == 'text' ? 'selected' : '' }}>Văn bản</option>
@@ -66,7 +65,7 @@
             <textarea name="content" 
                       id="content" 
                       class="form-control" 
-                      rows="5">{{ old('content') }}</textarea>
+                      rows="5" placeholder="Nhập nội dung">{{ old('content') }}</textarea>
             @error('content')
                 <span class="text-danger">{{ $message }}</span>
             @enderror

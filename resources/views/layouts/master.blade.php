@@ -22,266 +22,53 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
     <!-- sweetalert2 -->
+    
+    <!-- Start of LiveChat (www.livechat.com) code -->
+    <script>
+        window.__lc = window.__lc || {};
+        window.__lc.license = 19122437;
+        window.__lc.integration_name = "manual_onboarding";
+        window.__lc.product_name = "livechat";;
+        (function(n, t, c) {
+            function i(n) {
+                return e._h ? e._h.apply(null, n) : e._q.push(n)
+            }
+            var e = {
+                _q: [],
+                _h: null,
+                _v: "2.0",
+                on: function() {
+                    i(["on", c.call(arguments)])
+                },
+                once: function() {
+                    i(["once", c.call(arguments)])
+                },
+                off: function() {
+                    i(["off", c.call(arguments)])
+                },
+                get: function() {
+                    if (!e._h) throw new Error("[LiveChatWidget] You can't use getters before load.");
+                    return i(["get", c.call(arguments)])
+                },
+                call: function() {
+                    i(["call", c.call(arguments)])
+                },
+                init: function() {
+                    var n = t.createElement("script");
+                    n.async = !0, n.type = "text/javascript", n.src = "https://cdn.livechatinc.com/tracking.js",
+                        t.head.appendChild(n)
+                }
+            };
+            !n.__lc.asyncInit && e.init(), n.LiveChatWidget = n.LiveChatWidget || e
+        }(window, document, [].slice))
+    </script>
+    <noscript><a href="https://www.livechat.com/chat-with/19122437/" rel="nofollow">Chat with us</a>, powered by <a
+            href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a></noscript>
+    <!-- End of LiveChat code -->
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-
-
-        .footer {
-            background-color: #1a1a1a;
-            padding: 40px 20px;
-            border-top: 1px solid #333;
-        }
-
-        .footer-container {
-            display: flex;
-            justify-content: space-between;
-            max-width: 1200px;
-            margin: 0 auto;
-            flex-wrap: wrap;
-        }
-
-        .footer-column {
-            flex: 1;
-            min-width: 200px;
-            margin-bottom: 20px;
-        }
-
-        .footer-column h3 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-
-        .footer-column p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #ccc;
-            margin-bottom: 8px;
-        }
-
-        .footer-column .logo {
-            color: #ff6200;
-            font-weight: bold;
-            font-size: 24px;
-        }
-
-        .dmca img {
-            margin-top: 10px;
-            width: 100px;
-        }
-
-        .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 20px auto 0;
-            border-top: 1px solid #333;
-            padding-top: 20px;
-        }
-
-        .copyright {
-            font-size: 14px;
-            color: #ccc;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .social-icons img {
-            width: 24px;
-            height: 24px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .footer-container {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            .footer-column {
-                margin-bottom: 30px;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-
-        .header {
-            background-color: #fff;
-            padding: 5px 0;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .logo img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .logo span {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-left: 10px;
-            color: #333;
-        }
-
-        .navbar-nav .nav-link {
-            color: #333;
-            font-weight: 500;
-            padding: 10px 15px;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: #ff6200;
-        }
-
-        .navbar-nav .nav-link.active {
-            color: #ff6200;
-            font-weight: bold;
-        }
-
-        .btn-login {
-            background-color: #ff6200;
-            border-color: #ff6200;
-        }
-
-        .btn-login:hover {
-            background-color: #e55a00;
-            border-color: #e55a00;
-        }
-
-        @media (max-width: 991px) {
-            .btn-login {
-                margin-left: 0;
-                width: 100%;
-            }
-        }
-
-        /* CSS cho avatar và dropdown */
-        .avatar-container {
-            position: relative;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .dropdown-menu {
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 250px;
-            padding: 10px;
-        }
-
-        .dropdown-menu .dropdown-item {
-            padding: 10px 15px;
-            border-radius: 5px;
-        }
-
-        .dropdown-menu .dropdown-item:hover {
-            background-color: #f0f2f5;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .user-info img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .user-info .user-name {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .user-info .user-handle {
-            color: #606770;
-            font-size: 14px;
-        }
-
-        /* CSS cho dropdown của "Khoá học của tôi" */
-        .courses-dropdown {
-            width: 300px;
-            padding: 15px;
-        }
-
-        .courses-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .courses-header h6 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .courses-header a {
-            color: #ff6200;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .course-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .course-item:last-child {
-            border-bottom: none;
-        }
-
-        .course-item img {
-            width: 60px;
-            height: 40px;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-
-        .course-info h6 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .course-info p {
-            margin: 0;
-            font-size: 12px;
-            color: #606770;
-        }
-
-        .new-pricex {
-            color: #ff6200;
-            font-size: 18px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/master.css') }}" class="">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -301,72 +88,118 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Trang chủ</a>
+                            <a class="nav-link active" href="/">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Lộ trình</a>
+                            <a class="nav-link" href="/khoa-hoc">Khóa Học</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Bài viết</a>
+                            <a class="nav-link" href="/lo-trinh">Lộ trình</a>
                         </li>
-                        @if (Auth::check() && Auth::user()->role === 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="/post">Bài viết</a>
+                        </li>
+                        @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'owner'))
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('/admin') }}">Admin</a>
                             </li>
                         @endif
+
+                        @if (Auth::check() && Auth::user()->role === 'teacher')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/teacher') }}">Teacher</a>
+                            </li>
+                        @endif
                     </ul>
+
+                    <div class="d-flex me-3 position-relative">
+                        <div class="search-container">
+                            <input type="text" class="form-control search-input" placeholder="Tìm kiếm..."
+                                id="searchInput" autocomplete="off">
+                            <div class="search-results-dropdown" id="searchResults" style="display: none;">
+                                <div class="search-results">
+                                    <h6 class="section-title">KHÓA HỌC</h6>
+                                    <ul class="list-unstyled" id="courses-list"></ul>
+                                    <a href="#" class="view-more" id="courses-view-more"
+                                        style="display: none;">Xem thêm</a>
+
+                                    <h6 class="section-title mt-4">BÀI VIẾT</h6>
+                                    <ul class="list-unstyled" id="posts-list"></ul>
+                                    <a href="#" class="view-more" id="posts-view-more" style="display: none;">Xem
+                                        thêm</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
 
                     <div class="d-flex align-items-center">
                         @if (Auth::check())
-                        <div class="me-3 d-flex">
-                            <div class="dropdown">
-                                @if (isset($enrollments) && $enrollments->where('user_id', Auth::id())->isNotEmpty())
-                                    <button class="border-0 dropdown-toggle" style="padding: 5px 10px; background-color: #FFFFFF;" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Khoá học của tôi
+                            <div class="me-3 d-flex">
+                                <div class="dropdown">
+                                    @if (isset($enrollments) && $enrollments->where('user_id', Auth::id())->isNotEmpty())
+                                        <button class="border-0 dropdown-toggle"
+                                            style="padding: 5px 10px; background-color: #FFFFFF;"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            Khoá học của tôi
+                                        </button>
+                                        <ul class="dropdown-menu courses-dropdown dropdown-menu-end">
+                                            <li class="courses-header">
+                                                <h6>Khoá học của tui</h6>
+                                                <a href="{{ route('profile.youcourse') }}">Xem tất cả</a>
+                                            </li>
+                                            @foreach ($enrollments->where('user_id', Auth::id()) as $enrollment)
+                                                @php
+                                                    $course = $courses->firstWhere('id', $enrollment->course_id);
+                                                @endphp
+                                                @if ($course)
+                                                    <li class="course-item">
+                                                        <img src="{{ asset('storage/' . $course->thumbnail) }}"
+                                                            alt="Course thumbnail">
+                                                        <div class="course-info">
+                                                            <h6>{{ $course->title }}</h6>
+                                                            <p>Tiến độ
+                                                            <div class="progress" style="width: 100%;">
+                                                                <div class="progress-bar" role="progressbar"
+                                                                    style="width: {{ $courseProgress[$course->id] }}%;"
+                                                                    aria-valuenow="{{ $courseProgress[$course->id] }}"
+                                                                    aria-valuemin="0" aria-valuemax="100">
+                                                                    {{ $courseProgress[$course->id] }}%
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <a href="{{ $links[$course->id] }}">Bắt đầu học</a>
+                                                            </p>
+                                                        </div>
+                                                    </li>
+                                                @endif
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+
+                                <div>
+                                    <button class="border-0" style="padding: 5px 10px; background-color: #FFFFFF;">
+                                        <i class="fa-solid fa-bell"></i>
                                     </button>
-                                    <ul class="dropdown-menu courses-dropdown dropdown-menu-end">
-                                        <li class="courses-header">
-                                            <h6>Khoá học của tui</h6>
-                                            <a href="#">Xem tất cả</a>
-                                        </li>
-                                        @foreach ($enrollments->where('user_id', Auth::id()) as $enrollment)
-                                            @php
-                                                $course = $courses->firstWhere('id', $enrollment->course_id);
-                                            @endphp
-                                            @if ($course)
-                                                <li class="course-item">
-                                                    <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="Course thumbnail">
-                                                    <div class="course-info">
-                                                        <h6>{{ $course->title }}</h6>
-                                                        <p>Tiến độ <br><a href="{{ route('lessons', ['id' => $course->id]) }}">Bắt đầu học</a></p>
-                                                    </div>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                @endif
+                                </div>
                             </div>
-                            <div>
-                                <button class="border-0" style="padding: 5px 10px; background-color: #FFFFFF;">
-                                    <i class="fa-solid fa-bell"></i>
-                                </button>
-                            </div>
-                        </div>
-                            
+
                             <div class="avatar-container">
                                 <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
                                     class="avatar" alt="Avatar" data-bs-toggle="dropdown" aria-expanded="false">
-                                <ul class="dropdown-menu dropdown-menu-end">
+                                <ul class="dropdown-menu dropdown-menu-end ">
                                     <li class="user-info">
                                         <img src="@if (Auth::user()->avatar) {{ asset(Auth::user()->avatar) }} @else https://www.gravatar.com/avatar/dfb7d7bb286d54795ab66227e90ff048.jpg?s=80&d=mp&r=g @endif"
                                             alt="User Avatar">
                                         <div>
-                                            <div class="user-name">{{ Auth::user()->username }}</div>
-                                            <div class="user-handle">{{ Auth::user()->username }}</div>
+
+                                            <div class="user-name ellipsis">{{ Auth::user()->username }}</div>
+                                            <div class="user-handle ellipsis">{{ Auth::user()->username }}</div>
                                         </div>
                                     </li>
                                     <li><a class="dropdown-item" href="{{ url('/profile') }}">Trang cá nhân</a></li>
-                                    <li><a class="dropdown-item" href="#">Viết blog</a></li>
+                                    <li><a class="dropdown-item" href="{{url('/khoa-hoc/yeu-thich')}}">Khóa học đã thích</a></li>
                                     <li><a class="dropdown-item" href="#">Bài viết của tui</a></li>
                                     <li><a class="dropdown-item" href="#">Cài đặt</a></li>
                                     <li>
@@ -392,6 +225,24 @@
     </header>
     <div class="container-fluid mt-3" style="min-height: calc(100vh - 100px);">
         @yield('content')
+    </div>
+
+    <!-- Nút mở chatbox -->
+    <button class="chatbox-toggle-btn" id="chatboxToggleBtn"><i class="fas fa-comment"></i></button>
+
+    <!-- Chatbox -->
+    <div class="chatbox" id="chatbox">
+        <div class="chatbox-header" id="chatboxToggle">
+            <span>Chat với F8 Bot</span>
+            <button class="chatbox-close" id="chatboxClose">×</button>
+        </div>
+        <div class="chatbox-body" id="chatboxBody">
+            <div class="chatbox-messages" id="chatboxMessages"></div>
+            <div class="chatbox-input">
+                <input type="text" id="chatboxInput" placeholder="Nhập câu hỏi của bạn...">
+                <button id="chatboxSend"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
     </div>
 
     <footer class="footer">
@@ -464,6 +315,173 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const coursesList = document.getElementById('courses-list');
+        const postsList = document.getElementById('posts-list');
+        const coursesViewMore = document.getElementById('courses-view-more');
+        const postsViewMore = document.getElementById('posts-view-more');
+
+        searchInput.addEventListener('input', function(e) {
+            const query = e.target.value.trim();
+            if (query.length === 0) {
+                coursesList.innerHTML = '';
+                postsList.innerHTML = '';
+                coursesViewMore.style.display = 'none';
+                postsViewMore.style.display = 'none';
+                searchResults.style.display = 'none';
+                return;
+            }
+            fetch(`/search?query=${encodeURIComponent(query)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    searchResults.style.display = 'block';
+                    coursesList.innerHTML = '';
+                    if (data.courses && data.courses.length > 0) {
+                        data.courses.forEach(course => {
+                            const li = document.createElement('li');
+                            li.className = 'search-item';
+                            li.innerHTML = `
+                                <img src="${course.thumbnail ? `/storage/${course.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Course Icon" class="me-2">
+                                <div>
+                                    <a href="${course.url}" class="search-title">${course.title}</a>
+                                </div>
+                            `;
+                            coursesList.appendChild(li);
+                        });
+                        coursesViewMore.style.display = 'block';
+                        coursesViewMore.href = `/courses?search=${query}`;
+                    } else {
+                        coursesList.innerHTML = '<li class="text-muted">Không tìm thấy khóa học nào.</li>';
+                        coursesViewMore.style.display = 'none';
+                    }
+                    postsList.innerHTML = '';
+                    if (data.posts && data.posts.length > 0) {
+                        data.posts.forEach(post => {
+                            const li = document.createElement('li');
+                            li.className = 'search-item';
+                            li.innerHTML = `
+                                <img src="${post.thumbnail ? `/storage/${post.thumbnail}` : 'https://via.placeholder.com/40'}" alt="Post Icon" class="me-2">
+                                <div>
+                                    <a href="/post/${post.id}" class="search-title">${post.title}</a>
+                                </div>
+                            `;
+                            postsList.appendChild(li);
+                        });
+                        postsViewMore.style.display = 'block';
+                        postsViewMore.href = `/posts?search=${query}`;
+                    } else {
+                        postsList.innerHTML = '<li class="text-muted">Không tìm thấy bài viết nào.</li>';
+                        postsViewMore.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching search results:', error);
+                    coursesList.innerHTML = '<li class="text-danger">Đã có lỗi xảy ra.</li>';
+                    postsList.innerHTML = '<li class="text-danger">Đã có lỗi xảy ra.</li>';
+                    searchResults.style.display = 'block';
+                });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        searchInput.addEventListener('focus', function() {
+            if (searchInput.value.trim().length > 0) {
+                searchResults.style.display = 'block';
+            }
+        });
+
+        // Script chatbox
+        const chatbox = document.getElementById('chatbox');
+        const chatboxToggle = document.getElementById('chatboxToggle');
+        const chatboxToggleBtn = document.getElementById('chatboxToggleBtn');
+        const chatboxClose = document.getElementById('chatboxClose');
+        const chatboxBody = document.getElementById('chatboxBody');
+        const chatboxMessages = document.getElementById('chatboxMessages');
+        const chatboxInput = document.getElementById('chatboxInput');
+        const chatboxSend = document.getElementById('chatboxSend');
+
+        // Mở/đóng chatbox
+        chatboxToggleBtn.addEventListener('click', () => {
+            chatbox.style.display = 'block';
+            chatboxToggleBtn.style.display = 'none';
+            chatboxBody.style.display = 'flex';
+        });
+
+        chatboxToggle.addEventListener('click', () => {
+            chatboxBody.style.display = chatboxBody.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        chatboxClose.addEventListener('click', () => {
+            chatbox.style.display = 'none';
+            chatboxToggleBtn.style.display = 'block';
+        });
+
+        // Gửi tin nhắn và gọi Gemini API
+        chatboxSend.addEventListener('click', sendMessage);
+        chatboxInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function sendMessage() {
+            const message = chatboxInput.value.trim();
+            if (!message) return;
+
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user-message';
+            userMessage.textContent = message;
+            chatboxMessages.appendChild(userMessage);
+            chatboxInput.value = '';
+
+            chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+
+            console.log('Sending message:', message);
+            fetch('/chat-with-gemini', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot-message';
+                    botMessage.innerHTML = data.reply.replace(/\n/g, '<br>');
+                    chatboxMessages.appendChild(botMessage);
+                    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'message bot-message';
+                    botMessage.textContent = 'Có lỗi xảy ra, vui lòng thử lại!';
+                    chatboxMessages.appendChild(botMessage);
+                    chatboxMessages.scrollTop = chatboxMessages.scrollHeight;
+                });
+        }
+    </script>
 </body>
 
 </html>

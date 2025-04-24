@@ -49,10 +49,10 @@
                 @foreach ($lessons as $lesson)
                     <tr>
                         <td class="text-center">{{ $index++ }}</td>
-                        <td>{{ $lesson->title }}</td>
-                        <td>{{ $section->find($lesson->section_id)->title ?? 'Không xác định' }}</td>
-                        <td>{{ ucfirst($lesson->type) }}</td>
-                        <td>
+                        <td class="text-center">{{ $lesson->title }}</td>
+                        <td class="text-center">{{ $section->find($lesson->section_id)->title ?? 'Không xác định' }}</td>
+                        <td class="text-center">{{ ucfirst($lesson->type) }}</td>
+                        <td class="text-center">
                             @if ($lesson->type === 'video' && $lesson->file_url)
                                 @php
                                     $videoId = '';

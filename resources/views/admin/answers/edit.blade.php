@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1>Chỉnh sửa câu trả lời</h1>
+    <h1>{{ $title }}</h1>
     <form action="{{ route('admin.answers.update', $answer->id) }}" method="POST">
         @csrf
         @method('PUT')
@@ -31,7 +31,7 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success">Cập nhật</button>
+        <button type="submit" class="btn btn-primary">Cập nhật</button>
         <a href="{{ route('admin.answers.index') }}" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>

@@ -71,8 +71,11 @@
                     <a class="nav-link" href="{{ route('profile') }}">Thông tin</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Các khóa học</a>
+                    <a class="nav-link" href="{{ route('profile.youcourse') }}">Các khóa học</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('userPayment') }}">Hóa đơn</a>
+                    </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="{{ route('profile.changePassword') }}">Đổi mật khẩu</a>
                 </li>

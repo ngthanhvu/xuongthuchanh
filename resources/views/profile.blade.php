@@ -1,6 +1,6 @@
 @extends('layouts.master')
-
 @section('content')
+
     <style>
         .sidebar {
             background-color: #fff;
@@ -62,23 +62,28 @@
             border-color: #e55a00;
         }
     </style>
+    
     <div class="container mt-3">
         <div class="row">
             <!-- Cột bên trái: Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Thông tin</a>
+                        <a class="nav-link active" href="{{ route('profile') }}">Thông tin</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Các khóa học</a>
+                        <a class="nav-link" href="{{ route('profile.youcourse') }}">Các khóa học</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="{{ route('userPayment') }}">Hóa đơn</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('profile.changePassword') }}">Đổi mật khẩu</a>
                     </li>
                 </ul>
+                
             </div>
-
+           
             <!-- Cột bên phải: Thông tin cá nhân -->
             <div class="col-md-9 col-lg-10 profile-content">
                 <div class="profile-header">
@@ -148,14 +153,28 @@
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
+                            @php
+                            $user = auth()->user();
+                            $canRequest = $user->role === 'user' && 
+                            ($user->teacher_request_status !== 'pending');
+                            @endphp
+
+                            @if($canRequest)
+                            <button type="submit" class="btn btn-save">
+                            <a class="nav-link" href="{{ route('teacher.request.form') }}">
+                            Đăng ký giảng viên
+                            </a>
+                            </button>
+                            @endif
                             <button type="submit" class="btn btn-save">Lưu thay đổi</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        
     </div>
-
+    
     <script>
         function deleteAvatar() {
             if (confirm('Bạn có chắc muốn xóa ảnh đại diện không?')) {

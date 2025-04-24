@@ -23,7 +23,7 @@
     <!-- Header -->
     <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
         <div>
-            <h3 class="tw-text-2xl tw-font-bold">Quản lý đáp án</h3>
+            <h3 class="tw-text-2xl tw-font-bold">{{ $title }}</h3>
             <p class="tw-text-gray-500 tw-mt-1">Danh sách các đáp án và câu hỏi</p>
         </div>
         <a href="{{ route('admin.answers.create') }}" class="btn btn-outline-secondary">

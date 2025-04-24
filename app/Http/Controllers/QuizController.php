@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Quiz;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
+use App\Models\Enrollment;
+use Illuminate\Support\Facades\Auth;
 use App\Models\UserQuizResult;
 
 class QuizController extends Controller
 {
+    // Admin functions
     public function index()
     {
         $title = 'Quizzes';
@@ -18,8 +21,9 @@ class QuizController extends Controller
 
     public function create()
     {
+        $title = 'Tạo quizz';
         $lessons = Lesson::all();
-        return view('admin.quizzes.create', compact('lessons'));
+        return view('admin.quizzes.create', compact('lessons', 'title'));
     }
 
     public function store(Request $request)
@@ -30,96 +34,39 @@ class QuizController extends Controller
             'description' => 'nullable',
         ]);
 
-        Quiz::create($request->all());
+        Quiz::create(array_merge($request->all(), ['user_id' => Auth::id()]));
         return redirect()->route('admin.quizzes.index')->with('success', 'Quiz created successfully.');
     }
 
     public function show(Quiz $quiz)
     {
-        $quiz->load([
-            'questions.answers' => function ($query) {
-                $query->orderBy('is_correct', 'desc');
-            }
-        ]);
+        $userId = Auth::check() ? Auth::id() : null;
 
-        return view('showquizz', compact('quiz')); // Đúng đường dẫn tới file blade
-    }
+        $lesson = $quiz->lesson;
+        $section = $lesson ? $lesson->section : null;
+        $course = $section ? $section->course : null;
 
-
-    public function submitQuiz(Request $request, Quiz $quiz)
-    {
-        if (!$request->has('answers')) {
-            return redirect()->route('showquizz', ['quiz' => $quiz->id])
-                ->with('error', 'Bạn chưa chọn đáp án nào!');
+        $isEnrolled = false;
+        if ($userId && $course) {
+            $isEnrolled = Enrollment::where('user_id', $userId)
+                ->where('course_id', $course->id)
+                ->exists();
         }
-
-        $correctAnswers = 0;
-        $totalQuestions = $quiz->questions->count();
-
-        foreach ($quiz->questions as $question) {
-            if (isset($request->answers[$question->id])) {
-                $selectedAnswerId = $request->answers[$question->id];
-
-                $correctAnswer = $question->answers->where('is_correct', true)->first();
-
-                if ($correctAnswer && $correctAnswer->id == $selectedAnswerId) {
-                    $correctAnswers++;
+        if ($isEnrolled) {
+            $quiz->load([
+                'questions.answers' => function ($query) {
+                    $query->orderBy('is_correct', 'desc');
                 }
-            }
+            ]);
         }
-        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
-
-        $userId = auth()->id();
-
-        if (!$userId) {
-            return redirect()->route('showquizz', ['quiz' => $quiz->id])
-                ->with('error', 'Bạn cần đăng nhập để làm bài quiz!');
-        }
-
-        UserQuizResult::create([
-            'user_id' => $userId,
-            'quiz_id' => $quiz->id,
-            'score' => $score,
-            'submitted_at' => now(),
-        ]);
-
-        return redirect()->route('showquizz', ['quiz' => $quiz->id])
-            ->with('success', "Bạn đã trả lời $correctAnswers/$totalQuestions câu! Điểm: $score.");
+        return view('showquizz', compact('quiz', 'isEnrolled', 'course'));
     }
-
-    // public function submitQuiz(Request $request, Quiz $quiz)
-    // {
-    //     if (!$request->has('answers')) {
-    //         return redirect()->route('admin.quizzes.show', $quiz->id)
-    //             ->with('error', 'Bạn chưa chọn đáp án nào!');
-    //     }
-
-    //     $correctAnswers = 0;
-    //     $totalQuestions = $quiz->questions->count();
-
-    //     foreach ($quiz->questions as $question) {
-    //         if (isset($request->answers[$question->id])) {
-    //             $selectedAnswerId = $request->answers[$question->id];
-
-    //             $correctAnswer = $question->answers->where('is_correct', true)->first();
-
-    //             if ($correctAnswer && $correctAnswer->id == $selectedAnswerId) {
-    //                 $correctAnswers++; 
-    //             }
-    //         }
-    //     }
-
-    //     return redirect()->route('showquizz', ['quiz' => $quiz->id])
-    //     ->with('success', "Bạn đã trả lời đúng $correctAnswers/$totalQuestions câu!");
-    // }
-
-
-
 
     public function edit(Quiz $quiz)
     {
+        $title = 'Sửa quizz';
         $lessons = Lesson::all();
-        return view('admin.quizzes.edit', compact('quiz', 'lessons'));
+        return view('admin.quizzes.edit', compact('quiz', 'lessons', 'title'));
     }
 
     public function update(Request $request, Quiz $quiz)
@@ -138,5 +85,103 @@ class QuizController extends Controller
     {
         $quiz->delete();
         return redirect()->route('admin.quizzes.index')->with('success', 'Quiz deleted successfully.');
+    }
+
+    // Teacher functions
+    public function indexTeacher()
+    {
+        $title = 'Quản lí bài kiểm tra';
+        $quizzes = Quiz::ofTeacher()->with('lesson')->get();
+        return view('teacher.quizzes.index', compact('quizzes', 'title'));
+    }
+
+    public function createTeacher()
+    {
+        $title = 'Tạo bài kiểm tra';
+        $lessons = Lesson::where('user_id', Auth::id())->get(); // Chỉ lấy lesson của teacher
+        return view('teacher.quizzes.create', compact('lessons', 'title'));
+    }
+
+    public function storeTeacher(Request $request)
+    {
+        $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+            'title' => 'required',
+            'description' => 'nullable',
+        ]);
+
+        $lesson = Lesson::where('id', $request->lesson_id)
+            ->where('user_id', Auth::id())
+            ->first();
+        if (!$lesson) {
+            return back()->withErrors(['lesson_id' => 'Bạn không có quyền tạo quiz cho lesson này.']);
+        }
+
+        Quiz::create([
+            'lesson_id' => $request->lesson_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'user_id' => Auth::id(),
+        ]);
+        return redirect()->route('teacher.quizzes.index')->with('success', 'Bài kiểm tra đã được tạo thành công.');
+    }
+
+    public function showTeacher(Quiz $quiz)
+    {
+        if ($quiz->user_id !== Auth::id()) {
+            abort(403, 'Bạn không có quyền xem bài kiểm tra này.');
+        }
+
+        $quiz->load('lesson', 'questions.answers');
+        return view('teacher.quizzes.show', compact('quiz'));
+    }
+
+    public function editTeacher(Quiz $quiz)
+    {
+        if ($quiz->user_id !== Auth::id()) {
+            abort(403, 'Bạn không có quyền chỉnh sửa bài kiểm tra này.');
+        }
+
+        $title = 'Sửa bài kiểm tra';
+        $lessons = Lesson::where('user_id', Auth::id())->get();
+        return view('teacher.quizzes.edit', compact('quiz', 'lessons', 'title'));
+    }
+
+    public function updateTeacher(Request $request, Quiz $quiz)
+    {
+        if ($quiz->user_id !== Auth::id()) {
+            abort(403, 'Bạn không có quyền cập nhật bài kiểm tra này.');
+        }
+
+        $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+            'title' => 'required',
+            'description' => 'nullable',
+        ]);
+
+        $lesson = Lesson::where('id', $request->lesson_id)
+            ->where('user_id', Auth::id())
+            ->first();
+        if (!$lesson) {
+            return back()->withErrors(['lesson_id' => 'Bạn không có quyền cập nhật quiz cho lesson này.']);
+        }
+
+        $quiz->update([
+            'lesson_id' => $request->lesson_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'user_id' => Auth::id(),
+        ]);
+        return redirect()->route('teacher.quizzes.index')->with('success', 'Bài kiểm tra đã được cập nhật thành công.');
+    }
+
+    public function destroyTeacher(Quiz $quiz)
+    {
+        if ($quiz->user_id !== Auth::id()) {
+            abort(403, 'Bạn không có quyền xóa bài kiểm tra này.');
+        }
+
+        $quiz->delete();
+        return redirect()->route('teacher.quizzes.index')->with('success', 'Bài kiểm tra đã được xóa thành công.');
     }
 }

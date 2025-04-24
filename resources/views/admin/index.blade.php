@@ -2,170 +2,243 @@
 
 @section('content')
     <h3 class="tw-text-2xl tw-font-bold tw-mb-6">Trang chủ admin</h3>
-
     <!-- Stats Cards -->
     <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-mb-6">
-        <!-- Card 1: Total Users -->
         <div class="card tw-shadow-md">
             <div class="card-body">
                 <h5 class="card-title tw-text-lg tw-font-semibold">Tổng người dùng</h5>
-                <p class="card-text tw-text-3xl tw-font-bold tw-text-blue-600">1,234</p>
-                <p class="tw-text-sm tw-text-gray-500">+5% so với tháng trước</p>
+                <p class="card-text tw-text-3xl tw-font-bold tw-text-blue-600">{{ $totalUsers }}</p>
+                <p class="tw-text-sm tw-text-gray-500">
+                    @if ($userGrowth > 0)
+                        <i class="fas fa-arrow-up tw-text-green-500"></i>
+                    @elseif($userGrowth < 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @elseif($userGrowth == 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @endif
+                    {{ abs($userGrowth) }}% so với tháng trước
+                </p>
             </div>
         </div>
-        <!-- Card 2: Total Revenue -->
+
         <div class="card tw-shadow-md">
             <div class="card-body">
                 <h5 class="card-title tw-text-lg tw-font-semibold">Doanh thu</h5>
-                <p class="card-text tw-text-3xl tw-font-bold tw-text-green-600">12,345,000 VNĐ</p>
-                <p class="tw-text-sm tw-text-gray-500">+10% so với tháng trước</p>
+                <p class="card-text tw-text-3xl tw-font-bold tw-text-green-600">
+                    {{ number_format($totalRevenue, 0, ',', '.') }} VNĐ</p>
+                <p class="tw-text-sm tw-text-gray-500">
+                    @if ($revenueGrowth > 0)
+                        <i class="fas fa-arrow-up tw-text-green-500"></i>
+                    @elseif($revenueGrowth < 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @elseif($revenueGrowth == 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @endif
+                    {{ abs($revenueGrowth) }}% so với tháng trước
+                </p>
             </div>
         </div>
-        <!-- Card 3: Active Projects -->
+
         <div class="card tw-shadow-md">
             <div class="card-body">
-                <h5 class="card-title tw-text-lg tw-font-semibold">Dự án đang hoạt động</h5>
-                <p class="card-text tw-text-3xl tw-font-bold tw-text-purple-600">45</p>
-                <p class="tw-text-sm tw-text-gray-500">+2 dự án trong tuần này</p>
+                <h5 class="card-title tw-text-lg tw-font-semibold">Khóa học đang hoạt động</h5>
+                <p class="card-text tw-text-3xl tw-font-bold tw-text-purple-600">{{ $totalCourses }}</p>
+                <p class="tw-text-sm tw-text-gray-500">
+                    @if ($newCoursesThisWeek > 0)
+                        <i class="fas fa-arrow-up tw-text-green-500"></i>
+                    @elseif($newCoursesThisWeek < 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @elseif($newCoursesThisWeek == 0)
+                        <i class="fas fa-arrow-down tw-text-red-500"></i>
+                    @endif
+                    {{ $newCoursesThisWeek }} khóa học mới trong tuần này
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Chart Section -->
-    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-mb-6">
-        <!-- Line Chart -->
-        <div class="card tw-shadow-md">
-            <div class="card-body">
-                <h5 class="card-title tw-text-lg tw-font-semibold tw-mb-4">Doanh thu hàng tháng</h5>
-                <canvas id="revenueChart" height="200"></canvas>
-            </div>
+    <h3 class="tw-text-2xl tw-font-bold tw-mb-6">Thống kê của F8</h3>
+    <div class="tw-flex tw-gap-8">
+        <div class="tw-flex-1">
+            <h3 class="tw-text-lg tw-font-semibold tw-mb-3">Doanh thu theo tháng</h3>
+            <canvas id="revenueChart"></canvas>
         </div>
-        <!-- Bar Chart -->
-        <div class="card tw-shadow-md">
-            <div class="card-body">
-                <h5 class="card-title tw-text-lg tw-font-semibold tw-mb-4">Người dùng mới</h5>
-                <canvas id="usersChart" height="200"></canvas>
-            </div>
+
+        <div class="tw-flex-1">
+            <h3 class="tw-text-lg tw-font-semibold tw-mb-3">Người dùng theo tháng</h3>
+            <canvas id="userChart"></canvas>
         </div>
     </div>
-
-    <!-- Recent Activities Table -->
+    <br><br>
     <div class="tw-mb-6">
-        <h3 class="tw-text-xl tw-font-semibold tw-mb-3">Hoạt động gần đây</h3>
+        <h3 class="tw-text-xl tw-font-semibold tw-mb-3">Khóa học gần đây</h3>
+        <a href="admin/course" class="tw-flex tw-items-center tw-font-semibold tw-transition-all tw-no-underline "
+            style="margin-left: 1050px; color:orange hover:color:blue">
+            <i class="fas fa-cogs tw-mr-2"></i> Xem tất cả
+        </a>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-bordered align-middle mb-3 text-center">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Thời gian</th>
-                        <th>Người dùng</th>
-                        <th>Hành động</th>
-                        <th>Trạng thái</th>
+                        <th>Tên khóa học</th>
+                        <th>Người tạo</th>
+                        <th>Giảng viên</th>
+                        <th>Danh mục</th>
+                        <th>Chi tiết</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach ($recentCourses as $course)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $course->created_at->format('Y-m-d H:i') }}</td>
+                            <td>{{ $course->title }}</td>
+                            <td>{{ $course->user->username }}</td>
+                            <td>{{ $course->user->username }}</td>
+                            <td>{{ $course->category->name }}</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{{ route('admin.course.edit', $course->id) }}"
+                                    class="btn btn-sm btn-outline-danger tw-me-1">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                @if($recentCourses->isEmpty())
                     <tr>
-                        <td>1</td>
-                        <td>2025-03-24 10:30</td>
-                        <td>Nguyễn Văn A</td>
-                        <td>Đăng nhập</td>
-                        <td><span class="badge bg-success">Thành công</span></td>
+                        <td colspan="7" class="text-center">Không có dữ liệu</td>
                     </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br><br>
+    <div class="tw-mb-6">
+        <h3 class="tw-text-xl tw-font-semibold tw-mb-3">Thanh toán gần đây</h3>
+        <a href="admin/order" class="tw-flex tw-items-center tw-font-semibold tw-transition-all tw-no-underline "
+            style="margin-left: 1050px">
+            <i class="fas fa-cogs tw-mr-2"></i> Xem tất cả
+        </a>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle tw-mb-4 text-center">
+                <thead>
                     <tr>
-                        <td>2</td>
-                        <td>2025-03-24 09:15</td>
-                        <td>Trần Thị B</td>
-                        <td>Cập nhật hồ sơ</td>
-                        <td><span class="badge bg-warning">Đang xử lý</span></td>
+                        <th>#</th>
+                        <th>Ngày thanh toán</th>
+                        <th>Khóa học</th>
+                        <th>Sinh viên</th>
+                        <th>Số tiền</th>
+                        <th>Hình thức</th>
+                        <th>Trạng thái</th>
+                        <th>Chi tiết</th>
                     </tr>
+                </thead>
+                <tbody>
+                    @foreach ($recentPayments as $payment)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $payment->payment_date->format('Y-m-d H:i') }}</td>
+                            <td>{{ $payment->course->title }}</td>
+                            <td>{{ $payment->user->username }}</td>
+                            <td>{{ number_format($payment->amount, 0, ',', '.') }} VND</td>
+                            <td>{{ $payment->payment_method }}</td>
+                            <td>
+                                @if ($payment->status === 'success')
+                                    <span class="badge bg-success px-3 py-2 rounded-pill">✅ Thành công</span>
+                                @elseif ($payment->status === 'canceled')
+                                    <span class="badge bg-danger px-3 py-2 rounded-pill"> Thất bại</span>
+                                @else
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"> Đang xử lý</span>
+                                @endif
+                            </td>
+
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+
+                                <form action="{{ route('admin.order.delete', $payment->id) }}" method="POST"
+                                    onsubmit="return confirm('Bạn có chắc muốn xóa hóa đơn này?');" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                @if($recentPayments->isEmpty())
                     <tr>
-                        <td>3</td>
-                        <td>2025-03-23 16:45</td>
-                        <td>Lê Văn C</td>
-                        <td>Thêm dự án</td>
-                        <td><span class="badge bg-success">Thành công</span></td>
+                        <td colspan="8" class="text-center">Không có dữ liệu</td>
                     </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Progress Bars -->
-    <div class="tw-mb-6">
-        <h3 class="tw-text-xl tw-font-semibold tw-mb-3">Tiến độ công việc</h3>
-        <div class="tw-mb-4">
-            <p class="tw-font-medium">Thiết kế website</p>
-            <div class="progress">
-                <div class="progress-bar bg-success" role="progressbar" style="width: 75%" aria-valuenow="75"
-                    aria-valuemin="0" aria-valuemax="100">75%</div>
-            </div>
-        </div>
-        <div class="tw-mb-4">
-            <p class="tw-font-medium">Phát triển ứng dụng di động</p>
-            <div class="progress">
-                <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                    aria-valuemax="100">50%</div>
-            </div>
-        </div>
-        <div>
-            <p class="tw-font-medium">Tích hợp API</p>
-            <div class="progress">
-                <div class="progress-bar bg-warning" role="progressbar" style="width: 25%" aria-valuenow="25"
-                    aria-valuemin="0" aria-valuemax="100">25%</div>
-            </div>
-        </div>
-    </div>
-
     <!-- JavaScript for Charts -->
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            // Revenue Chart (Line Chart)
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(revenueCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
-                    datasets: [{
-                        label: 'Doanh thu (VNĐ)',
-                        data: [5000000, 7000000, 6000000, 9000000, 8000000, 12000000],
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+    <script>
+        var revenueData = @json($monthlyPayments);
+        var userData = @json($monthlyUsers);
+        var ctx1 = document.getElementById('revenueChart').getContext('2d');
+        var revenueChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(revenueData).map(month => {
+                    return ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7",
+                        "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+                    ][month - 1];
+                }),
+                datasets: [{
+                    label: 'Doanh thu (VND)',
+                    data: Object.values(revenueData),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
+            }
+        });
 
-            // Users Chart (Bar Chart)
-            const usersCtx = document.getElementById('usersChart').getContext('2d');
-            new Chart(usersCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'],
-                    datasets: [{
-                        label: 'Người dùng mới',
-                        data: [120, 150, 180, 200, 170, 220],
-                        backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        var ctx2 = document.getElementById('userChart').getContext('2d');
+        var userChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(userData).map(month => {
+                    return ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7",
+                        "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+                    ][month - 1];
+                }),
+                datasets: [{
+                    label: 'Số người dùng',
+                    data: Object.values(userData),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-        </script>
-    @endpush
+            }
+        });
+    </script>
 @endsection
